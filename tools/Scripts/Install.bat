@@ -26,7 +26,7 @@ vcpkg\vcpkg install spdlog:x64-windows-static spdlog:x64-windows
 
 echo ---------- 3.6) Installing imgui...
 vcpkg\vcpkg install imgui[core,sdl2-binding,sdl2-renderer-binding,docking-experimental]:x64-windows-static --recurse
-vcpkg\vcpkg install implot:x64-windows-static
+vcpkg\vcpkg install implot:x64-windows-static --recurse
 
 echo ========== 4) Integrating VCPKG dependencies
 vcpkg\vcpkg integrate install
