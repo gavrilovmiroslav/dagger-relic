@@ -1,0 +1,15 @@
+.vs
+.idea
+bin
+bin/**
+obj
+obj/**
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+project/
+tools/Scripts/vcpkg
+
+# CoffeeCup
+.brew
