@@ -13,7 +13,7 @@
 
 #include <FPNG.h>
 #include <LodePNG.h>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <yaml-cpp/yaml.h>
 #include <algorithm>
@@ -200,10 +200,10 @@ void TextureLoader::load_assets()
 
 void TextureLoader::process_signal(core::WindowShutdownSignal&)
 {
-	auto& storage = AccessStorage<Texture>::access_storage();
-	for (auto& e : storage)
+	const auto& storage = AccessStorage<Texture>::access_storage();
+	for (const auto& e : storage)
 	{
-		auto& texture = storage.get<Texture>(e);
+		const auto& texture = storage.get<Texture>(e);
 		SDL_DestroyTexture(texture.inner);
 	}
 }
@@ -290,19 +290,19 @@ ecs::Entity SpritesheetLoader::load_asset(String spritesheet_name, String sprite
 	auto& registry = core::Engine::get_instance().registry;
 
 	I32 index = 0;
-	for (auto& sprite_data : loaded["sprites"])
+	for (const auto& sprite_data : loaded["sprites"])
 	{
 		Sprite sprite;
 		sprite.texture = texture;
 
-		auto& clip = sprite_data["clip"];
+		const auto& clip = sprite_data["clip"];
 		I32 x{ clip[0].as<I32>() };
 		I32 y{ clip[1].as<I32>() };
 		I32 w{ clip[2].as<I32>() };
 		I32 h{ clip[3].as<I32>() };
 		sprite.clip = geometry::Rect{ x, y, w, h };
 
-		auto& pivot = sprite_data["pivot"];
+		const auto& pivot = sprite_data["pivot"];
 		sprite.pivot.x = pivot[0].as<F32>();
 		sprite.pivot.y = pivot[1].as<F32>();
 

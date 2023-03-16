@@ -1,0 +1,1 @@
+option('sdl_renderer', type : 'boolean', value : true)

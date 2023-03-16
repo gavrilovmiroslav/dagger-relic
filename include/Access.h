@@ -128,7 +128,7 @@ struct MutAccessGroupStorage : public AccessTrait
 template<typename T>
 struct SignalEmitter : public AccessTrait
 {
-	void emit(T& signal) const
+	void emit(const T& signal) const
 	{
 		core::Engine::get_instance().dispatcher.trigger(signal);
 	}
@@ -141,7 +141,7 @@ struct SignalProcessor : public AccessTrait
 
 	SignalProcessor()
 	{
-		core::Engine::get_instance().dispatcher.sink<T>().connect<&SignalProcessor<T>::process_signal>(this);
+		core::Engine::get_instance().dispatcher.sink<T>().template connect<&SignalProcessor<T>::process_signal>(this);
 	}
 };
 

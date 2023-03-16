@@ -34,9 +34,9 @@ struct Default2D
 		engine.use<DiagnosticsModule>();
 		engine.use<SMAFPSCalculatorModule>();
 
-		auto& assets = engine.use<AssetModule>();
-		assets->add_loader<TextureLoader>();
-		assets->add_loader<SpritesheetLoader>();
+		engine.use<AssetModule>();
+		engine.get<AssetModule>()->add_loader<TextureLoader>();
+		engine.get<AssetModule>()->add_loader<SpritesheetLoader>();
 
 		engine.use<ToolModule>();
 

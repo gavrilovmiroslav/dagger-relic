@@ -1,5 +1,5 @@
 #include "TextEditorTool.h"
-#include "ImguiTexteditor.h"
+#include "ImguiTextEditor.h"
 #include "EventBus.h"
 #include <imgui.h>
 

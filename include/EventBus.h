@@ -6,7 +6,7 @@
 #include "Logger.h"
 #include "Access.h"
 #include "Windowing.h"
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 using namespace memory;
 

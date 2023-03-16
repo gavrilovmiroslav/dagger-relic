@@ -27,7 +27,7 @@ inline void show_data_browser_tooltip(String text)
 void DataBrowserTool::draw_tree(fs::Dir path)
 {
 	// TODO (reported by @mstojanovic): Sus path handling, fix this plez
-	auto& name = fs::get_simple_name(path);
+	auto name = fs::get_simple_name(path);
 	auto fullname = path.path().parent_path().string() + "/" + name;	
 	fullname.erase(0, 5);
 	std::replace(fullname.begin(), fullname.end(), '\\', '/');

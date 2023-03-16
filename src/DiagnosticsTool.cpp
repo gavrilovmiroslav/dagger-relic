@@ -3,7 +3,6 @@
 #include "Diagnostics.h"
 
 #include <imgui.h>
-#include <implot.h>
 
 using namespace std::chrono;
 
@@ -38,26 +37,6 @@ void DiagnosticsTool::show_fps()
 	const ScrollingBuffer& fps_buffer = fps_data.fps_buffer;
 
 	ImGui::Text("FPS: %f", fps.value);
-
-	if (ImPlot::BeginPlot("##FPS")) {
-		ImPlot::SetupAxisLimits(ImAxis_X1, time_elapsed(fps.sample_time) - 10.0, time_elapsed(fps.sample_time), ImGuiCond_Always);
-		ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 3000);
-
-		if (fps_data.fps_buffer.Data.size() > 0)
-		{
-			ImPlot::PlotLine(
-				"", 
-				&fps_buffer.Data[0].x,
-				&fps_buffer.Data[0].y,
-				(U32)fps_buffer.Data.size(),
-				0,
-				fps_buffer.offset,
-				(U32)(2 * sizeof(float))
-			);
-		}
-
-		ImPlot::EndPlot();
-	}
 }
 
 void DiagnosticsTool::process_signal(core::GameStartSignal& signal)

@@ -142,7 +142,7 @@ void SpriteEditorTool::load_spritesheet()
         cell_count.y = dimensions[1].as<F32>();
     }
 
-    for (auto& sprite_data : loaded["sprites"])
+    for (const auto& sprite_data : loaded["sprites"])
     {
         Sprite sprite;
         sprite.texture = texture;
@@ -205,7 +205,7 @@ void SpriteEditorTool::show_tool_window()
         auto texture = AccessSystem<core::AssetModule>::access_system()->get_asset<Texture>(texture_filepath);
         if (texture == ecs::no_entity) return;
 
-        auto& textures = AccessStorage<Texture>::access_storage();
+        const auto& textures = AccessStorage<Texture>::access_storage();
 
         auto preview = textures.get<Texture>(texture);
         SDL_Point texture_size;
@@ -307,18 +307,18 @@ void SpriteEditorTool::show_tool_window()
             auto& rect = sprite.clip;
             auto& pvt = sprite.pivot;
 
-            ImGui::Rect(ImVec2{ 
+            ImVec2 startPos(
                 (F32)(window_pos.x + rect.x * scale),
-                (F32)(window_pos.y + rect.y * scale)
-            }, ImVec2{ 
-                (F32)(window_pos.x + (rect.x + rect.w) * scale), 
-                (F32)(window_pos.y + (rect.y + rect.h) * scale) 
-            });
+                (F32)(window_pos.y + rect.y * scale));
+            ImVec2 endPos(
+                (F32)(window_pos.x + (rect.x + rect.w) * scale),
+                (F32)(window_pos.y + (rect.y + rect.h) * scale));
+            ImGui::Rect(startPos, endPos);
 
-            ImGui::Dot(ImVec2{
+            ImVec2 dotPos(
                 (F32)(window_pos.x + ((F32)rect.x + pvt.x * (F32)rect.w) * scale),
-                (F32)(window_pos.y + ((F32)rect.y + pvt.y * (F32)rect.h) * scale)
-            });
+                (F32)(window_pos.y + ((F32)rect.y + pvt.y * (F32)rect.h) * scale));
+            ImGui::Dot(dotPos);
         }
     }
 }

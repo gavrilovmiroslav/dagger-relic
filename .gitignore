@@ -12,5 +12,9 @@ obj/**
 project/
 tools/Scripts/vcpkg
 
+# meson build stuff
+builddir/
+subprojects/
+
 # CoffeeCup
 .brew

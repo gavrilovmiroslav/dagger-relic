@@ -6,6 +6,7 @@
 #include "Tooling.h"
 
 #include <imgui.h>
+#include <yaml-cpp/yaml.h>
 
 namespace core
 {
@@ -36,6 +37,70 @@ namespace core
 		Size asset_type_id = 0;
 	};
 
+	class AssetModule
+		: public ecs::System
+		, public MutAccessUnique<WindowingState>
+		, public SignalEmitter<AssetLoadStartSignal>
+		, public SignalEmitter<AssetLoadEndSignal>
+	{
+		static containers::Map<Size, memory::SharedPtr<AbstractAssetLoader>> loaders;
+
+		bool on_start();	
+
+	public:
+		AssetModule() = default;
+
+		template<typename T>
+		static Size get_type_id()
+		{
+			return typeid(T).hash_code();
+		}
+
+		template<typename T>
+		ecs::Entity get_asset(String path)
+		{
+			const auto id = AssetModule::template get_type_id<T>();
+			assert(AssetModule::loaders.find(id) != AssetModule::loaders.end());
+
+			SharedPtr<AbstractAssetLoader> loader = AssetModule::loaders.at(id);
+			if (loader->contains(path))
+			{
+				return loader->loaded_entity_mapping.at(path);
+			}
+			else
+			{
+				return ecs::no_entity;
+			}
+		}
+
+		template<typename T>
+		Bool contains(String path) const
+		{
+			const auto id = AssetModule::template get_type_id<T>();
+			assert(AssetModule::loaders.find(id) != AssetModule::loaders.end());
+
+			SharedPtr<AbstractAssetLoader> loader = AssetModule::loaders.at(id);
+			return loader->contains(path);
+		}
+
+		template<typename L>
+		void add_loader()
+		{
+			add_loader(new L{});
+		}
+
+		template<typename L>
+		void add_loader(memory::RawPtr<L> loader)
+		{
+			assert(loader->asset_type_id != 0);
+
+			AssetModule::loaders.insert({
+				loader->asset_type_id,
+				memory::SharedPtr<L>(loader)
+				});
+		}
+	};
+
 	template<typename T>
 	struct AssetLoader 
 		: public AbstractAssetLoader
@@ -59,7 +124,7 @@ namespace core
 			auto name = get_default_asset_name();
 
 			containers::Set<String> keys{};
-			for (auto& key : yaml)
+			for (const auto& key : yaml)
 			{
 				keys.insert(key.first.as<String>());
 			}
@@ -70,7 +135,7 @@ namespace core
 			}
 			else
 			{
-				return yaml[name].as<String>();
+				return yaml[name].template as<String>();
 			}
 		}
 
@@ -80,71 +145,7 @@ namespace core
 
 		AssetLoader()
 		{
-			asset_type_id = AssetModule::get_type_id<T>();
-		}
-	};
-
-	class AssetModule
-		: public ecs::System
-		, public MutAccessUnique<WindowingState>
-		, public SignalEmitter<AssetLoadStartSignal>
-		, public SignalEmitter<AssetLoadEndSignal>
-	{
-		static containers::Map<Size, memory::SharedPtr<AbstractAssetLoader>> loaders;
-
-		bool on_start();	
-
-	public:
-		AssetModule() = default;
-
-		template<typename T>
-		static Size get_type_id()
-		{
-			return typeid(T).hash_code();
-		}
-
-		template<typename T>
-		ecs::Entity get_asset(String path)
-		{
-			const auto id = AssetModule::get_type_id<T>();
-			assert(AssetModule::loaders.find(id) != AssetModule::loaders.end());
-
-			SharedPtr<AbstractAssetLoader> loader = AssetModule::loaders.at(id);
-			if (loader->contains(path))
-			{
-				return loader->loaded_entity_mapping.at(path);
-			}
-			else
-			{
-				return ecs::no_entity;
-			}
-		}
-
-		template<typename T>
-		Bool contains(String path) const
-		{
-			const auto id = AssetModule::get_type_id<T>();
-			assert(AssetModule::loaders.find(id) != AssetModule::loaders.end());
-
-			SharedPtr<AbstractAssetLoader> loader = AssetModule::loaders.at(id);
-			return loader->contains(path);
-		}
-
-		template<typename L>
-		void add_loader()
-		{
-			add_loader(new L{});
-		}
-
-		template<typename L>
-		void add_loader(memory::RawPtr<L> loader)
-		{
-			assert(loader->asset_type_id != 0);
-
-			AssetModule::loaders.insert({
-				loader->asset_type_id,
-				memory::SharedPtr<L>(loader)
-				});
+			asset_type_id = AssetModule::template get_type_id<T>();
 		}
 	};
 }

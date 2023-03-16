@@ -7,7 +7,9 @@
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_sdlrenderer.h>
-#include <implot.h>
+
+// Dockable support is experimental :/
+// We cam still make our own imgui wrap target later on to enable it
 
 using namespace core;
 
@@ -24,10 +26,9 @@ void ToolModule::process_signal(WindowInitSignal&)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImPlot::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	/*io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;*/
 
 	ImGui::StyleColorsDark();
 
@@ -38,8 +39,9 @@ void ToolModule::process_signal(WindowInitSignal&)
 
 void ToolModule::create_dockspace()
 {
-	static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+	/*static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;*/
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(viewport->Pos);
 	ImGui::SetNextWindowSize(viewport->Size);
@@ -48,20 +50,22 @@ void ToolModule::create_dockspace()
 	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
+/*
 	if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
 		window_flags |= ImGuiWindowFlags_NoBackground;
+*/
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 	ImGui::Begin("DockSpace", nullptr, window_flags);
 	ImGui::PopStyleVar();
 	ImGui::PopStyleVar(2);
 
-	ImGuiIO& io = ImGui::GetIO();
+	/*ImGuiIO& io = ImGui::GetIO();
 	if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 	{
 		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-	}
+	}*/
 }
 
 void ToolModule::process_signal(PostRenderSignal&)
@@ -72,7 +76,7 @@ void ToolModule::process_signal(PostRenderSignal&)
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
 
-		create_dockspace();
+		// create_dockspace();
 
 		SignalEmitter<ToolRenderSignal>::emit(ToolRenderSignal{});
 		auto& window_state = AccessUnique<WindowingState>::access_unique();
@@ -87,18 +91,17 @@ void ToolModule::process_signal(PostRenderSignal&)
 void ToolModule::process_signal(RenderFrameEnd&)
 {
 	ImGuiIO& io = ImGui::GetIO();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	/*if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
-	}
+	}*/
 }
 
 void ToolModule::process_signal(WindowShutdownSignal&)
 {
 	ImGui_ImplSDLRenderer_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
-	ImPlot::DestroyContext();
 	ImGui::DestroyContext();
 }
 

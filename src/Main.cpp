@@ -169,7 +169,7 @@ struct Pong : public Game
 	}
 };
 
-int wmain(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
 	auto& engine = Engine::get_instance();
 	engine.configure("dagger.ini", argc, argv);

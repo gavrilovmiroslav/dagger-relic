@@ -16,7 +16,7 @@ void AnimationModule::process_signal(core::PostRenderSignal&)
 {
 	const auto& sprites = AccessStorage<Sprite>::access_storage();
 	const auto& sheets = AccessStorage<Spritesheet>::access_storage();
-	auto& storage = MutAccessGroupStorage<Sprite, SpriteAnimation>::access_storage();
+	const auto& storage = MutAccessGroupStorage<Sprite, SpriteAnimation>::access_storage();
 
 	static containers::Map<ecs::Entity, F32> frame_switch_delay{};
 

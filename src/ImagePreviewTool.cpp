@@ -5,7 +5,7 @@
 #include "Textures.h"
 #include "Assets.h"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <imgui.h>
 #include <string>
 
@@ -41,9 +41,9 @@ void ImagePreviewTool::show_tool_window()
         if (texture == ecs::no_entity) return;
 
         auto& state = AccessUnique<WindowingState>::access_unique();
-        auto& textures = AccessStorage<Texture>::access_storage();
+        const auto& textures = AccessStorage<Texture>::access_storage();
 
-        auto preview = textures.get<Texture>(texture);
+        const auto& preview = textures.get<Texture>(texture);
         SDL_Point preview_size;
         SDL_QueryTexture(preview.inner, nullptr, nullptr, &preview_size.x, &preview_size.y);
 
