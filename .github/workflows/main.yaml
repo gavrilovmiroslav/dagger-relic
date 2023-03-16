@@ -1,0 +1,20 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Install dependent packages
+        run: sudo apt install git meson ninja-build clang libyaml-cpp-dev libsdl2-dev
+
+      - name: Generate build directory
+        run: cd $GITHUB_WORKSPACE && meson builddir
+
+      - name: Build the engine
+        run: cd $GITHUB_WORKSPACE && meson compile -C builddir
