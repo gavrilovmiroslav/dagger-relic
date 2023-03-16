@@ -1,5 +1,10 @@
 project('dagger', 'c', 'cpp', default_options : ['cpp_std=c++17' ])
 
+if (host_machine.system() == 'linux') # Needed to compile FPNG.cpp
+    add_global_arguments('-march=native', language : 'c')
+    add_global_arguments('-march=native', language : 'cpp')
+endif
+
 deps = [
     dependency('entt'),
     dependency('glm'),
