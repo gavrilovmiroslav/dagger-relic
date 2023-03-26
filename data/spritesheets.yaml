@@ -1,2 +1,4 @@
 - pong/ball.png.spritesheet.yaml
 - pong/pad.png.spritesheet.yaml
+- test/WizardIdle.png.spritesheet.yaml
+- test/WizardRun.png.spritesheet.yaml
