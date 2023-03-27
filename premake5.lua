@@ -33,6 +33,7 @@ project "Dagger"
 		"include/**", 
 		"tools/vcpkg/installed/x64-windows/include",
 		"tools/vcpkg/installed/x64-windows-static/include",
+		"tools/vcpkg/installed/x64-windows/include/SDL2",
 		"tools/vcpkg/installed/arm64-osx/include"
 	}
 
