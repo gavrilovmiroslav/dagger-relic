@@ -1,2 +1,4 @@
-- pong/ball.png.spritesheet.yaml
-- pong/pad.png.spritesheet.yaml
+- fallingHero/heroStanding.png.spritesheet.yaml
+- fallingHero/attack.png.spritesheet.yaml
+- fallingHero/runningRight.png.spritesheet.yaml
+- background/bg47.png.spritesheet.yaml
