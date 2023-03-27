@@ -4,7 +4,10 @@
 
 using namespace core;
 
-struct Player {};
+struct Player {
+	bool is_grounded;
+	float jump_height;
+};
 
 struct KeyBindings {
 	KeyCode up;
@@ -16,20 +19,22 @@ struct KeyBindings {
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 #define SPEED_MOD 300.0f
-#define GRAVITY_MOD 100.0f
+#define GRAVITY_MOD 300.0f
+#define JUMP_SPEED_MOD 600.0f
 
-struct GravitySystem
+struct GravitySystem // Should maybe be renamed to PhysicsSystem once more physics are implemented.
 	: public ecs::System
 	, public MutAccessGroupStorage<Player, Position>
 {
 	void on_tick() override
 	{
-		for (auto&& [entity, pos] : access_storage().each())
+		for (auto&& [player_entity, player, pos] : access_storage().each())
 		{
-			if(pos.xy.y < SCREEN_HEIGHT - 16){
+			if(!player.is_grounded){
 				pos.xy.y += GRAVITY_MOD * Time::delta_time();
 				if(pos.xy.y > SCREEN_HEIGHT - 16){
 					pos.xy.y = SCREEN_HEIGHT - 16;
+					player.is_grounded = true;
 				}
 			}
 		}
@@ -44,14 +49,12 @@ struct PlayerControlsSystem
 	{
 		const auto& keys = KeyState::get();
 
-		for (auto&& [entity, bindings, pos, sprite] : access_storage().each())
+		for (auto&& [player_entity, player, bindings, pos, sprite] : access_storage().each())
 		{
-			if (keys.is_down(bindings.up))
+			if (keys.is_down(bindings.up) && player.is_grounded)
 			{
-				pos.xy.y -= SPEED_MOD * Time::delta_time();
-				if (pos.xy.y < 16) {
-					pos.xy.y = 16;
-				}
+				player.is_grounded = false;
+				player.jump_height = pos.xy.y - 100.0f;
 			}
 			if (keys.is_down(bindings.down))
 			{
@@ -79,6 +82,16 @@ struct PlayerControlsSystem
 			else {
 				sprite.change_to("test/WizardIdle");
 			}
+			if (player.jump_height < pos.xy.y) {
+				pos.xy.y -= JUMP_SPEED_MOD * Time::delta_time();
+				if(pos.xy.y < player.jump_height){
+					pos.xy.y = player.jump_height;
+					player.jump_height = SCREEN_HEIGHT - 16;
+				}
+			}
+			if (keys.is_released(bindings.up)){
+				player.jump_height = SCREEN_HEIGHT - 16;
+			}
 		}
 	}
 };
@@ -93,7 +106,7 @@ struct SWMG : public Game {
 
 	void on_start() override{
 		auto player_one = spawn()
-			.with<Player>()
+			.with<Player>(false, SCREEN_HEIGHT - 16)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
 			.with<Position>(geometry::Vec2{ 50, 600 - 32 })
@@ -102,7 +115,7 @@ struct SWMG : public Game {
 			.done();
 
 		auto player_two = spawn()
-			.with<Player>()
+			.with<Player>(false, SCREEN_HEIGHT - 16)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
 			.with<Position>(geometry::Vec2{ 750, 600 - 32 })
