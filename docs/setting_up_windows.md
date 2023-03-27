@@ -8,7 +8,7 @@
 ## Clone the repo
 
 ```
-git clone --recursive https://github.com/gavrilovmiroslav/dagger-2023.git
+git clone --recursive https://github.com/gavrilovmiroslav/dagger-relic.git
 ```
 
 ## Run the installation scripts
