@@ -4,11 +4,6 @@
 
 using namespace core;
 
-// TODO: Create Ground struct and enable collision
-struct GroundCollisionSignal {
-	ecs::Entity player;
-};
-
 struct Player {};
 
 struct KeyBindings {
@@ -21,6 +16,25 @@ struct KeyBindings {
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 #define SPEED_MOD 300.0f
+#define GRAVITY_MOD 100.0f
+
+struct GravitySystem
+	: public ecs::System
+	, public MutAccessGroupStorage<Player, Position>
+{
+	void on_tick() override
+	{
+		for (auto&& [entity, pos] : access_storage().each())
+		{
+			if(pos.xy.y < SCREEN_HEIGHT - 16){
+				pos.xy.y += GRAVITY_MOD * Time::delta_time();
+				if(pos.xy.y > SCREEN_HEIGHT - 16){
+					pos.xy.y = SCREEN_HEIGHT - 16;
+				}
+			}
+		}
+	}
+};
 
 struct PlayerControlsSystem 
 	: public ecs::System
@@ -39,14 +53,14 @@ struct PlayerControlsSystem
 					pos.xy.y = 16;
 				}
 			}
-			else if (keys.is_down(bindings.down))
+			if (keys.is_down(bindings.down))
 			{
 				pos.xy.y += SPEED_MOD * Time::delta_time();
 				if (pos.xy.y > SCREEN_HEIGHT - 16) {
 					pos.xy.y = SCREEN_HEIGHT - 16;
 				}
 			}
-			else if (keys.is_down(bindings.left))
+			if (keys.is_down(bindings.left))
 			{
 				sprite.change_to("test/WizardRun");
 				pos.xy.x -= SPEED_MOD * Time::delta_time();
@@ -54,7 +68,7 @@ struct PlayerControlsSystem
 					pos.xy.x = 11;
 				}
 			}
-			else if (keys.is_down(bindings.right))
+			if (keys.is_down(bindings.right))
 			{
 				sprite.change_to("test/WizardRun");
 				pos.xy.x += SPEED_MOD * Time::delta_time();
@@ -74,6 +88,7 @@ struct SWMG : public Game {
 	{
 		auto& engine = Engine::get_instance();
 		engine.use<PlayerControlsSystem>();
+		engine.use<GravitySystem>();
 	}
 
 	void on_start() override{
