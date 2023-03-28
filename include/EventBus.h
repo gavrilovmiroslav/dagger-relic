@@ -6,7 +6,7 @@
 #include "Logger.h"
 #include "Access.h"
 #include "Windowing.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 using namespace memory;
 
@@ -405,8 +405,6 @@ typedef enum
 
 namespace core
 {
-	class ToolModule;
-
 	enum MouseEventState
 	{
 		UpHold,
@@ -498,7 +496,6 @@ namespace core
 
 	class EventBusModule
 		: public ecs::System
-		, public AccessSystem<ToolModule>
 		, public AllocateUnique<MouseState>
 		, public AllocateUnique<KeyState>
 		, public MutAccessUnique<MouseState>

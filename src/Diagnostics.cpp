@@ -14,8 +14,6 @@ void DiagnosticsModule::set_diagnostics(DiagType diagType, F32 value)
 	DiagEntry& entry = diagnostics[diagType];
 	entry.value = value;
 	entry.sample_time = high_resolution_clock::now();
-
-	SignalEmitter<DiagnosticsToolSignal>::emit(DiagnosticsToolSignal{ diagType, entry });
 }
 
 void DiagnosticsModule::process_signal(DiagnosticsSignal& signal)

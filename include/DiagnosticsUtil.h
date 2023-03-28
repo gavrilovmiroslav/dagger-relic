@@ -24,12 +24,6 @@ struct DiagnosticsSignal
 	F32 value;
 };
 
-struct DiagnosticsToolSignal
-{
-	DiagType diagType;
-	DiagEntry diagEntry;
-};
-
 struct ScrollingBuffer {
 	int max_size;
 	int offset;
