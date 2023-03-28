@@ -12,8 +12,8 @@ struct KeyBindings
 {
 	KeyCode up;
 	KeyCode down;
-	KeyCode right;
 	KeyCode left;
+	KeyCode right;
 };
 
 
@@ -24,7 +24,7 @@ struct KeyBindings
 
 struct PlayerControlsSystem
 	: public ecs::System
-	, public MutAccessGroupStorage<Player, KeyBindings, Position>
+	, public MutAccessGroupStorage<Player, KeyBindings, Position, SpriteAnimation>
 {
 	void on_tick() override
 	{
@@ -35,24 +35,36 @@ struct PlayerControlsSystem
 			Engine::get_instance().quit();
 		}
 
-		for (auto&& [entity, bindings, pos] : access_storage().each())
+		for (auto&& [entity, bindings, pos, sprite] : access_storage().each())
 		{
 			if (keys.is_down(bindings.up))
 			{
 				pos.xy.y -= SPEED_MOD * Time::delta_time();
 			}
-			else if (keys.is_down(bindings.down))
+			if (keys.is_down(bindings.down))
 			{
 				pos.xy.y += SPEED_MOD * Time::delta_time();
 			}
-			else if (keys.is_down(bindings.right))
+			if (keys.is_down(bindings.left))
 			{
 				pos.xy.x -= SPEED_MOD * Time::delta_time();
 			}
-			else if (keys.is_down(bindings.left))
+			if (keys.is_down(bindings.right))
 			{
+				sprite.change_to("fallingHero/runningRight");
 				pos.xy.x += SPEED_MOD * Time::delta_time();
 			}
+			else{
+				sprite.change_to("fallingHero/heroStanding");
+			}
+			if (keys.is_down(KeyCode::KEY_SPACE))
+			{
+				sprite.change_to("fallingHero/attack");
+			}
+			else{
+				sprite.change_to("fallingHero/heroStanding");
+			}
+			
 		
 		}
 	}
