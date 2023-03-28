@@ -32,7 +32,7 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "preLaunchTask": "Meson: Build dagger Windows"
+            "preLaunchTask": "Meson: Build dagger"
         },
         {
             "name": "Dagger (macOS)",
