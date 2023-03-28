@@ -8,6 +8,12 @@
             "group": "build",
             "problemMatcher": [],
             "label": "Meson: Build dagger"
+        },
+        {
+            "type": "shell",
+            "command": "cp ${workspaceFolder}/builddir/subprojects/SDL2-2.26.0/sdl2.dll ${workspaceFolder}/builddir/sdl2.dll",
+            "label": "Meson: Build dagger Windows",
+            "dependsOn": "Meson: Build dagger"
         }
     ]
 }

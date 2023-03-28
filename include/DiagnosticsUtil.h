@@ -2,8 +2,6 @@
 
 #include "Definitions.h"
 
-#include <imgui.h>
-
 using namespace std::chrono;
 
 struct DiagEntry
@@ -24,16 +22,10 @@ struct DiagnosticsSignal
 	F32 value;
 };
 
-struct DiagnosticsToolSignal
-{
-	DiagType diagType;
-	DiagEntry diagEntry;
-};
-
 struct ScrollingBuffer {
 	int max_size;
 	int offset;
-	containers::DynamicArray<ImVec2> Data;
+	containers::DynamicArray<SDL_FPoint> Data;
 
 	ScrollingBuffer(int size = 100) {
 		max_size = size;
@@ -43,9 +35,9 @@ struct ScrollingBuffer {
 
 	void AddPoint(float x, float y) {
 		if (Data.size() < max_size)
-			Data.push_back(ImVec2(x, y));
+			Data.push_back(SDL_FPoint{x, y});
 		else {
-			Data[offset] = ImVec2(x, y);
+			Data[offset] = SDL_FPoint{x, y};
 			offset = (offset + 1) % max_size;
 		}
 	}
