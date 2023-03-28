@@ -25,7 +25,7 @@ struct KeyBindings {
 #define SCREEN_HEIGHT 600
 #define SPEED_MOD 300.0f
 #define GRAVITY_MOD 200.0f
-#define JUMP_MOD 500.0f
+#define JUMP_MOD 600.0f
 
 struct GravitySystem
 	: public ecs::System
@@ -80,7 +80,7 @@ struct PlayerControlsSystem
 					pos.xy.x = SCREEN_WIDTH - 11;
 				}
 			}
-			else {
+			else if (!keys.is_down(bindings.left)){
 				sprite.change_to("test/WizardIdle");
 			}
 			if (player.jump_speed > 0) {
@@ -109,8 +109,8 @@ struct PlatformSystem
 			bool on_platfrom = false;
 			for (auto&& [platform_entity, platform, platform_pos] : QueryPlatforms :: access_storage().each())
 			{
-				if(	player_pos.xy.x <= platform_pos.xy.x + platform.width / 2 
-					&& player_pos.xy.x >= platform_pos.xy.x - platform.width / 2
+				if(	player_pos.xy.x <= platform_pos.xy.x + platform.width / 2 + 11
+					&& player_pos.xy.x >= platform_pos.xy.x - platform.width / 2 - 11
 					&& player_pos.xy.y + 16 >= platform_pos.xy.y - 1
 					&& player_pos.xy.y + 16 <= platform_pos.xy.y + 1) 
 					{
