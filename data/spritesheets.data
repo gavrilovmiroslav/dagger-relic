@@ -3,3 +3,4 @@ pong/pad: pong/pad.png.data
 test/WizardIdle: test/WizardIdle.png.data
 test/WizardRun: test/WizardRun.png.data
 test/platform: test/platform.png.data
+test/pickup: test/pickup.png.data

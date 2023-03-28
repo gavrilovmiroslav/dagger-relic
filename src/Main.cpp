@@ -14,6 +14,12 @@ struct Platform {
 	float height;
 };
 
+struct Pickup {
+	const char* name = new char(51);
+	double radius;
+	bool is_picked;
+};
+
 struct KeyBindings {
 	KeyCode up;
 	KeyCode down;
@@ -57,7 +63,7 @@ struct PlayerControlsSystem
 				player.is_grounded = false;
 				player.jump_speed = JUMP_MOD;
 			}
-			if (keys.is_down(bindings.down) && !player.is_grounded) 
+			if (keys.is_down(bindings.down))  // deleted player.is_grounded condition, player can now go down from platform
 			{
 				pos.xy.y += SPEED_MOD * Time::delta_time();
 				if (pos.xy.y > SCREEN_HEIGHT - 16) {
@@ -89,6 +95,34 @@ struct PlayerControlsSystem
 			}
 			if (keys.is_released(bindings.up)){
 				player.jump_speed/=2;
+			}
+		}
+	}
+};
+
+
+struct PickupSystem
+	: public ecs::System
+	, public MutAccessGroupStorage<Player, Position>
+	, public MutAccessGroupStorage<Pickup, Position>
+{
+	using QueryPlayers 	= MutAccessGroupStorage<Player, Position>;
+	using QueryPlickups = MutAccessGroupStorage<Pickup, Position>;
+	
+	void on_tick() override
+	{
+		for (auto&& [player_entity, player, player_pos] : QueryPlayers :: access_storage().each())
+		{
+			for (auto&& [pickup_entity, pickup, pickup_pos] : QueryPlickups :: access_storage().each())
+			{
+				if (	abs(player_pos.xy.x - pickup_pos.xy.x) <= pickup.radius
+					&& 	abs(player_pos.xy.y - pickup_pos.xy.y) <= pickup.radius
+					&&  !pickup.is_picked){
+						pickup.is_picked = true;
+
+						replace_component<Pickup>(player_entity, pickup.name,pickup.radius, pickup.is_picked);
+						despawn(pickup_entity);
+				}
 			}
 		}
 	}
@@ -130,6 +164,7 @@ struct SWMG : public Game {
 		engine.use<PlayerControlsSystem>();
 		engine.use<GravitySystem>();
 		engine.use<PlatformSystem>();
+		engine.use<PickupSystem>();
 	}
 
 	void on_start() override{
@@ -151,6 +186,20 @@ struct SWMG : public Game {
 			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT)
 			.done();
 
+		auto pickup1 = spawn()
+			.with<Pickup>("potion" ,32, false)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
+			.with<Position>(geometry::Vec2{ 600, 570 })
+			.with<Visibility>(true);
+
+		auto pickup2 = spawn()
+			.with<Pickup>("scroll" ,32, false)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
+			.with<Position>(geometry::Vec2{ 200, 400 })
+			.with<Visibility>(true);
+	
 		auto platform1 = spawn()
 			.with<Platform>(128, 4)
 			.with<Sprite>(ecs::no_entity)
