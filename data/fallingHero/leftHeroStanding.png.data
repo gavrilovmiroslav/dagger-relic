@@ -1,20 +1,8 @@
-texture: fallingHero/attack
-dimensions: 1, 1
+texture: fallingHero/leftHeroStanding
+dimensions: 3, 3
 sprites: 6
 
-clip: 0, 0, 56, 56
-pivot: 0.5, 0.5
-scale: 2, 2
-
-clip: 56, 0, 56, 56
-pivot: 0.5, 0.5
-scale: 2, 2
-
-clip: 112, 0, 56, 56
-pivot: 0.5, 0.5
-scale: 2, 2
-
-clip: 168, 0, 56, 56
+clip: 280, 0, 56, 56
 pivot: 0.5, 0.5
 scale: 2, 2
 
@@ -22,7 +10,20 @@ clip: 224, 0, 56, 56
 pivot: 0.5, 0.5
 scale: 2, 2
 
-clip: 280, 0, 56, 56
+clip: 168, 0, 56, 56
 pivot: 0.5, 0.5
 scale: 2, 2
+
+clip: 112, 0, 56, 56
+pivot: 0.5, 0.5
+scale: 2, 2
+
+clip: 56, 0, 56, 56
+pivot: 0.5, 0.5
+scale: 2, 2
+
+clip: 0, 0, 56, 56
+pivot: 0.5, 0.5
+scale: 2, 2
+
 

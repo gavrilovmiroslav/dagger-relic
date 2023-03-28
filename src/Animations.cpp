@@ -3,6 +3,8 @@
 #include "Geometry.h"
 #include "SpriteRendering.h"
 
+
+#define SPEED_MOD 10.0f
 void SpriteAnimation::change_to(String animation_name)
 {
 	const auto current = Spritesheet::get_by_name(animation_name);
@@ -29,7 +31,7 @@ void AnimationModule::process_signal(core::PostRenderSignal&)
 		auto current_sprite = sheet.sprites[anim.current_frame];
 		sprite = sprites.get<Sprite>(current_sprite);
 
-		frame_switch_delay[entity] += Time::delta_time();
+		frame_switch_delay[entity] += (Time::delta_time() * SPEED_MOD);
 		if (frame_switch_delay[entity] >= anim.frame_length)
 		{
 			frame_switch_delay[entity] *= 0;

@@ -2,6 +2,7 @@
 
 #include "Prelude.h"
 #include "Random.h"
+#include <iostream>
 
 using namespace core;
 
@@ -14,6 +15,7 @@ struct KeyBindings
 	KeyCode down;
 	KeyCode left;
 	KeyCode right;
+	KeyCode attack;
 };
 
 
@@ -26,6 +28,8 @@ struct PlayerControlsSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<Player, KeyBindings, Position, SpriteAnimation>
 {
+	bool side = true;
+
 	void on_tick() override
 	{
 		const auto& keys = KeyState::get();
@@ -35,37 +39,48 @@ struct PlayerControlsSystem
 			Engine::get_instance().quit();
 		}
 
+       
+
 		for (auto&& [entity, bindings, pos, sprite] : access_storage().each())
 		{
+			
+
 			if (keys.is_down(bindings.up))
 			{
 				pos.xy.y -= SPEED_MOD * Time::delta_time();
 			}
+
 			if (keys.is_down(bindings.down))
 			{
 				pos.xy.y += SPEED_MOD * Time::delta_time();
 			}
+
 			if (keys.is_down(bindings.left))
 			{
+				side = false;
+				sprite.change_to("fallingHero/runningLeft");
 				pos.xy.x -= SPEED_MOD * Time::delta_time();
 			}
-			if (keys.is_down(bindings.right))
+			else if (keys.is_down(bindings.right))
 			{
+				side = true;
 				sprite.change_to("fallingHero/runningRight");
 				pos.xy.x += SPEED_MOD * Time::delta_time();
 			}
-			else{
-				sprite.change_to("fallingHero/heroStanding");
-			}
-			if (keys.is_down(KeyCode::KEY_SPACE))
+			else if (keys.is_down(bindings.attack))
 			{
-				sprite.change_to("fallingHero/attack");
+				if(side == true)
+					sprite.change_to("fallingHero/attack");
+				if(side == false)
+					sprite.change_to("fallingHero/attackLeft");
 			}
 			else{
-				sprite.change_to("fallingHero/heroStanding");
+				if(side == true)
+					sprite.change_to("fallingHero/heroStanding");
+				if(side == false)
+					sprite.change_to("fallingHero/leftHeroStanding");
+				
 			}
-			
-		
 		}
 	}
 };
@@ -86,7 +101,7 @@ struct FallingHero : public Game
 			.with<SpriteAnimation>(Spritesheet::get_by_name("fallingHero/heroStanding"))
 			.with<Position>(geometry::Vec2{ 300, 100 })
 			.with<Visibility>(true)
-			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D)
+			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D, KeyCode::KEY_SPACE)
 			.done();
 	}
 };

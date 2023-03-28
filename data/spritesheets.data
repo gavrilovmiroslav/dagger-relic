@@ -1,6 +1,7 @@
 fallingHero/runningRight: fallingHero/runningRight.png.data
-pong/ball: pong/ball.png.data
-pong/pad: pong/pad.png.data
 fallingHero/heroStanding: fallingHero/heroStanding.png.data
 fallingHero/attack: fallingHero/attack.png.data
+fallingHero/runningLeft: fallingHero/runningLeft.png.data
+fallingHero/leftHeroStanding: fallingHero/leftHeroStanding.png.data
+fallingHero/attackLeft: fallingHero/attackLeft.png.data
 background/bg47: background/bg47.png.data

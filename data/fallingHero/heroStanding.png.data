@@ -1,7 +1,28 @@
 texture: fallingHero/heroStanding
 dimensions: 3, 3
-sprites: 1
+sprites: 6
 
 clip: 0, 0, 56, 56
 pivot: 0.5, 0.5
 scale: 5, 5
+
+clip: 56, 0, 56, 56
+pivot: 0.5, 0.5
+scale: 2, 2
+
+clip: 112, 0, 56, 56
+pivot: 0.5, 0.5
+scale: 2, 2
+
+clip: 168, 0, 56, 56
+pivot: 0.5, 0.5
+scale: 2, 2
+
+clip: 224, 0, 56, 56
+pivot: 0.5, 0.5
+scale: 2, 2
+
+clip: 280, 0, 56, 56
+pivot: 0.5, 0.5
+scale: 2, 2
+
