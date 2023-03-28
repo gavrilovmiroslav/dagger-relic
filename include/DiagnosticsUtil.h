@@ -2,8 +2,6 @@
 
 #include "Definitions.h"
 
-#include <imgui.h>
-
 using namespace std::chrono;
 
 struct DiagEntry

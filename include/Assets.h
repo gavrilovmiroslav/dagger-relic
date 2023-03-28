@@ -3,7 +3,6 @@
 #include "Definitions.h"
 #include "Access.h"
 
-#include <imgui.h>
 #include <fstream>
 
 namespace core
