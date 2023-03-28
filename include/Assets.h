@@ -3,10 +3,7 @@
 #include "Definitions.h"
 #include "Access.h"
 
-#include "Tooling.h"
-
-#include <imgui.h>
-#include <yaml-cpp/yaml.h>
+#include <fstream>
 
 namespace core
 {
@@ -62,7 +59,7 @@ namespace core
 			const auto id = AssetModule::template get_type_id<T>();
 			assert(AssetModule::loaders.find(id) != AssetModule::loaders.end());
 
-			SharedPtr<AbstractAssetLoader> loader = AssetModule::loaders.at(id);
+			const auto& loader = AssetModule::loaders.at(id);
 			if (loader->contains(path))
 			{
 				return loader->loaded_entity_mapping.at(path);
@@ -79,7 +76,7 @@ namespace core
 			const auto id = AssetModule::template get_type_id<T>();
 			assert(AssetModule::loaders.find(id) != AssetModule::loaders.end());
 
-			SharedPtr<AbstractAssetLoader> loader = AssetModule::loaders.at(id);
+			const auto& loader = AssetModule::loaders.at(id);
 			return loader->contains(path);
 		}
 
@@ -104,39 +101,22 @@ namespace core
 	template<typename T>
 	struct AssetLoader 
 		: public AbstractAssetLoader
-		, public SignalProcessor<core::EditorToolAssetLoadingSignal>
 	{
-		void process_signal(EditorToolAssetLoadingSignal&) override
-		{
-			if (ImGui::MenuItem(("Reload " + get_default_asset_name()).c_str()))
-			{
-				// TODO: unloading dependent assets has to happen here first
-				load_assets();
-				// TODO: reloading dependent assets has to happen here first
-			}
-		}
-
 		virtual String get_default_asset_name() const = 0;
 
 		String get_loader_path()
 		{
-			auto yaml = YAML::LoadFile("data/entry.yaml");
-			auto name = get_default_asset_name();
-
+			std::ifstream entry("data/entry.data");
 			containers::Set<String> keys{};
-			for (const auto& key : yaml)
-			{
-				keys.insert(key.first.as<String>());
-			}
 
-			if (keys.find(name) == keys.end())
+			String line;
+			while (std::getline(entry, line))
 			{
-				return name + ".yaml";
+				keys.insert(line);
 			}
-			else
-			{
-				return yaml[name].template as<String>();
-			}
+			entry.close();
+			auto name = get_default_asset_name();
+			return name + ".data";
 		}
 
 		virtual void load_assets() = 0;

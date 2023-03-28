@@ -10,7 +10,6 @@ using namespace std::chrono;
 class DiagnosticsModule
 	: public ecs::System
 	, public SignalProcessor<DiagnosticsSignal>
-	, public SignalEmitter<DiagnosticsToolSignal>
 {
 
 public:
