@@ -59,7 +59,7 @@ namespace core
 			const auto id = AssetModule::template get_type_id<T>();
 			assert(AssetModule::loaders.find(id) != AssetModule::loaders.end());
 
-			SharedPtr<AbstractAssetLoader> loader = AssetModule::loaders.at(id);
+			const auto& loader = AssetModule::loaders.at(id);
 			if (loader->contains(path))
 			{
 				return loader->loaded_entity_mapping.at(path);
@@ -76,7 +76,7 @@ namespace core
 			const auto id = AssetModule::template get_type_id<T>();
 			assert(AssetModule::loaders.find(id) != AssetModule::loaders.end());
 
-			SharedPtr<AbstractAssetLoader> loader = AssetModule::loaders.at(id);
+			const auto& loader = AssetModule::loaders.at(id);
 			return loader->contains(path);
 		}
 

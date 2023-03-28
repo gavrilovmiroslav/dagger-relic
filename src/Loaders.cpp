@@ -13,7 +13,7 @@
 
 #include <FPNG.h>
 #include <LodePNG.h>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <algorithm>
 
@@ -378,7 +378,7 @@ void SpritesheetLoader::load_assets()
 	{
 		fs::Dir sprite_full_path{ key };
 
-		auto& [ name, path ] = read_tuple(key);
+		const auto& [ name, path ] = read_tuple(key);
 		auto sheet = load_asset(name, "data/" + path);
 		loaded_entity_mapping.insert({ name, sheet });
 	}
@@ -401,7 +401,7 @@ ecs::Entity SpritesheetLoader::load_asset(String spritesheet_name, String sprite
 
 	assert(texture != ecs::no_entity);
 
-	auto& dimensions = read_2ints(read_pair(input, "dimensions").value());
+	const auto& dimensions = read_2ints(read_pair(input, "dimensions").value());
 
 	cell_count.x = dimensions[0];
 	cell_count.y = dimensions[1];
@@ -417,8 +417,8 @@ ecs::Entity SpritesheetLoader::load_asset(String spritesheet_name, String sprite
 	for (int i = 0; i < sprite_count; i++)
 	{
 		read_line(input);
-		auto& clip = read_4ints(read_pair(input, "clip").value());
-		auto& pivot = read_2floats(read_pair(input, "pivot").value());
+		const auto& clip = read_4ints(read_pair(input, "clip").value());
+		const auto& pivot = read_2floats(read_pair(input, "pivot").value());
 		//auto& scale = read_2floats(read_pair(input, "scale").value());
 
 		Sprite sprite;
