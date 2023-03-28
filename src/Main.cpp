@@ -6,7 +6,7 @@ using namespace core;
 
 struct Player {
 	bool is_grounded;
-	float jump_height;
+	float jump_speed;
 };
 
 struct Platform {
@@ -24,10 +24,10 @@ struct KeyBindings {
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 #define SPEED_MOD 300.0f
-#define GRAVITY_MOD 300.0f
-#define JUMP_SPEED_MOD 600.0f
+#define GRAVITY_MOD 200.0f
+#define JUMP_MOD 500.0f
 
-struct GravitySystem // Should maybe be renamed to PhysicsSystem once more physics are implemented.
+struct GravitySystem
 	: public ecs::System
 	, public MutAccessGroupStorage<Player, Position>
 {
@@ -55,7 +55,7 @@ struct PlayerControlsSystem
 			if (keys.is_pressed(bindings.up) && player.is_grounded) // keys.is_down() causes a bug where player can levitate trough platforms 
 			{
 				player.is_grounded = false;
-				player.jump_height = pos.xy.y - 100.0f;
+				player.jump_speed = JUMP_MOD;
 			}
 			if (keys.is_down(bindings.down) && !player.is_grounded) 
 			{
@@ -83,15 +83,12 @@ struct PlayerControlsSystem
 			else {
 				sprite.change_to("test/WizardIdle");
 			}
-			if (player.jump_height < pos.xy.y) {
-				pos.xy.y -= JUMP_SPEED_MOD * Time::delta_time();
-				if(pos.xy.y < player.jump_height){
-					pos.xy.y = player.jump_height;
-					player.jump_height = SCREEN_HEIGHT - 16;
-				}
+			if (player.jump_speed > 0) {
+				pos.xy.y -= player.jump_speed * Time::delta_time();
+				player.jump_speed -= 0.1;
 			}
 			if (keys.is_released(bindings.up)){
-				player.jump_height = SCREEN_HEIGHT - 16;
+				player.jump_speed/=2;
 			}
 		}
 	}
@@ -137,7 +134,7 @@ struct SWMG : public Game {
 
 	void on_start() override{
 		auto player_one = spawn()
-			.with<Player>(false, SCREEN_HEIGHT - 16)
+			.with<Player>(false, 0)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
 			.with<Position>(geometry::Vec2{ 50, 600 - 32})
@@ -146,7 +143,7 @@ struct SWMG : public Game {
 			.done();
 
 		auto player_two = spawn()
-			.with<Player>(false, SCREEN_HEIGHT - 16)
+			.with<Player>(false, 0)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
 			.with<Position>(geometry::Vec2{ 750, 600 - 32})
