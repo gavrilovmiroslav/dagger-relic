@@ -1,2 +1,7 @@
 pong/pad pong/pad.png
 pong/ball pong/ball.png
+fallingHero/heroStanding fallingHero/heroStanding.png
+fallingHero/runningRight fallingHero/runningRight.png
+fallingHero/attack fallingHero/attack.png
+background/bg47 background/bg47.png
+
