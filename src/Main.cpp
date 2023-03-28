@@ -169,11 +169,11 @@ struct Pong : public Game
 	}
 };
 
-#undef main
 int main(int argc, char* argv[])
 {
 	auto& engine = Engine::get_instance();
-	engine.configure("dagger.ini", argc, argv);
+	std::string filePath = "dagger.ini";
+	engine.configure(filePath.data(), argc, argv);
 
 	engine.setup<Default2D>();
 
