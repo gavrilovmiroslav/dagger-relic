@@ -1,2 +1,5 @@
 pong/pad pong/pad.png
 pong/ball pong/ball.png
+test/WizardIdle test/WizardIdle.png
+test/WizardRun test/WizardRun.png
+test/platform test/platform.png
