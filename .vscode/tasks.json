@@ -29,12 +29,12 @@
                 "'&'",
                 "meson",
                 "setup",
-                "builddir4",
+                "builddir",
                 "'&'",
                 "meson",
                 "compile",
                 "-C",
-                "builddir4"
+                "builddir"
             ]
         }
     ]
