@@ -9,7 +9,7 @@ deps = [
     dependency('entt'),
     dependency('glm'),
     dependency('spdlog'),
-    dependency('sdl2', static : true, default_options : [ 'test=false' ])
+    dependency('sdl2', default_options : [ 'test=false' ])
 ]
 
 includes = [
