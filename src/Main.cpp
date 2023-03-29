@@ -50,13 +50,13 @@ struct GravitySystem
 
 struct PlayerControlsSystem 
 	: public ecs::System
-	, public MutAccessGroupStorage<Player, KeyBindings, Position, SpriteAnimation>
+	, public MutAccessGroupStorage<Player, KeyBindings, Position, SpriteAnimation, Flip>
 {
 	void on_tick() override
 	{
 		const auto& keys = KeyState::get();
 
-		for (auto&& [player_entity, player, bindings, pos, sprite] : access_storage().each())
+		for (auto&& [player_entity, player, bindings, pos, sprite, flip] : access_storage().each())
 		{
 			if (keys.is_pressed(bindings.up) && player.is_grounded) // keys.is_down() causes a bug where player can levitate trough platforms 
 			{
@@ -72,6 +72,7 @@ struct PlayerControlsSystem
 			}
 			if (keys.is_down(bindings.left))
 			{
+				replace_component<Flip>(player_entity, Horizontal);
 				sprite.change_to("test/WizardRun");
 				pos.xy.x -= SPEED_MOD * Time::delta_time();
 				if (pos.xy.x < 11) {
@@ -80,6 +81,7 @@ struct PlayerControlsSystem
 			}
 			if (keys.is_down(bindings.right))
 			{
+				replace_component<Flip>(player_entity, None);
 				sprite.change_to("test/WizardRun");
 				pos.xy.x += SPEED_MOD * Time::delta_time();
 				if (pos.xy.x > SCREEN_WIDTH - 11) {
@@ -168,23 +170,6 @@ struct SWMG : public Game {
 	}
 
 	void on_start() override{
-		auto player_one = spawn()
-			.with<Player>(false, 0)
-			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
-			.with<Position>(geometry::Vec2{ 50, 600 - 32})
-			.with<Visibility>(true)
-			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D)
-			.done();
-
-		auto player_two = spawn()
-			.with<Player>(false, 0)
-			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
-			.with<Position>(geometry::Vec2{ 750, 600 - 32})
-			.with<Visibility>(true)
-			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT)
-			.done();
 
 		auto pickup1 = spawn()
 			.with<Pickup>("potion" ,32, false)
@@ -242,6 +227,25 @@ struct SWMG : public Game {
 			.with<Position>(geometry::Vec2{ SCREEN_WIDTH / 2, SCREEN_HEIGHT })
 			.with<Visibility>(true);
 
+		auto player_one = spawn()
+			.with<Player>(false, 0)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
+			.with<Position>(geometry::Vec2{ 50, 600 - 32})
+			.with<Visibility>(true)
+			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D)
+			.with<Flip>(None)
+			.done();
+
+		auto player_two = spawn()
+			.with<Player>(false, 0)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
+			.with<Position>(geometry::Vec2{ 750, 600 - 32})
+			.with<Visibility>(true)
+			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT)
+			.with<Flip>(None)
+			.done();
 	}
 };
 
