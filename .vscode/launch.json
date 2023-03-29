@@ -13,7 +13,6 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": false,
             "MIMode": "gdb",
             "setupCommands": [
                 {
@@ -25,6 +24,17 @@
             "preLaunchTask": "Meson: Build dagger"
         },
         {
+            "name": "Dagger (Windows)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/builddir/dagger",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "preLaunchTask": "Meson: Build dagger"
+        },
+        {
             "name": "Dagger (macOS)",
             "type": "cppdbg",
             "request": "launch",
@@ -33,7 +43,6 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": false,
             "MIMode": "lldb",
             "preLaunchTask": "Meson: Build dagger"
         }
