@@ -2,12 +2,39 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Meson: Build Unix",
             "type": "meson",
             "target": "dagger",
             "mode": "build",
             "group": "build",
-            "problemMatcher": [],
-            "label": "Meson: Build dagger"
+            "problemMatcher": []
+        },
+        {
+            "label": "Meson Build Windows",
+            "type": "shell",
+            "options":
+            {
+                "env": {
+                    "CC": "cl",
+                    "CXX": "cl"
+                }
+            },
+            "command": "cmd.exe",
+            "args":
+            [
+                "/d",
+                "/c",
+                "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat",
+                "'&'",
+                "meson",
+                "setup",
+                "builddir4",
+                "'&'",
+                "meson",
+                "compile",
+                "-C",
+                "builddir4"
+            ]
         }
     ]
 }
