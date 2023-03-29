@@ -10,8 +10,9 @@
             "problemMatcher": []
         },
         {
-            "label": "Meson Build Windows",
+            "label": "Meson: Build Windows",
             "type": "shell",
+            "group": "build",
             "options":
             {
                 "env": {
