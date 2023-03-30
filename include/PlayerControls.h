@@ -8,5 +8,5 @@ struct PlayerControlsSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<Player, KeyBindings, Position, SpriteAnimation, Flip>
 {
-	void on_tick();
+	void on_tick() override;
 };

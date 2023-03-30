@@ -12,5 +12,5 @@ struct CombatSystem
 	using QueryPlayers = MutAccessGroupStorage<Player, Position>;
 	using QueryAttacks = MutAccessGroupStorage<BasicAttack, Position, SpriteAnimation, Flip>;
 
-	void on_tick();
+	void on_tick() override;
 };

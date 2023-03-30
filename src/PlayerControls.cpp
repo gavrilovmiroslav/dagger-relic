@@ -13,7 +13,8 @@ void PlayerControlsSystem::on_tick()
         if (keys.is_down(bindings.down))  // deleted player.is_grounded condition, player can now go down from platform
         {
             pos.xy.y += SPEED_MOD * Time::delta_time();
-            if (pos.xy.y > SCREEN_HEIGHT - 16) {
+            if (pos.xy.y > SCREEN_HEIGHT - 16) 
+            {
                 pos.xy.y = SCREEN_HEIGHT - 16;
             }
         }
@@ -22,7 +23,8 @@ void PlayerControlsSystem::on_tick()
             replace_component<Flip>(player_entity, Horizontal);
             sprite.change_to("test/WizardRun");
             pos.xy.x -= SPEED_MOD * Time::delta_time();
-            if (pos.xy.x < 11) {
+            if (pos.xy.x < 11) 
+            {
                 pos.xy.x = 11;
             }
         }
@@ -31,23 +33,29 @@ void PlayerControlsSystem::on_tick()
             replace_component<Flip>(player_entity, None);
             sprite.change_to("test/WizardRun");
             pos.xy.x += SPEED_MOD * Time::delta_time();
-            if (pos.xy.x > SCREEN_WIDTH - 11) {
+            if (pos.xy.x > SCREEN_WIDTH - 11) 
+            {
                 pos.xy.x = SCREEN_WIDTH - 11;
             }
         }
-        else if (!keys.is_down(bindings.left)){
+        else if (!keys.is_down(bindings.left))
+        {
             sprite.change_to("test/WizardIdle");
         }
-        if (player.jump_speed > 0) {
+        if (player.jump_speed > 0) 
+        {
             pos.xy.y -= player.jump_speed * Time::delta_time();
             player.jump_speed -= 0.1;
         }
-        if (keys.is_released(bindings.up)){
+        if (keys.is_released(bindings.up))
+        {
             player.is_grounded = false;
             player.jump_speed/=2;
         }
-        if (keys.is_pressed(bindings.basic_attack)){
-            if (flip == None){
+        if (keys.is_pressed(bindings.basic_attack))
+        {
+            if (flip == None)
+            {
                 auto attack = spawn()
                 .with<BasicAttack>(300.0f, pos.xy.x + 400.0f, 25.0f)
                 .with<Sprite>(ecs::no_entity)
@@ -57,7 +65,8 @@ void PlayerControlsSystem::on_tick()
                 .with<Flip>(None)
                 .with<Scale>(geometry::Vec2{0.1f,0.1f}); // There must exist a better way to scale objects.
             }
-            else{
+            else
+            {
                 auto attack = spawn()
                 .with<BasicAttack>(300.0f, pos.xy.x - 400.0f, 25.0f)
                 .with<Sprite>(ecs::no_entity)

@@ -18,8 +18,8 @@ struct SWMG : public Game {
 		engine.use<CombatSystem>();
 	}
 
-	void on_start() override{
-
+	void on_start() override
+	{
 		auto pickup1 = spawn()
 			.with<Pickup>("potion" ,32, false)
 			.with<Sprite>(ecs::no_entity)

@@ -9,8 +9,8 @@ struct PickupSystem
 	, public MutAccessGroupStorage<Player, Position>
 	, public MutAccessGroupStorage<Pickup, Position>
 {
-	using QueryPlayers 	= MutAccessGroupStorage<Player, Position>;
-	using QueryPlickups = MutAccessGroupStorage<Pickup, Position>;
+	using QueryPlayers = MutAccessGroupStorage<Player, Position>;
+	using QueryPickups = MutAccessGroupStorage<Pickup, Position>;
 	
 	void on_tick() override;
 };

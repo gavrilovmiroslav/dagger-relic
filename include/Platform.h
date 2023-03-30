@@ -2,9 +2,7 @@
 
 #include "Definitions.h"
 #include "Access.h"
-
 #include "GameSpecificComponents.h"
-
 
 struct PlatformSystem 
 	: public ecs::System
