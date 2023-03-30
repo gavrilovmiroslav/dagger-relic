@@ -11,7 +11,7 @@ jobs:
           submodules: recursive
 
       - name: Install dependent packages
-        run: sudo apt install git meson ninja-build clang libyaml-cpp-dev libsdl2-dev
+        run: sudo apt update && sudo apt install git meson ninja-build clang libyaml-cpp-dev libsdl2-dev
 
       - name: Generate build directory
         run: cd $GITHUB_WORKSPACE && meson builddir
