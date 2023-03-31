@@ -3,11 +3,9 @@
     "tasks": [
         {
             "label": "Meson: Build Unix",
-            "type": "meson",
-            "target": "dagger",
-            "mode": "build",
+            "type": "shell",
             "group": "build",
-            "problemMatcher": []
+            "command": "meson setup builddir && meson compile -C builddir"
         },
         {
             "label": "Meson: Build Windows",
