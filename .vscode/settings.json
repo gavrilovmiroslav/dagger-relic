@@ -18,5 +18,5 @@
         "string_view": "cpp",
         "vector": "cpp"
     },
-    "mesonbuild.configureOnOpen": true
+    "mesonbuild.configureOnOpen": false
 }
