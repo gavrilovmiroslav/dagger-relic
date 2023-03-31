@@ -30,7 +30,12 @@ sources = [
     'src/Rendering.cpp',
     'src/SpriteRendering.cpp',
     'src/Windowing.cpp',
-    'src/Main.cpp'
+    'src/Main.cpp',
+    'src/Platform.cpp',
+    'src/Gravity.cpp',
+    'src/Pickup.cpp',
+    'src/PlayerControls.cpp',
+    'src/Combat.cpp'
 ]
 
 executable('dagger', sources, dependencies : deps, include_directories : include_directories('include'), cpp_args : '-DIMGUI_IMPL_OPENGL_LOADER_GLAD')
