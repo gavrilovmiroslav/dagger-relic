@@ -22,14 +22,14 @@ struct SWMG : public Game {
 	void on_start() override
 	{
 		auto pickup1 = spawn()
-			.with<Pickup>("potion" ,32, false)
+			.with<Pickup>("potion" ,32)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
 			.with<Position>(geometry::Vec2{ 600, 570 })
 			.with<Visibility>(true);
 
 		auto pickup2 = spawn()
-			.with<Pickup>("scroll" ,32, false)
+			.with<Pickup>("scroll" ,32)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
 			.with<Position>(geometry::Vec2{ 200, 400 })

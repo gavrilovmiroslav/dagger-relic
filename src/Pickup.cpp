@@ -7,12 +7,9 @@ void PickupSystem::on_tick()
         for (auto&& [pickup_entity, pickup, pickup_pos] : QueryPickups::access_storage().each())
         {
             if (abs(player_pos.xy.x - pickup_pos.xy.x) <= pickup.radius &&
-             	abs(player_pos.xy.y - pickup_pos.xy.y) <= pickup.radius &&
-                !pickup.is_picked)
+             	abs(player_pos.xy.y - pickup_pos.xy.y) <= pickup.radius)
             {
-                pickup.is_picked = true;
-
-                replace_component<Pickup>(player_entity, pickup.name,pickup.radius, pickup.is_picked);
+                replace_component<Item>(player_entity, pickup.name);
                 despawn(pickup_entity);
             }
         }

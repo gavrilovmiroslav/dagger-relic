@@ -25,7 +25,11 @@ struct Pickup
 {
 	LiteralString name = new char(51);
 	F64 radius;
-	Bool is_picked;
+};
+
+struct Item
+{
+	LiteralString name = new char(51);
 };
 
 struct Spell
