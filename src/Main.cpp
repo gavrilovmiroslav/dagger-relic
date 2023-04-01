@@ -15,7 +15,8 @@ struct SWMG : public Game {
 		engine.use<GravitySystem>();
 		engine.use<PlatformSystem>();
 		engine.use<PickupSystem>();
-		engine.use<CombatSystem>();
+		engine.use<SpellMovementSystem>();
+		engine.use<SpellCollisionSystem>();
 	}
 
 	void on_start() override

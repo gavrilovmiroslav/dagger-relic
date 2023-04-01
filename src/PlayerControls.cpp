@@ -57,24 +57,34 @@ void PlayerControlsSystem::on_tick()
             if (flip == None)
             {
                 auto attack = spawn()
-                .with<BasicAttack>(300.0f, pos.xy.x + 400.0f, 25.0f)
+                .with<Spell>(300.0f, pos.xy.x + 400.0f, 25.0f)
                 .with<Sprite>(ecs::no_entity)
                 .with<SpriteAnimation>(Spritesheet::get_by_name("test/Fireball"))
                 .with<Position>(geometry::Vec2{ pos.xy.x + 30.0f , pos.xy.y })
                 .with<Visibility>(true)
                 .with<Flip>(None)
-                .with<Scale>(geometry::Vec2{0.1f,0.1f}); // There must exist a better way to scale objects.
+                .with<Scale>(geometry::Vec2{0.1f,0.1f})
+                .with<Element>(Fire)
+                .with<Shape>(Ray)
+                .with<Move>(Line)
+                .with<Duration>(Disappear)
+                .with<Clipping>(Pass);
             }
             else
             {
                 auto attack = spawn()
-                .with<BasicAttack>(300.0f, pos.xy.x - 400.0f, 25.0f)
+                .with<Spell>(300.0f, pos.xy.x - 400.0f, 25.0f)
                 .with<Sprite>(ecs::no_entity)
                 .with<SpriteAnimation>(Spritesheet::get_by_name("test/Fireball"))
                 .with<Position>(geometry::Vec2{ pos.xy.x - 30.0f , pos.xy.y })
                 .with<Visibility>(true)
                 .with<Flip>(Horizontal)
-                .with<Scale>(geometry::Vec2{0.1f,0.1f}); // There must exist a better way to scale objects.
+                .with<Scale>(geometry::Vec2{0.1f,0.1f})
+                .with<Element>(Fire)
+                .with<Shape>(Ray)
+                .with<Move>(Line)
+                .with<Duration>(Disappear)
+                .with<Clipping>(Pass);
             }
         }
     }
