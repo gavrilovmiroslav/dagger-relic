@@ -19,8 +19,13 @@ struct Ball
 
 struct KeyBindings 
 {
-	KeyCode up;
-	KeyCode down;
+	KeyCode jump;
+	KeyCode left;
+	KeyCode right;
+};
+
+struct Gravity{
+	geometry::Vec2 acceleration;
 };
 
 struct PhysicsSystem
@@ -77,7 +82,7 @@ struct PhysicsSystem
 
 struct BallMovementSystem
 	: public ecs::System
-	, public MutAccessGroupStorage<Ball, Position>
+	, public MutAccessGroupStorage<Ball, Position, Gravity, KeyBindings>
 	, public MutAccessComponentById<Ball>
 	, public SignalProcessor<PadCollisionSignal>
 {
@@ -90,90 +95,120 @@ struct BallMovementSystem
 
 	void on_tick() override
 	{
-		for (auto&& [entity, ball, pos] : access_storage().each())
+		for (auto&& [entity, ball, pos, gravity, bindings] : access_storage().each())
 		{
-			if (pos.xy.y >= SCREEN_HEIGHT - BALL_RADIUS || pos.xy.y <= BALL_RADIUS)
-			{
-				ball.speed.y *= -1;
-			}
+			// if (pos.xy.y >= SCREEN_HEIGHT - BALL_RADIUS || pos.xy.y <= BALL_RADIUS)
+			// {
+			// 	ball.speed.y *= -1;
+			// }
+
+			const auto &keys = KeyState::get();
+			if(keys.is_pressed(bindings.jump))
+				ball.speed={0, -15.5};
+			ball.speed+=gravity.acceleration;
+
+			if(keys.is_down(bindings.left))
+				pos.xy.x-=0.05;
+
+			if(keys.is_down(bindings.right))
+				pos.xy.x+=0.05;
 
 			pos.xy += ball.speed * SPEED_MOD * Time::delta_time();
+
+			if(pos.xy.y+gravity.acceleration.y>=SCREEN_HEIGHT-BALL_RADIUS)
+				pos.xy.y=SCREEN_HEIGHT-BALL_RADIUS;
+			else
+				pos.xy+=gravity.acceleration;
+
+			
 		}
 	}
 };
 
-struct PlayerControlsSystem
-	: public ecs::System
-	, public MutAccessGroupStorage<Player, KeyBindings, Position>
-{
-	void on_tick() override
-	{
-		const auto& keys = KeyState::get();
+// struct PlayerControlsSystem
+// 	: public ecs::System
+// 	, public MutAccessGroupStorage<Player, KeyBindings, Position>
+// {
+// 	void on_tick() override
+// 	{
+// 		const auto& keys = KeyState::get();
 
-		if (keys.is_pressed(KEY_ESCAPE))
-		{
-			Engine::get_instance().quit();
-		}
+// 		if (keys.is_pressed(KEY_ESCAPE))
+// 		{
+// 			Engine::get_instance().quit();
+// 		}
 
-		for (auto&& [entity, bindings, pos] : access_storage().each())
-		{
-			if (keys.is_down(bindings.up))
-			{
-				pos.xy.y -= SPEED_MOD * Time::delta_time();
-			}
-			else if (keys.is_down(bindings.down))
-			{
-				pos.xy.y += SPEED_MOD * Time::delta_time();
-			}
-		}
-	}
-};
+// 		for (auto&& [entity, bindings, pos] : access_storage().each())
+// 		{
+// 			if (keys.is_down(bindings.up))
+// 			{
+// 				pos.xy.y -= SPEED_MOD * Time::delta_time();
+// 			}
+// 			else if (keys.is_down(bindings.down))
+// 			{
+// 				pos.xy.y += SPEED_MOD * Time::delta_time();
+// 			}
+// 		}
+// 	}
+// };
 
 struct Pong : public Game
 {
 	Pong()
 	{
 		auto& engine = Engine::get_instance();
-		engine.use<PlayerControlsSystem>();
+		//engine.use<PlayerControlsSystem>();
 		engine.use<BallMovementSystem>();
 		engine.use<PhysicsSystem>();
 	}
 
 	void on_start() override
 	{
-		auto pad_left = spawn()
-			.with<Player>()
-			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
-			.with<Position>(geometry::Vec2{ 50, 300 })
-			.with<Visibility>(true)
-			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S)
-			.done();
+		// auto pad_left = spawn()
+		// 	.with<Player>()
+		// 	.with<Sprite>(ecs::no_entity)
+		// 	.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
+		// 	.with<Position>(geometry::Vec2{ 50, 300 })
+		// 	.with<Visibility>(true)
+		// 	.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S)
+		// 	.done();
 
-		auto pad_right = spawn()
-			.with<Player>()
-			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
-			.with<Position>(geometry::Vec2{ 750, 300 })
-			.with<Visibility>(true)
-			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN)
-			.done();
+		// auto pad_right = spawn()
+		// 	.with<Player>()
+		// 	.with<Sprite>(ecs::no_entity)
+		// 	.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
+		// 	.with<Position>(geometry::Vec2{ 750, 300 })
+		// 	.with<Visibility>(true)
+		// 	.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN)
+		// 	.done();
 
 		auto ball = spawn()
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))
-			.with<Position>(geometry::Vec2{ 300, 100 })
+			.with<Position>(geometry::Vec2{600, 300})
+			.with<Gravity>(geometry::Vec2{0, 0.03})
 			.with<Visibility>(true)
-			.with<Ball>(geometry::Vec2{ 1, 0 })
+			.with<Ball>(geometry::Vec2{ 0, 0 })
+			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT)
 			.done();
+
+		auto bigBall=spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))
+			.with<Position>(geometry::Vec2{200, 300})
+			.with<Gravity>(geometry::Vec2{0, 0.03})
+			.with<Visibility>(true)
+			.with<Ball>(geometry::Vec2{ 0, 0 })
+			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_A, KeyCode::KEY_D)
+			.done();
+			
 	}
 };
 
 int main(int argc, char* argv[])
 {
 	auto& engine = Engine::get_instance();
-	std::string filePath = "dagger.ini";
-	engine.configure(filePath.data(), argc, argv);
+	engine.configure("dagger.ini", argc, argv);
 
 	engine.setup<Default2D>();
 
