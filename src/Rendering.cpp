@@ -13,7 +13,6 @@ RenderingModule::RenderingModule()
 
 bool RenderingModule::on_start()
 {
-	fpng::fpng_init();
 	return true;
 }
 

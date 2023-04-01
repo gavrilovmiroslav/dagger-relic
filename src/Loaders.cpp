@@ -37,47 +37,30 @@ memory::RawPtr<Texture> TextureLoader::load_texture(String path)
 	std::vector<U8> data;
 
 	auto filepath = path.c_str();
-	auto result = fpng::fpng_decode_file(filepath, data, width, height, channelsInFile, 4);
-	Logger::info("[FPNG] W: {}, H: {}, C: {}", width, height, channelsInFile);
-	if (result == fpng::FPNG_DECODE_NOT_FPNG)
-	{
-		Logger::error("[FPNG] Decoder error: recoding into fpng", result);
-		RawPtr<U8> ptr;
+	
+	RawPtr<U8> ptr;
 
-		error = lodepng_decode32_file(&ptr, &width, &height, filepath);
-		Logger::info("[LODE] W: {}, H: {}, C: {}", width, height, channelsInFile);
+	error = lodepng_decode32_file(&ptr, &width, &height, filepath);
+	Logger::info("[LODE] W: {}, H: {}, C: {}", width, height, channelsInFile);
 
-		if (error) {
-			Logger::error("[LODE] Decoder error {}: {}\n", error, lodepng_error_text(error));
-			delete texture;
-			return nullptr;
-		}
-
-		auto dataLength = width * height * sizeof(U32);
-		Logger::info("[LODE] Expected: {}", dataLength);
-
-		data.reserve(dataLength);
-		for (int i = 0; i < dataLength; i++)
-		{
-			data.push_back(ptr[i]);
-		}
-
-		if (ptr != nullptr)
-			free(ptr);
-
-		fpng::fpng_encode_image_to_file(filepath, data.data(), width, height, channelsInFile, 0);
-		Logger::info("[LODE] Recoding complete, will attempt to reload");
-
-		result = fpng::fpng_decode_file(filepath, data, width, height, channelsInFile, 4);
-		Logger::info("[FPNG] W: {}, H: {}, C: {}", width, height, channelsInFile);
-	}
-	else if (result != fpng::FPNG_DECODE_SUCCESS)
-	{
-		Logger::critical("[FPNG] Error: {}", result);
+	if (error) {
+		Logger::error("[LODE] Decoder error {}: {}\n", error, lodepng_error_text(error));
 		delete texture;
 		return nullptr;
 	}
 
+	auto dataLength = width * height * sizeof(U32);
+	Logger::info("[LODE] Expected: {}", dataLength);
+
+	data.reserve(dataLength);
+	for (int i = 0; i < dataLength; i++)
+	{
+		data.push_back(ptr[i]);
+	}
+
+	if (ptr != nullptr)
+		free(ptr);
+	
 	Logger::info("Creating texture.");
 
 	texture->inner = SDL_CreateTexture(state.renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
