@@ -1,6 +1,6 @@
-project('dagger', 'c', 'cpp', default_options : ['cpp_std=c++17' ])
+project('dagger', 'c', 'cpp', default_options : [ 'cpp_std=c++17', 'default_library=static' ])
 
-if (host_machine.system() == 'linux') # Needed to compile FPNG.cpp
+if host_machine.cpu() == 'x86_64' and meson.get_compiler('c').get_id() != 'msvc' # Needed to compile FPNG.cpp and SDL2
     add_global_arguments('-march=native', language : 'c')
     add_global_arguments('-march=native', language : 'cpp')
 endif
@@ -9,7 +9,7 @@ deps = [
     dependency('entt'),
     dependency('glm'),
     dependency('spdlog'),
-    dependency('sdl2')
+    dependency('sdl2', default_options : [ 'test=false' ])
 ]
 
 includes = [
@@ -38,4 +38,8 @@ sources = [
     'src/Combat.cpp'
 ]
 
-executable('dagger', sources, dependencies : deps, include_directories : include_directories('include'), cpp_args : '-DIMGUI_IMPL_OPENGL_LOADER_GLAD')
+executable('dagger',
+    sources,
+    dependencies : deps,
+    include_directories : include_directories('include'),
+    win_subsystem: 'windows')

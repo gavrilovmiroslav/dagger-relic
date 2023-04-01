@@ -2,18 +2,38 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "meson",
-            "target": "dagger",
-            "mode": "build",
+            "label": "Meson: Build Unix",
+            "type": "shell",
             "group": "build",
-            "problemMatcher": [],
-            "label": "Meson: Build dagger"
+            "command": "meson setup builddir && meson compile -C builddir"
         },
         {
+            "label": "Meson: Build Windows",
             "type": "shell",
-            "command": "cp ${workspaceFolder}/builddir/subprojects/SDL2-2.26.0/sdl2.dll ${workspaceFolder}/builddir/sdl2.dll",
-            "label": "Meson: Build dagger Windows",
-            "dependsOn": "Meson: Build dagger"
+            "group": "build",
+            "options":
+            {
+                "env": {
+                    "CC": "cl",
+                    "CXX": "cl"
+                }
+            },
+            "command": "cmd.exe",
+            "args":
+            [
+                "/d",
+                "/c",
+                "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat",
+                "'&'",
+                "meson",
+                "setup",
+                "builddir",
+                "'&'",
+                "meson",
+                "compile",
+                "-C",
+                "builddir"
+            ]
         }
     ]
 }

@@ -7,7 +7,9 @@
 Install [Visual Studio](https://visualstudio.microsoft.com/vs/) with enabled "Desktop development with C++" option. Afterwards run the following commands:
 
 ```
-winget install python3 git.git meson
+winget install python3
+winget install git.git
+winget install meson
 ```
 
 ### macOS:
