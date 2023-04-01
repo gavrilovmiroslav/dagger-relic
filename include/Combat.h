@@ -4,6 +4,13 @@
 #include "Access.h"
 #include "GameSpecificComponents.h"
 
+struct ProjectileSpawnSystem
+	: public ecs::System
+	, public MutAccessGroupStorage<Player, KeyBindings, Position, SpriteAnimation, Flip, Item>
+{
+	void on_tick() override;
+};
+
 struct SpellMovementSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<Spell, Position, SpriteAnimation, Flip, Move, Clipping>

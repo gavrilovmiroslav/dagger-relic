@@ -17,19 +17,20 @@ struct SWMG : public Game {
 		engine.use<PickupSystem>();
 		engine.use<SpellMovementSystem>();
 		engine.use<SpellCollisionSystem>();
+		engine.use<ProjectileSpawnSystem>();
 	}
 
 	void on_start() override
 	{
 		auto pickup1 = spawn()
-			.with<Pickup>("potion" ,32)
+			.with<Pickup>("curseball" ,32)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
 			.with<Position>(geometry::Vec2{ 600, 570 })
 			.with<Visibility>(true);
 
 		auto pickup2 = spawn()
-			.with<Pickup>("scroll" ,32)
+			.with<Pickup>("curseball" ,32)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
 			.with<Position>(geometry::Vec2{ 200, 400 })
@@ -83,8 +84,9 @@ struct SWMG : public Game {
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
 			.with<Position>(geometry::Vec2{ 50, 600 - 32})
 			.with<Visibility>(true)
-			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D, KeyCode::KEY_F)
+			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D, KeyCode::KEY_F, KeyCode::KEY_G)
 			.with<Flip>(None)
+			.with<Item>("None")
 			.done();
 
 		auto player_two = spawn()
@@ -93,8 +95,9 @@ struct SWMG : public Game {
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
 			.with<Position>(geometry::Vec2{ 750, 600 - 32})
 			.with<Visibility>(true)
-			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT, KeyCode::KEY_APOSTROPHE)
+			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT, KeyCode::KEY_K, KeyCode::KEY_L)
 			.with<Flip>(Horizontal)
+			.with<Item>("None")
 			.done();
 	}
 };

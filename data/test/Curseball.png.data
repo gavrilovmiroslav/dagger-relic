@@ -1,0 +1,23 @@
+texture: test/Curseball
+dimensions: 1, 1
+sprites: 5
+
+clip: 0, 0, 256, 256
+pivot: 0.05, 0.05
+scale: 0.5, 0.5
+
+clip: 320, 0, 256, 256
+pivot: 0.05, 0.05
+scale: 0.5, 0.5
+
+clip: 640, 0, 256, 256
+pivot: 0.05, 0.05
+scale: 0.5, 0.5
+
+clip: 960, 0, 256, 256
+pivot: 0.05, 0.05
+scale: 0.5, 0.5
+
+clip: 1280, 0, 256, 256
+pivot: 0.05, 0.05
+scale: 0.5, 0.5

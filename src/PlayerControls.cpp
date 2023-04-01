@@ -52,40 +52,5 @@ void PlayerControlsSystem::on_tick()
             player.is_grounded = false;
             player.jump_speed/=2;
         }
-        if (keys.is_pressed(bindings.basic_attack))
-        {
-            if (flip == None)
-            {
-                auto attack = spawn()
-                .with<Spell>(300.0f, pos.xy.x + 400.0f, 25.0f)
-                .with<Sprite>(ecs::no_entity)
-                .with<SpriteAnimation>(Spritesheet::get_by_name("test/Fireball"))
-                .with<Position>(geometry::Vec2{ pos.xy.x + 30.0f , pos.xy.y })
-                .with<Visibility>(true)
-                .with<Flip>(None)
-                .with<Scale>(geometry::Vec2{0.1f,0.1f})
-                .with<Element>(Fire)
-                .with<Shape>(Ray)
-                .with<Move>(Line)
-                .with<Duration>(Disappear)
-                .with<Clipping>(Pass);
-            }
-            else
-            {
-                auto attack = spawn()
-                .with<Spell>(300.0f, pos.xy.x - 400.0f, 25.0f)
-                .with<Sprite>(ecs::no_entity)
-                .with<SpriteAnimation>(Spritesheet::get_by_name("test/Fireball"))
-                .with<Position>(geometry::Vec2{ pos.xy.x - 30.0f , pos.xy.y })
-                .with<Visibility>(true)
-                .with<Flip>(Horizontal)
-                .with<Scale>(geometry::Vec2{0.1f,0.1f})
-                .with<Element>(Fire)
-                .with<Shape>(Ray)
-                .with<Move>(Line)
-                .with<Duration>(Disappear)
-                .with<Clipping>(Pass);
-            }
-        }
     }
 }
