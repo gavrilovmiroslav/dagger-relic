@@ -1,10 +1,10 @@
 #include "OverlayRendering.h"
 #include "Prelude.h"
+
 extern uint8_t r_image_font_6_11[2464];
 
 /*
  * Context for the software renderer.
- * TODO: Rename this.
  */
 struct bitmap
 {
