@@ -13,7 +13,7 @@
 #include <mutex>
 #include <queue>
 #include <string>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <unordered_map>
 #include <variant>
 #include <vector>
