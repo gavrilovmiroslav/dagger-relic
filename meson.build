@@ -30,6 +30,7 @@ sources = [
     'src/Rendering.cpp',
     'src/SpriteRendering.cpp',
     'src/Windowing.cpp',
+    'src/OverlayRendering.cpp',
     'src/Main.cpp'
 ]
 
