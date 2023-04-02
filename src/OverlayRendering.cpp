@@ -155,12 +155,14 @@ OverlayTestRenderingModule::process_signal(core::Render2Signal& signal)
 {
 	for (const auto&& [ entity, test ] : AccessStorage<OverlayTest>::access_storage().each())
 	{
+		uint32_t x, y;
+
         switch (test.magic)
         {
         case 0:
-        for (int y = 0; y < signal.h; y++)
+        for (y = 0; y < signal.h; y++)
         {
-            for (int x = 0; x < signal.w; x++)
+            for (x = 0; x < signal.w; x++)
             {
                 uint32_t c = x^y;
 
@@ -169,9 +171,9 @@ OverlayTestRenderingModule::process_signal(core::Render2Signal& signal)
         }
         break;
         case 1:
-        for (int y = 0; y < signal.h; y++)
+        for (y = 0; y < signal.h; y++)
         {
-            for (int x = 0; x < signal.w; x++)
+            for (x = 0; x < signal.w; x++)
             {
                 signal.pixels[y * signal.w + x] = (x << 16) | (x << 8) | (x);
             }
