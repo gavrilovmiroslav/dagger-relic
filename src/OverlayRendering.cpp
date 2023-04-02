@@ -18,6 +18,7 @@ static void r_line(struct bitmap *r, uint32_t x0, uint32_t y0, uint32_t x1, uint
 /*
  * Draw text to bitmap.
  * The order of drawing a character is right to left.
+ * NOTE: Cannot start drawing with negative x and y values.
  */
 void
 r_puts(struct bitmap *r, uint32_t sx, uint32_t sy, const char *text)
