@@ -1,4 +1,5 @@
 #include "Combat.h"
+#include <iostream>
 
 void ProjectileSpawnSystem::on_tick()
 {
@@ -6,78 +7,41 @@ void ProjectileSpawnSystem::on_tick()
 
     for (auto&& [player_entity, player, bindings, pos, sprite, flip, item] : access_storage().each())
     {
-        if (keys.is_pressed(bindings.basic_attack))
+        int direction = (flip == None) ? 1 : -1;
+        if (keys.is_pressed(bindings.basic_attack)) 
         {
-            if (flip == None)
-            {
-                auto attack = spawn()
-                .with<Spell>(300.0f, pos.xy.x + 400.0f, 25.0f)
-                .with<Sprite>(ecs::no_entity)
-                .with<SpriteAnimation>(Spritesheet::get_by_name("test/Fireball"))
-                .with<Position>(geometry::Vec2{ pos.xy.x + 30.0f , pos.xy.y })
-                .with<Visibility>(true)
-                .with<Flip>(None)
-                .with<Scale>(geometry::Vec2{0.1f,0.1f})
-                .with<Element>(Fire)
-                .with<Shape>(Ray)
-                .with<Move>(Line)
-                .with<Duration>(Disappear)
-                .with<Clipping>(Pass);
-            }
-            else
-            {
-                auto attack = spawn()
-                .with<Spell>(300.0f, pos.xy.x - 400.0f, 25.0f)
-                .with<Sprite>(ecs::no_entity)
-                .with<SpriteAnimation>(Spritesheet::get_by_name("test/Fireball"))
-                .with<Position>(geometry::Vec2{ pos.xy.x - 30.0f , pos.xy.y })
-                .with<Visibility>(true)
-                .with<Flip>(Horizontal)
-                .with<Scale>(geometry::Vec2{0.1f,0.1f})
-                .with<Element>(Fire)
-                .with<Shape>(Ray)
-                .with<Move>(Line)
-                .with<Duration>(Disappear)
-                .with<Clipping>(Pass);
-            }
+            spawn()
+            .with<Spell>(300.0f, pos.xy.x + direction * 30.0f, 400.0f, 25.0f)
+            .with<Sprite>(ecs::no_entity)
+            .with<SpriteAnimation>(Spritesheet::get_by_name("test/Fireball"))
+            .with<Position>(geometry::Vec2{ pos.xy.x + direction * 30.0f , pos.xy.y })
+            .with<Visibility>(true)
+            .with<Flip>(flip)
+            .with<Scale>(geometry::Vec2{0.1f,0.1f})
+            .with<Element>(Fire)
+            .with<Shape>(Ray)
+            .with<Move>(Line)
+            .with<Duration>(Disappear)
+            .with<Clipping>(Pass);
         }
 
         else if (keys.is_pressed(bindings.special_attack))
         {
             if(item.name == "curseball")
             {
-                if (flip == None)
-                {
-                    auto attack = spawn()
-                    .with<Spell>(300.0f, pos.xy.x + 400.0f, 25.0f)
-                    .with<Sprite>(ecs::no_entity)
-                    .with<SpriteAnimation>(Spritesheet::get_by_name("test/Curseball"))
-                    .with<Position>(geometry::Vec2{ pos.xy.x + 30.0f , pos.xy.y })
-                    .with<Visibility>(true)
-                    .with<Flip>(None)
-                    .with<Scale>(geometry::Vec2{0.1f,0.1f})
-                    .with<Element>(Fire)
-                    .with<Shape>(Ray)
-                    .with<Move>(Line)
-                    .with<Duration>(Disappear)
-                    .with<Clipping>(Pass);
-                }
-                else
-                {
-                    auto attack = spawn()
-                    .with<Spell>(300.0f, pos.xy.x - 400.0f, 25.0f)
-                    .with<Sprite>(ecs::no_entity)
-                    .with<SpriteAnimation>(Spritesheet::get_by_name("test/Curseball"))
-                    .with<Position>(geometry::Vec2{ pos.xy.x - 30.0f , pos.xy.y })
-                    .with<Visibility>(true)
-                    .with<Flip>(Horizontal)
-                    .with<Scale>(geometry::Vec2{0.1f,0.1f})
-                    .with<Element>(Fire)
-                    .with<Shape>(Ray)
-                    .with<Move>(Line)
-                    .with<Duration>(Disappear)
-                    .with<Clipping>(Pass);
-                }
+                spawn()
+                .with<Spell>(100.0f, pos.xy.x + direction * 30.0f, 400.0f, 25.0f)
+                .with<Sprite>(ecs::no_entity)
+                .with<SpriteAnimation>(Spritesheet::get_by_name("test/Curseball"))
+                .with<Position>(geometry::Vec2{ pos.xy.x + direction * 30.0f , pos.xy.y })
+                .with<Visibility>(true)
+                .with<Flip>(flip)
+                .with<Scale>(geometry::Vec2{0.1f,0.1f})
+                .with<Element>(Fire)
+                .with<Shape>(Ray)
+                .with<Move>(Line)
+                .with<Duration>(Disappear)
+                .with<Clipping>(Pass);
             }
         }
     }
@@ -89,21 +53,10 @@ void SpellMovementSystem::on_tick()
     {
         if(move == Line)
         {
-            if(flip == None)
-            {
-                spell_pos.xy.x += spell.speed * Time::delta_time();
-                if(spell_pos.xy.x > spell.range)
-                {
-                    despawn(spell_entity);
-                }
-            }
-            else
-            {
-                spell_pos.xy.x -= spell.speed * Time::delta_time();
-                if(spell_pos.xy.x < spell.range)
-                {
-                    despawn(spell_entity);
-                }
+            int direction = (flip == None) ? 1 : -1;
+            spell_pos.xy.x += direction * spell.speed * Time::delta_time();
+            if(abs(spell_pos.xy.x - spell.start_pos) > spell.range){
+                despawn(spell_entity);
             }
         }
 

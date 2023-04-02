@@ -23,18 +23,19 @@ struct Platform
 
 struct Pickup
 {
-	LiteralString name = new char(51);
+	LiteralString name;
 	F64 radius;
 };
 
 struct Item
 {
-	LiteralString name = new char(51);
+	LiteralString name;
 };
 
 struct Spell
 {
 	F32 speed;
+	F32 start_pos;
 	F32 range;
 	F32 radius;
 };
