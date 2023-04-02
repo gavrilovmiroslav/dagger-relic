@@ -1,28 +1,26 @@
 #include "OverlayRendering.h"
 #include "Prelude.h"
-
-#ifndef restrict
-#define restrict
-#endif
-
 extern uint8_t r_image_font_6_11[2464];
 
 /*
  * Context for the software renderer.
  * TODO: Rename this.
  */
-struct r_soft
+struct bitmap
 {
     uint32_t  w, h;
-    uint32_t *bitmap;
+    uint32_t *pixel;
 };
+
+static void r_puts(struct bitmap *r, uint32_t sx, uint32_t sy, const char *text);
+static void r_line(struct bitmap *r, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint32_t colour);
 
 /*
  * Draw text to bitmap.
  * The order of drawing a character is right to left.
  */
 void
-r_2d_puts(struct r_soft * restrict r, uint32_t sx, uint32_t sy, const char *text)
+r_puts(struct bitmap *r, uint32_t sx, uint32_t sy, const char *text)
 {
 	uint32_t       j      = 0;
 	const uint32_t colour = 0xffffffff;
@@ -54,7 +52,7 @@ r_2d_puts(struct r_soft * restrict r, uint32_t sx, uint32_t sy, const char *text
 					/* Must check for each iteration as x is unsigned and may underflow. */
 					if (x < r->w)
 					{
-						r->bitmap[map] = (test & mask ? colour : r->bitmap[map]);
+						r->pixel[map] = (test & mask ? colour : r->pixel[map]);
 					}
 
 					x--;
@@ -71,8 +69,8 @@ r_2d_puts(struct r_soft * restrict r, uint32_t sx, uint32_t sy, const char *text
  * Bresenham's line algorithm.
  * Assuming positions are within the extent of the bitmap (screen).
  */
-static void
-r_2d_line(struct r_soft *r, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint32_t colour)
+void
+r_line(struct bitmap *r, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint32_t colour)
 {
 	int32_t dx,  dy;
 	int32_t sx,  sy;
@@ -100,7 +98,7 @@ r_2d_line(struct r_soft *r, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, 
 	{
 		if (x0 < r->w && y0 < r->h)
 		{
-			r->bitmap[x0 + y0 * r->w] = colour;
+			r->pixel[x0 + y0 * r->w] = colour;
 		}
 		if (x0 == x1 && y0 == y1)
 		{
@@ -126,12 +124,12 @@ OverlayLineRenderingModule::process_signal(core::Render2Signal& signal)
 {
 	for (const auto&& [ entity, line ] : AccessStorage<OverlayLine>::access_storage().each())
 	{
-        struct r_soft r;
+        struct bitmap r;
 
-        r.bitmap = signal.pixels;
-        r.w      = (uint32_t) signal.w;
-        r.h      = (uint32_t) signal.h;
-        r_2d_line(&r, (uint32_t) line.start.x, (uint32_t) line.start.y, (uint32_t) line.end.x, (uint32_t) line.end.y, line.colour);
+        r.pixel = signal.pixels;
+        r.w     = (uint32_t) signal.w;
+        r.h     = (uint32_t) signal.h;
+        r_line(&r, (uint32_t) line.start.x, (uint32_t) line.start.y, (uint32_t) line.end.x, (uint32_t) line.end.y, line.colour);
 	}
 }
 
@@ -140,12 +138,12 @@ OverlayTextRenderingModule::process_signal(core::Render2Signal& signal)
 {
 	for (const auto&& [ entity, textdata ] : AccessStorage<OverlayText>::access_storage().each())
 	{
-        struct r_soft r;
+        struct bitmap r;
 
-        r.bitmap = signal.pixels;
-        r.w      = (uint32_t) signal.w;
-        r.h      = (uint32_t) signal.h;
-        r_2d_puts(&r, (uint32_t) textdata.position.x, (uint32_t) textdata.position.y, textdata.text.c_str());
+        r.pixel = signal.pixels;
+        r.w     = (uint32_t) signal.w;
+        r.h     = (uint32_t) signal.h;
+        r_puts(&r, (uint32_t) textdata.position.x, (uint32_t) textdata.position.y, textdata.text.c_str());
 	}
 }
 
