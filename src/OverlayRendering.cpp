@@ -69,6 +69,8 @@ r_puts(struct bitmap *r, uint32_t sx, uint32_t sy, const char *text)
 /*
  * Bresenham's line algorithm.
  * Assuming positions are within the extent of the bitmap (screen).
+ * NOTE: Offscreen positions are handled by clamping to the extent of the bitmap,
+ * this is only meant for drawing lines within the screen.
  */
 void
 r_line(struct bitmap *r, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint32_t colour)
