@@ -3,6 +3,8 @@
 #include "Prelude.h"
 #include "Random.h"
 
+#define INITIAL_VALUE 3
+
 using namespace core;
 
 struct Movement 
@@ -18,6 +20,22 @@ struct Movement
 struct KeyBindings 
 {
 	KeyCode left, down, up, right;
+};
+
+enum SpecialBlindfold
+{
+	HumanEyes = 0,
+	FoxEyes = 1,
+	ScorpionEyes = 2
+};
+
+struct Player
+{
+	Bool is_pushing;
+	Bool all_platforms_checked;
+	U32 number_of_platforms_checked;
+	SpecialBlindfold current_blindfold;
+	Map<SpecialBlindfold, U32> available_blindfolds;
 };
 
 static float
@@ -96,10 +114,12 @@ struct Pong : public Game
 
 	void on_start() override
 	{
-		auto ball = spawn()
+		auto player = spawn()
+			.with<Player>(false, false, 0u, HumanEyes, Map<SpecialBlindfold, U32>({{HumanEyes, INITIAL_VALUE}, {FoxEyes, INITIAL_VALUE}, 
+																				   {ScorpionEyes, INITIAL_VALUE}}))
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))
-			.with<Position>(geometry::Vec2{ 300, 100 })
+			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
+			.with<Position>(geometry::Vec2{ 40, 550 })
 			.with<Visibility>(true)
 			.with<Movement>(2000.0f, 50.0f)
 			.with<KeyBindings>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT)
