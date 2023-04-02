@@ -184,7 +184,7 @@ struct Pong : public Game
 
 		auto ball = spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("Rogue/rogue"))
 			.with<Position>(geometry::Vec2{600, 300})
 			.with<Gravity>(geometry::Vec2{0, 0.03})
 			.with<Visibility>(true)
@@ -194,7 +194,7 @@ struct Pong : public Game
 
 		auto bigBall=spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("Knight/knight"))
 			.with<Position>(geometry::Vec2{200, 300})
 			.with<Gravity>(geometry::Vec2{0, 0.03})
 			.with<Visibility>(true)

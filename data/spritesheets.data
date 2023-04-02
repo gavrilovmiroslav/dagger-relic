@@ -1,2 +1,4 @@
 pong/ball: pong/ball.png.data
 pong/pad: pong/pad.png.data
+Rogue/rogue: Rogue/rogue.png.data
+Knight/knight: Knight/knight.png.data
