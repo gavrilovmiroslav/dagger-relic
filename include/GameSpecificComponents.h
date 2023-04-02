@@ -23,13 +23,13 @@ struct Platform
 
 struct Pickup
 {
-	LiteralString name;
+	String name;
 	F64 radius;
 };
 
 struct Item
 {
-	LiteralString name;
+	String name;
 };
 
 struct Spell
