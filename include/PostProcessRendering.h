@@ -19,7 +19,7 @@ struct PostProcessLine
 
 struct PostProcessText
 {
-	std::string    text;
+	String         text;
 	geometry::Vec2 position;
 };
 
