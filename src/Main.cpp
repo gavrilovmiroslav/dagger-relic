@@ -2,128 +2,167 @@
 
 #include "Prelude.h"
 #include "Random.h"
+#include <iostream>
 
 using namespace core;
 
-struct PadCollisionSignal {
-	ecs::Entity ball;
-	ecs::Entity pad;
+struct PlayerCollisionSignal {
+	ecs::Entity enemy;
+	ecs::Entity player;
 };
 
-struct Player {};
+struct Player
+{
+};
 
-struct Ball 
+struct Enemy
 {
 	geometry::Vec2 speed;
 };
 
-struct KeyBindings 
+// struct Ball
+// {
+// 	geometry::Vec2 speed;
+// };
+
+struct KeyBindings
 {
 	KeyCode up;
 	KeyCode down;
+	KeyCode left;
+	KeyCode right;
 };
 
 struct PhysicsSystem
-	: public ecs::System
-	, public AccessGroupStorage<Player, Position>
-	, public AccessGroupStorage<Ball, Position>
-	, public SignalEmitter<PadCollisionSignal>
+	: public ecs::System,
+	  public AccessGroupStorage<Player, Position>
+	, public AccessGroupStorage<Enemy, Position>
+	, public SignalEmitter<PlayerCollisionSignal>
 {
 	using QueryPlayers = AccessGroupStorage<Player, Position>;
-	using QueryBalls = AccessGroupStorage<Ball, Position>;
+		using QueryEnemies = AccessGroupStorage<Enemy, Position>;
 
-	Bool intersects(const geometry::Vec2& pad_center, const geometry::Vec2& ball_center, float ball_radius)
-	{
-		static constexpr const int pad_width = 11;
-		static constexpr const int pad_height = 32;
-
-		const geometry::Vec2 circle_distance{
-			abs(ball_center.x - pad_center.x),
-			abs(ball_center.y - pad_center.y)
-		};
-
-		if (circle_distance.x > (pad_width + ball_radius)) { return false; }
-		if (circle_distance.y > (pad_height + ball_radius)) { return false; }
-
-		if (circle_distance.x <= pad_width) { return true; }
-		if (circle_distance.y <= pad_height) { return true; }
-
-		const auto dx = circle_distance.x - pad_width;
-		const auto dy = circle_distance.y - pad_height;
-		const auto corner_distance = dx * dx + dy * dy;
-
-		return corner_distance <= ball_radius * ball_radius;
-	}
-
-	void on_tick() override
-	{
-		for (auto&& [ball_entity, ball, pos] : QueryBalls::access_storage().each())
+		Bool intersects(const geometry::Vec2& player_center, const geometry::Vec2& enemy_center, float enemy_radius)
 		{
-			for (auto&& [player_entity, pad] : QueryPlayers::access_storage().each())
+			static constexpr const int player_width = 11;
+			static constexpr const int player_height = 32;
+
+			const geometry::Vec2 circle_distance{
+				abs(enemy_center.x - player_center.x),
+				abs(enemy_center.y - player_center.y)
+			};
+
+			if (circle_distance.x > (player_width + enemy_radius)) { return false; }
+			if (circle_distance.y > (player_height + enemy_radius)) { return false; }
+
+			if (circle_distance.x <= player_width) { return true; }
+			if (circle_distance.y <= player_height) { return true; }
+
+			const auto dx = circle_distance.x - player_width;
+			const auto dy = circle_distance.y - player_height;
+			const auto corner_distance = dx * dx + dy * dy;
+
+			return corner_distance <= enemy_radius * enemy_radius;
+		}
+
+
+		void on_tick() override
+		{
+			for (auto&& [enemy_entity, enemy, pos] : QueryEnemies::access_storage().each())
 			{
-				if (intersects(pad.xy, pos.xy, 16))
+				for (auto&& [player_entity, player] : QueryPlayers::access_storage().each())
 				{
-					emit(PadCollisionSignal{ ball_entity, player_entity });
+					if (intersects(player.xy, pos.xy, 16))
+					{
+						emit(PlayerCollisionSignal{ enemy_entity, player_entity});
+					}
 				}
 			}
 		}
-	}
 };
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 #define BALL_RADIUS 16
 #define SPEED_MOD 200.0f
+#define ENEMY_SPEED_MOD 150.0f
 
-struct BallMovementSystem
+struct EnemyMovementSystem
 	: public ecs::System
-	, public MutAccessGroupStorage<Ball, Position>
-	, public MutAccessComponentById<Ball>
-	, public SignalProcessor<PadCollisionSignal>
+	, public MutAccessGroupStorage<Enemy, Position>
+ 	, public AccessGroupStorage<Player, Position>
+	, public MutAccessComponentById<Enemy>
+	, public MutAccessComponentById<Position>
+	, public SignalProcessor<PlayerCollisionSignal>
 {
-	virtual void process_signal(PadCollisionSignal& signal)
+	
+	using QueryPlayers = AccessGroupStorage<Player, Position>;
+	using QueryEnemies = MutAccessGroupStorage<Enemy, Position>;
+	
+	virtual void process_signal(PlayerCollisionSignal& signal)
 	{
-		auto& ball = MutAccessComponentById<Ball>::get(signal.ball);
-		ball.speed.x *= -1;
-		ball.speed.y = get_random(-0.8f, 0.8f);
+		auto& enemy = MutAccessComponentById<Enemy>::get(signal.enemy);
+		auto& enemy_pos = MutAccessComponentById<Position>::get(signal.enemy);
+		
+		enemy.speed *= -1;
+		enemy_pos.xy += enemy.speed * ENEMY_SPEED_MOD;
+
 	}
 
 	void on_tick() override
 	{
-		for (auto&& [entity, ball, pos] : access_storage().each())
+		
+		
+		for (auto &&[player_entity, player_pos] : QueryPlayers::access_storage().each())
 		{
-			if (pos.xy.y >= SCREEN_HEIGHT - BALL_RADIUS || pos.xy.y <= BALL_RADIUS)
+			for (auto&& [entity, enemy, pos] : QueryEnemies::access_storage().each())
 			{
-				ball.speed.y *= -1;
-			}
+				if (pos.xy.y >= SCREEN_HEIGHT - BALL_RADIUS || pos.xy.y <= BALL_RADIUS)
+				{
+					enemy.speed.y *= -1;
+				}
 
-			pos.xy += ball.speed * SPEED_MOD * Time::delta_time();
+				enemy.speed = (player_pos.xy - pos.xy);
+				enemy.speed /= sqrt(pow(enemy.speed.x, 2) + pow(enemy.speed.y, 2));
+				
+				pos.xy += enemy.speed* Time::delta_time() * ENEMY_SPEED_MOD;
+
+			}
 		}
 	}
 };
 
 struct PlayerControlsSystem
-	: public ecs::System
-	, public MutAccessGroupStorage<Player, KeyBindings, Position>
+	: public ecs::System,
+	  public MutAccessGroupStorage<Player, KeyBindings, Position>
 {
 	void on_tick() override
 	{
-		const auto& keys = KeyState::get();
+		const auto &keys = KeyState::get();
 
 		if (keys.is_pressed(KEY_ESCAPE))
 		{
 			Engine::get_instance().quit();
 		}
 
-		for (auto&& [entity, bindings, pos] : access_storage().each())
+		for (auto &&[entity, bindings, pos] : access_storage().each())
 		{
 			if (keys.is_down(bindings.up))
 			{
 				pos.xy.y -= SPEED_MOD * Time::delta_time();
+
 			}
 			else if (keys.is_down(bindings.down))
 			{
 				pos.xy.y += SPEED_MOD * Time::delta_time();
+			}
+			else if (keys.is_down(bindings.left))
+			{
+				pos.xy.x -= SPEED_MOD * Time::delta_time();
+			}
+			else if (keys.is_down(bindings.right))
+			{
+				pos.xy.x += SPEED_MOD * Time::delta_time();
 			}
 		}
 	}
@@ -133,45 +172,45 @@ struct Pong : public Game
 {
 	Pong()
 	{
-		auto& engine = Engine::get_instance();
+		auto &engine = Engine::get_instance();
 		engine.use<PlayerControlsSystem>();
-		engine.use<BallMovementSystem>();
+		engine.use<EnemyMovementSystem>();
 		engine.use<PhysicsSystem>();
 	}
 
 	void on_start() override
 	{
 		auto pad_left = spawn()
-			.with<Player>()
-			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
-			.with<Position>(geometry::Vec2{ 50, 300 })
-			.with<Visibility>(true)
-			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S)
-			.done();
+							.with<Player>()
+							.with<Sprite>(ecs::no_entity)
+							.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
+							.with<Position>(geometry::Vec2{400, 300})
+							.with<Visibility>(true)
+							.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D)
+							.done();
 
-		auto pad_right = spawn()
-			.with<Player>()
-			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
-			.with<Position>(geometry::Vec2{ 750, 300 })
-			.with<Visibility>(true)
-			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN)
-			.done();
+		// auto pad_right = spawn()
+		// 	.with<Player>()
+		// 	.with<Sprite>(ecs::no_entity)
+		// 	.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
+		// 	.with<Position>(geometry::Vec2{ 750, 300 })
+		// 	.with<Visibility>(true)
+		// 	.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN)
+		// 	.done();
 
-		auto ball = spawn()
-			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))
-			.with<Position>(geometry::Vec2{ 300, 100 })
-			.with<Visibility>(true)
-			.with<Ball>(geometry::Vec2{ 1, 0 })
-			.done();
+				auto enemy = spawn()
+					.with<Sprite>(ecs::no_entity)
+					.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))
+					.with<Position>(geometry::Vec2{ 760, 0 })
+					.with<Visibility>(true)
+					.with<Enemy>(geometry::Vec2{ 1, 0 })
+					.done();
 	}
 };
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-	auto& engine = Engine::get_instance();
+	auto &engine = Engine::get_instance();
 	std::string filePath = "dagger.ini";
 	engine.configure(filePath.data(), argc, argv);
 
@@ -182,4 +221,3 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
-
