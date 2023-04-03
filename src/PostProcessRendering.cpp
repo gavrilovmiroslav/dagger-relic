@@ -1,4 +1,4 @@
-#include "OverlayRendering.h"
+#include "PostProcessRendering.h"
 #include "Prelude.h"
 
 extern uint8_t r_image_font_6_11[2464];
@@ -6,25 +6,24 @@ extern uint8_t r_image_font_6_11[2464];
 /*
  * Context for the software renderer.
  */
-struct bitmap
+struct BitmapData
 {
-    uint32_t  w, h;
-    uint32_t *pixel;
+    U32  w, h;
+    U32 *pixel;
 };
 
-static void r_puts(struct bitmap *r, uint32_t sx, uint32_t sy, const char *text);
-static void r_line(struct bitmap *r, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint32_t colour);
+static void r_puts(struct BitmapData *r, U32 sx, U32 sy, const char *text);
+static void r_line(struct BitmapData *r, U32 x0, U32 y0, U32 x1, U32 y1, U32 colour);
 
 /*
  * Draw text to bitmap.
  * The order of drawing a character is right to left.
  * NOTE: Cannot start drawing with negative x and y values.
  */
-void
-r_puts(struct bitmap *r, uint32_t sx, uint32_t sy, const char *text)
+void r_puts(struct BitmapData *r, U32 sx, U32 sy, const char *text)
 {
-	uint32_t       j      = 0;
-	const uint32_t colour = 0xffffffff;
+	U32       j      = 0;
+	const U32 colour = 0xffffffff;
 
 	if (sy >= r->h || text == NULL)
 	{
@@ -33,22 +32,22 @@ r_puts(struct bitmap *r, uint32_t sx, uint32_t sy, const char *text)
 
 	while (text[j])
 	{
-		uint32_t   i;
+		U32   i;
 		const char ch = text[j];
 
 		if (ch >= 32 && ch <= 126)
 		{
 			for (i = 0; i < 11 && sy + i < r->h; i++)
 			{
-				unsigned char test = '?';
-				unsigned char mask = 1;
-				uint32_t      x    = sx + 7;
+				U8  test = '?';
+				U8  mask = 1;
+				U32 x    = sx + 7;
 
-				test = r_image_font_6_11[(uint32_t)(ch - 32) * 11 + i];
+				test = r_image_font_6_11[(U32)(ch - 32) * 11 + i];
 
 				while (mask != 0)
 				{
-					const uint32_t map = (sy + i) * r->w + (x);
+					const U32 map = (sy + i) * r->w + (x);
 
 					/* Must check for each iteration as x is unsigned and may underflow. */
 					if (x < r->w)
@@ -72,12 +71,11 @@ r_puts(struct bitmap *r, uint32_t sx, uint32_t sy, const char *text)
  * NOTE: Offscreen positions are handled by clamping to the extent of the bitmap,
  * this is only meant for drawing lines within the screen.
  */
-void
-r_line(struct bitmap *r, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint32_t colour)
+void r_line(struct BitmapData *r, U32 x0, U32 y0, U32 x1, U32 y1, U32 colour)
 {
-	int32_t dx,  dy;
-	int32_t sx,  sy;
-	int32_t err, e2;
+	I32 dx,  dy;
+	I32 sx,  sy;
+	I32 err, e2;
 
     /*
      * Clamp values to the extent of the bitmap.
@@ -91,9 +89,9 @@ r_line(struct bitmap *r, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uin
 	if (y0 > r->h) { y0 = r->h; }
 	if (y1 > r->h) { y1 = r->h; }
 
-	dx  = abs((int32_t) x1 - (int32_t) x0);
+	dx  = abs((I32) x1 - (I32) x0);
 	sx  = (x0 > x1 ? 1 : -1);
-	dy  = abs((int32_t) y1 - (int32_t) y0);
+	dy  = abs((I32) y1 - (I32) y0);
 	sy  = (y0 > y1 ? 1 : -1);
 	err = (dx > dy ? dx : -dy) / 2;
 
@@ -112,50 +110,47 @@ r_line(struct bitmap *r, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uin
 		if (e2 > -dx)
 		{
 			err -= dy;
-			x0 = (uint32_t) ((int32_t) x0 - sx);
+			x0 = (U32) ((I32) x0 - sx);
 		}
 		if (e2 < dy)
 		{
 			err += dx;
-			y0 = (uint32_t) ((int32_t) y0 - sy);
+			y0 = (U32) ((I32) y0 - sy);
 		}
 	}
 }
 
-void
-OverlayLineRenderingModule::process_signal(core::Render2Signal& signal)
+void PostProcessLineRenderingModule::process_signal(core::PostProcessRenderSignal& signal)
 {
-	for (const auto&& [ entity, line ] : AccessStorage<OverlayLine>::access_storage().each())
+	for (const auto&& [ entity, line ] : AccessStorage<PostProcessLine>::access_storage().each())
 	{
-        struct bitmap r;
+        struct BitmapData r;
 
         r.pixel = signal.pixels;
-        r.w     = (uint32_t) signal.w;
-        r.h     = (uint32_t) signal.h;
-        r_line(&r, (uint32_t) line.start.x, (uint32_t) line.start.y, (uint32_t) line.end.x, (uint32_t) line.end.y, line.colour);
+        r.w     = (U32) signal.w;
+        r.h     = (U32) signal.h;
+        r_line(&r, (U32) line.start.x, (U32) line.start.y, (U32) line.end.x, (U32) line.end.y, line.colour);
 	}
 }
 
-void
-OverlayTextRenderingModule::process_signal(core::Render2Signal& signal)
+void PostProcessTextRenderingModule::process_signal(core::PostProcessRenderSignal& signal)
 {
-	for (const auto&& [ entity, textdata ] : AccessStorage<OverlayText>::access_storage().each())
+	for (const auto&& [ entity, textdata ] : AccessStorage<PostProcessText>::access_storage().each())
 	{
-        struct bitmap r;
+        struct BitmapData r;
 
         r.pixel = signal.pixels;
-        r.w     = (uint32_t) signal.w;
-        r.h     = (uint32_t) signal.h;
-        r_puts(&r, (uint32_t) textdata.position.x, (uint32_t) textdata.position.y, textdata.text.c_str());
+        r.w     = (U32) signal.w;
+        r.h     = (U32) signal.h;
+        r_puts(&r, (U32) textdata.position.x, (U32) textdata.position.y, textdata.text.c_str());
 	}
 }
 
-void
-OverlayTestRenderingModule::process_signal(core::Render2Signal& signal)
+void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSignal& signal)
 {
-	for (const auto&& [ entity, test ] : AccessStorage<OverlayTest>::access_storage().each())
+	for (const auto&& [ entity, test ] : AccessStorage<PostProcessTest>::access_storage().each())
 	{
-		uint32_t x, y;
+		U32 x, y;
 
         switch (test.magic)
         {
@@ -164,7 +159,7 @@ OverlayTestRenderingModule::process_signal(core::Render2Signal& signal)
         {
             for (x = 0; x < signal.w; x++)
             {
-                uint32_t c = x^y;
+                U32 c = x^y;
 
                 signal.pixels[y * signal.w + x] = (c << 16) | (c << 8) | (x);
             }
@@ -186,8 +181,9 @@ OverlayTestRenderingModule::process_signal(core::Render2Signal& signal)
 
 /*
  * Character width: 6, height: 11, total characters: 224, first character: ascii 32.
- * Each line defines 2 characters, every character is made from 11 'unsigned char' bitmasks.
+ * Each line defines 2 characters, every character is made from 11 'U8' bitmasks.
  * Converted from BDF with bdf2c.
+ * NOTE: This is only for debugging purposes, this is not a font to be used in the final product.
  */
 uint8_t r_image_font_6_11[2464] =
 {

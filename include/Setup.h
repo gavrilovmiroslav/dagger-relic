@@ -9,7 +9,7 @@
 #include "Loaders.h"
 #include "Rendering.h"
 #include "SpriteRendering.h"
-#include "OverlayRendering.h"
+#include "PostProcessRendering.h"
 #include "Windowing.h"
 #include "Textures.h"
 #include "Animations.h"
@@ -31,9 +31,18 @@ struct Default2D
 		engine.get<AssetModule>()->add_loader<SpritesheetLoader>();
 
 		engine.use<SpriteRenderingModule>();
-		engine.use<OverlayTestRenderingModule>();
-		engine.use<OverlayLineRenderingModule>();
-		engine.use<OverlayTextRenderingModule>();
 		engine.use<AnimationModule>();
+	}
+};
+
+struct PostProcess2D
+{
+	PostProcess2D()
+	{
+		auto& engine = Engine::get_instance();
+		
+		engine.use<PostProcessTestRenderingModule>();
+		engine.use<PostProcessLineRenderingModule>();
+		engine.use<PostProcessTextRenderingModule>();
 	}
 };
