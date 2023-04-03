@@ -2,8 +2,7 @@
 
 #include "Prelude.h"
 #include "Random.h"
-
-#define INITIAL_VALUE 3
+#include "PlayerComponent.h"
 
 using namespace core;
 
@@ -14,7 +13,14 @@ struct Movement
 	geometry::Vec2 force;
 	F32            moveforce;
 
-	Movement(F32 moveforce, F32 velocitymax) : velocity(0.0f, 0.0f), moveforce(moveforce), velocitymax(velocitymax), force(0.0f, 0.0f) { }
+	Movement(F32 moveforce, F32 velocitymax) 
+		: velocity(0.0f, 0.0f)
+		, moveforce(moveforce)
+		, velocitymax(velocitymax)
+		, force(0.0f, 0.0f) 
+	{ 
+
+	}
 };
 
 struct KeyBindings 
@@ -22,32 +28,14 @@ struct KeyBindings
 	KeyCode left, down, up, right;
 };
 
-enum SpecialBlindfold
-{
-	HumanEyes = 0,
-	FoxEyes = 1,
-	ScorpionEyes = 2
-};
-
-struct Player
-{
-	Bool is_pushing;
-	Bool all_platforms_checked;
-	U32 number_of_platforms_checked;
-	SpecialBlindfold current_blindfold;
-	Map<SpecialBlindfold, U32> available_blindfolds;
-};
-
-static float
-fsignf(float x)
+static float fsignf(float x)
 {
 	if (x > 0.0f) return  1.0f;
 	if (x < 0.0f) return -1.0f;
 	else          return  0.0f;
 }
 
-static float
-fclampf(float x, float min, float max)
+static float fclampf(float x, float min, float max)
 {
 	if (x < min) return min;
 	if (x > max) return max;
@@ -115,8 +103,7 @@ struct Pong : public Game
 	void on_start() override
 	{
 		auto player = spawn()
-			.with<Player>(false, false, 0u, HumanEyes, Map<SpecialBlindfold, U32>({{HumanEyes, INITIAL_VALUE}, {FoxEyes, INITIAL_VALUE}, 
-																				   {ScorpionEyes, INITIAL_VALUE}}))
+			.with<Player>(HumanEyes, Map<SpecialBlindfold, U32>({{HumanEyes, INITIAL_VALUE}, {FoxEyes, INITIAL_VALUE}, {ScorpionEyes, INITIAL_VALUE}}))
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
 			.with<Position>(geometry::Vec2{ 40, 550 })
