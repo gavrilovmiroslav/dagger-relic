@@ -419,7 +419,7 @@ ecs::Entity SpritesheetLoader::load_asset(String spritesheet_name, String sprite
 		read_line(input);
 		const auto& clip = read_4ints(read_pair(input, "clip").value());
 		const auto& pivot = read_2floats(read_pair(input, "pivot").value());
-		//auto& scale = read_2floats(read_pair(input, "scale").value());
+		const auto& scale = read_2floats(read_pair(input, "scale").value());
 
 		Sprite sprite;
 		sprite.texture = texture;
