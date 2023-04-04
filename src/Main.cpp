@@ -169,7 +169,6 @@ struct Pong : public Game
 	}
 };
 
-#undef main
 int main(int argc, char* argv[])
 {
 	auto& engine = Engine::get_instance();
