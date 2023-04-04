@@ -13,7 +13,7 @@
 
 #include <FPNG.h>
 #include <LodePNG.h>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <algorithm>
 

@@ -2,7 +2,7 @@
 #include "Access.h"
 #include "FPNG.h"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 using namespace core;
 
