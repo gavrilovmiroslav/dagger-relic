@@ -20,16 +20,14 @@ struct KeyBindings
 	KeyCode left, down, up, right;
 };
 
-static float
-fsignf(float x)
+static float fsignf(float x)
 {
 	if (x > 0.0f) return  1.0f;
 	if (x < 0.0f) return -1.0f;
 	else          return  0.0f;
 }
 
-static float
-fclampf(float x, float min, float max)
+static float fclampf(float x, float min, float max)
 {
 	if (x < min) return min;
 	if (x > max) return max;
