@@ -32,6 +32,7 @@ struct SpellMovementSystem
 struct SpellCollisionSystem
 	: public ecs::System
 	, public SignalProcessor<SpellPlayerCollisionSignal>
+	, public AccessEntityValidity
 	, public MutAccessComponentById<Duration>
 {
 	virtual void process_signal(SpellPlayerCollisionSignal& signal);

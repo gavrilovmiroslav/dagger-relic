@@ -86,9 +86,16 @@ void SpellMovementSystem::on_tick()
 }
 
 void SpellCollisionSystem::process_signal(SpellPlayerCollisionSignal& signal){
-    despawn(signal.player);
-    auto &linger = MutAccessComponentById<Duration>::get(signal.spell);
-    if (linger != Lingers){
-        despawn(signal.spell);
+    if (is_ok(signal.player))
+        despawn(signal.player);
+    
+    if (is_ok(signal.spell))
+    {
+        if (auto* linger = MutAccessComponentById<Duration>::get(signal.spell))
+        {
+            if (*linger != Lingers){
+                despawn(signal.spell);
+            }
+        }
     }
 }
