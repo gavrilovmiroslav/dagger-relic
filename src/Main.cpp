@@ -113,14 +113,16 @@ struct EnemyMovementSystem
 
 	void on_tick() override
 	{
-		//enemy flocking system
 
 		auto player  = QueryPlayers::access_storage().front();
+		auto player_position = MutAccessComponentById<Position>::get(player);
+		
+		//enemy flocking system
 		for (auto&& [entity, enemy, pos] : QueryEnemies::access_storage().each())
 		{
-			auto min_distance = 1000000;
-			auto nearest_enemy = Enemy();
-			auto nearest_enemy_pos = Position();
+			auto min_distance = INFINITY;
+			Position* nearest_enemy_pos = nullptr;
+
 			for (auto&& [entity2, enemy2, pos2] : QueryEnemies::access_storage().each())
 			{
 				if(entity != entity2)
@@ -129,15 +131,13 @@ struct EnemyMovementSystem
 					if (dist < min_distance)
 					{
 						min_distance = dist;
-						nearest_enemy = enemy2;
-						nearest_enemy_pos = pos2;
+						nearest_enemy_pos = &pos2;
 					}
 				}
 			}
-			auto player_position = MutAccessComponentById<Position>::get(player);
-			auto to_player =  normalize(player_position.xy - pos.xy);
 			
-			auto from_nearest_enemy  = normalize(pos.xy-nearest_enemy_pos.xy);
+			auto to_player =  normalize(player_position.xy - pos.xy);
+			auto from_nearest_enemy  = normalize(pos.xy - nearest_enemy_pos->xy);
 
 			auto enemy_tilt_coef = 0.02f;
 			std::cout << min_distance << std::endl;
@@ -152,7 +152,6 @@ struct EnemyMovementSystem
 
 			pos.xy += enemy.speed* Time::delta_time() * ENEMY_SPEED_MOD;
 		}
-
 	}
 };
 
