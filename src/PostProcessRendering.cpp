@@ -1,31 +1,31 @@
 #include "PostProcessRendering.h"
 #include "Prelude.h"
 
-extern uint8_t r_image_font_6_11[2464];
+extern U8 r_image_font_6_11[2464];
 
 /*
  * Context for the software renderer.
  */
-struct BitmapData
+struct Bitmap
 {
     U32  w, h;
     U32 *pixel;
 };
 
-static void r_puts(struct BitmapData *r, U32 sx, U32 sy, const char *text);
-static void r_line(struct BitmapData *r, U32 x0, U32 y0, U32 x1, U32 y1, U32 colour);
+static void render_puts(struct Bitmap *bm, U32 sx, U32 sy, const char *text);
+static void render_line(struct Bitmap *bm, U32 x0, U32 y0, U32 x1, U32 y1, U32 colour);
 
 /*
  * Draw text to bitmap.
  * The order of drawing a character is right to left.
  * NOTE: Cannot start drawing with negative x and y values.
  */
-void r_puts(struct BitmapData *r, U32 sx, U32 sy, const char *text)
+void render_puts(struct Bitmap *bm, U32 sx, U32 sy, const char *text)
 {
 	U32       j      = 0;
 	const U32 colour = 0xffffffff;
 
-	if (sy >= r->h || text == NULL)
+	if (sy >= bm->h || text == NULL)
 	{
 		return;
 	}
@@ -37,7 +37,7 @@ void r_puts(struct BitmapData *r, U32 sx, U32 sy, const char *text)
 
 		if (ch >= 32 && ch <= 126)
 		{
-			for (i = 0; i < 11 && sy + i < r->h; i++)
+			for (i = 0; i < 11 && sy + i < bm->h; i++)
 			{
 				U8  test = '?';
 				U8  mask = 1;
@@ -47,12 +47,12 @@ void r_puts(struct BitmapData *r, U32 sx, U32 sy, const char *text)
 
 				while (mask != 0)
 				{
-					const U32 map = (sy + i) * r->w + (x);
+					const U32 map = (sy + i) * bm->w + (x);
 
 					/* Must check for each iteration as x is unsigned and may underflow. */
-					if (x < r->w)
+					if (x < bm->w)
 					{
-						r->pixel[map] = (test & mask ? colour : r->pixel[map]);
+						bm->pixel[map] = (test & mask ? colour : bm->pixel[map]);
 					}
 
 					x--;
@@ -71,7 +71,7 @@ void r_puts(struct BitmapData *r, U32 sx, U32 sy, const char *text)
  * NOTE: Offscreen positions are handled by clamping to the extent of the bitmap,
  * this is only meant for drawing lines within the screen.
  */
-void r_line(struct BitmapData *r, U32 x0, U32 y0, U32 x1, U32 y1, U32 colour)
+void render_line(struct Bitmap *bm, U32 x0, U32 y0, U32 x1, U32 y1, U32 colour)
 {
 	I32 dx,  dy;
 	I32 sx,  sy;
@@ -84,10 +84,10 @@ void r_line(struct BitmapData *r, U32 x0, U32 y0, U32 x1, U32 y1, U32 colour)
      * Clamping should be done using linear interpolation (lerp)... but this should be removed anyway...
      * a*(1.0f-x)+(b*x), a, b : range, x : value.
      */
-	if (x0 > r->w) { x0 = r->w; }
-	if (x1 > r->w) { x1 = r->w; }
-	if (y0 > r->h) { y0 = r->h; }
-	if (y1 > r->h) { y1 = r->h; }
+	if (x0 > bm->w) { x0 = bm->w; }
+	if (x1 > bm->w) { x1 = bm->w; }
+	if (y0 > bm->h) { y0 = bm->h; }
+	if (y1 > bm->h) { y1 = bm->h; }
 
 	dx  = abs((I32) x1 - (I32) x0);
 	sx  = (x0 > x1 ? 1 : -1);
@@ -97,9 +97,9 @@ void r_line(struct BitmapData *r, U32 x0, U32 y0, U32 x1, U32 y1, U32 colour)
 
 	for (;;)
 	{
-		if (x0 < r->w && y0 < r->h)
+		if (x0 < bm->w && y0 < bm->h)
 		{
-			r->pixel[x0 + y0 * r->w] = colour;
+			bm->pixel[x0 + y0 * bm->w] = colour;
 		}
 		if (x0 == x1 && y0 == y1)
 		{
@@ -124,12 +124,12 @@ void PostProcessLineRenderingModule::process_signal(core::PostProcessRenderSigna
 {
 	for (const auto&& [ entity, line ] : AccessStorage<PostProcessLine>::access_storage().each())
 	{
-        struct BitmapData r;
+        struct Bitmap bm;
 
-        r.pixel = signal.pixels;
-        r.w     = (U32) signal.w;
-        r.h     = (U32) signal.h;
-        r_line(&r, (U32) line.start.x, (U32) line.start.y, (U32) line.end.x, (U32) line.end.y, line.colour);
+        bm.pixel = signal.pixels;
+        bm.w     = (U32) signal.w;
+        bm.h     = (U32) signal.h;
+        render_line(&bm, (U32) line.start.x, (U32) line.start.y, (U32) line.end.x, (U32) line.end.y, line.colour);
 	}
 }
 
@@ -137,12 +137,12 @@ void PostProcessTextRenderingModule::process_signal(core::PostProcessRenderSigna
 {
 	for (const auto&& [ entity, textdata ] : AccessStorage<PostProcessText>::access_storage().each())
 	{
-        struct BitmapData r;
+        struct Bitmap bm;
 
-        r.pixel = signal.pixels;
-        r.w     = (U32) signal.w;
-        r.h     = (U32) signal.h;
-        r_puts(&r, (U32) textdata.position.x, (U32) textdata.position.y, textdata.text.c_str());
+        bm.pixel = signal.pixels;
+        bm.w     = (U32) signal.w;
+        bm.h     = (U32) signal.h;
+        render_puts(&bm, (U32) textdata.position.x, (U32) textdata.position.y, textdata.text.c_str());
 	}
 }
 
@@ -185,7 +185,7 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
  * Converted from BDF with bdf2c.
  * NOTE: This is only for debugging purposes, this is not a font to be used in the final product.
  */
-uint8_t r_image_font_6_11[2464] =
+U8 r_image_font_6_11[2464] =
 {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x00, 0x20, 0x00, 0x00, 0x00, 0x50, 0x50, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x50, 0xF8, 0x50, 0xF8, 0x50, 0x00, 0x00, 0x00, 0x00, 0x20, 0x70, 0xA8, 0xA0, 0x70, 0x28, 0xA8, 0x70, 0x20, 0x00, 0x00, 0x00, 0x40, 0xA8, 0x50, 0x20, 0x50, 0xA8, 0x10,

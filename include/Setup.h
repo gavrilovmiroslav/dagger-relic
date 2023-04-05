@@ -1,18 +1,18 @@
 #pragma once
 
 #include "Assets.h"
+#include "Animations.h"
 #include "Diagnostics.h"
 #include "Engine.h"
 #include "EventBus.h"
 #include "FPSCalculator.h"
 #include "Geometry.h"
 #include "Loaders.h"
+#include "PostProcessRendering.h"
 #include "Rendering.h"
 #include "SpriteRendering.h"
-#include "PostProcessRendering.h"
-#include "Windowing.h"
 #include "Textures.h"
-#include "Animations.h"
+#include "Windowing.h"
 
 using namespace core;
 
