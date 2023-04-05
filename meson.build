@@ -23,7 +23,6 @@ sources = [
     'src/Config.cpp',
     'src/Diagnostics.cpp',
     'src/EventBus.cpp',
-    'src/FPNG.cpp',
     'src/FPSCalculator.cpp',
     'src/Loaders.cpp',
     'src/LodePNG.cpp',
