@@ -8,7 +8,7 @@ extern U8 r_image_font_6_11[2464];
  */
 struct Bitmap
 {
-    U32  w, h;
+    U32  width, height;
     U32 *pixel;
 };
 
@@ -25,7 +25,7 @@ void render_puts(struct Bitmap *bm, U32 sx, U32 sy, const char *text)
 	U32       j      = 0;
 	const U32 colour = 0xffffffff;
 
-	if (sy >= bm->h || text == NULL)
+	if (sy >= bm->height || text == NULL)
 	{
 		return;
 	}
@@ -37,7 +37,7 @@ void render_puts(struct Bitmap *bm, U32 sx, U32 sy, const char *text)
 
 		if (ch >= 32 && ch <= 126)
 		{
-			for (i = 0; i < 11 && sy + i < bm->h; i++)
+			for (i = 0; i < 11 && sy + i < bm->height; i++)
 			{
 				U8  test = '?';
 				U8  mask = 1;
@@ -47,10 +47,10 @@ void render_puts(struct Bitmap *bm, U32 sx, U32 sy, const char *text)
 
 				while (mask != 0)
 				{
-					const U32 map = (sy + i) * bm->w + (x);
+					const U32 map = (sy + i) * bm->width + (x);
 
 					/* Must check for each iteration as x is unsigned and may underflow. */
-					if (x < bm->w)
+					if (x < bm->width)
 					{
 						bm->pixel[map] = (test & mask ? colour : bm->pixel[map]);
 					}
@@ -84,10 +84,10 @@ void render_line(struct Bitmap *bm, U32 x0, U32 y0, U32 x1, U32 y1, U32 colour)
      * Clamping should be done using linear interpolation (lerp)... but this should be removed anyway...
      * a*(1.0f-x)+(b*x), a, b : range, x : value.
      */
-	if (x0 > bm->w) { x0 = bm->w; }
-	if (x1 > bm->w) { x1 = bm->w; }
-	if (y0 > bm->h) { y0 = bm->h; }
-	if (y1 > bm->h) { y1 = bm->h; }
+	if (x0 > bm->width)  { x0 = bm->width;  }
+	if (x1 > bm->width)  { x1 = bm->width;  }
+	if (y0 > bm->height) { y0 = bm->height; }
+	if (y1 > bm->height) { y1 = bm->height; }
 
 	dx  = abs((I32) x1 - (I32) x0);
 	sx  = (x0 > x1 ? 1 : -1);
@@ -97,9 +97,9 @@ void render_line(struct Bitmap *bm, U32 x0, U32 y0, U32 x1, U32 y1, U32 colour)
 
 	for (;;)
 	{
-		if (x0 < bm->w && y0 < bm->h)
+		if (x0 < bm->width && y0 < bm->height)
 		{
-			bm->pixel[x0 + y0 * bm->w] = colour;
+			bm->pixel[x0 + y0 * bm->width] = colour;
 		}
 		if (x0 == x1 && y0 == y1)
 		{
@@ -126,9 +126,9 @@ void PostProcessLineRenderingModule::process_signal(core::PostProcessRenderSigna
 	{
         struct Bitmap bm;
 
-        bm.pixel = signal.pixels;
-        bm.w     = (U32) signal.w;
-        bm.h     = (U32) signal.h;
+        bm.pixel  = signal.pixels;
+        bm.width  = (U32) signal.w;
+        bm.height = (U32) signal.h;
         render_line(&bm, (U32) line.start.x, (U32) line.start.y, (U32) line.end.x, (U32) line.end.y, line.colour);
 	}
 }
@@ -139,9 +139,9 @@ void PostProcessTextRenderingModule::process_signal(core::PostProcessRenderSigna
 	{
         struct Bitmap bm;
 
-        bm.pixel = signal.pixels;
-        bm.w     = (U32) signal.w;
-        bm.h     = (U32) signal.h;
+        bm.pixel  = signal.pixels;
+        bm.width  = (U32) signal.w;
+        bm.height = (U32) signal.h;
         render_puts(&bm, (U32) textdata.position.x, (U32) textdata.position.y, textdata.text.c_str());
 	}
 }
