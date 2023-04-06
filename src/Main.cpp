@@ -47,6 +47,20 @@ struct MovementSystem
 	}
 };
 
+struct ClickControlSystem
+	: public ecs::System
+{
+	void on_exit(){
+		const auto& key = KeyState::get();
+
+		if (key.is_down(KeyCode::KEY_ESCAPE))
+		{
+			Engine::get_instance().quit();
+		}
+
+	}
+};
+
 struct MovementControlSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<KeyBinding, Movement, SpriteAnimation>
@@ -54,11 +68,6 @@ struct MovementControlSystem
 	void on_tick() override
 	{
 		const auto& key = KeyState::get();
-
-		if (key.is_down(KeyCode::KEY_ESCAPE))
-		{
-			Engine::get_instance().quit();
-		}
 
 		for (auto&& [entity, key_binding, movement, sprite] : access_storage().each())
 		{
@@ -100,6 +109,7 @@ struct PyramidPlunder : public Game
 		auto& engine = Engine::get_instance();
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
+		engine.use<ClickControlSystem>();
 	}
 
 	void on_start() override
