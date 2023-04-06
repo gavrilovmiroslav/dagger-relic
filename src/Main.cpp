@@ -62,12 +62,15 @@ struct MovementControlSystem
 
 		for (auto&& [entity, key_binding, movement, sprite] : access_storage().each())
 		{
-			if (key.is_down(key_binding.up))         
+			if (key.is_down(key_binding.up)){       
 				movement.force.y = -movement.move_force;
-			else if (key.is_down(key_binding.down))  
+			}
+			else if (key.is_down(key_binding.down)){
 				movement.force.y =  movement.move_force;
-			else                                     
+			}
+			else{                                     
 				movement.force.y -= fsignf(movement.force.y)*movement.move_force;
+			}
 
 			if (key.is_down(key_binding.left))
 			{
@@ -81,8 +84,9 @@ struct MovementControlSystem
 				sprite.change_to("pyramidplunder/archaeologist_running");
 				movement.force.x =  movement.move_force;
 			}
-			else                                     
+			else{                                    
 				movement.force.x -= fsignf(movement.force.x)*movement.move_force;
+			}
 
 			spdlog::info("force: {} {}", movement.force.x, movement.force.y);
 		}
