@@ -15,7 +15,7 @@ struct Movement
 	Movement(F32 move_force, F32 velocity_max) : velocity(0.0f, 0.0f), move_force(move_force), velocity_max(velocity_max), force(0.0f, 0.0f) { }
 };
 
-struct KeyBindings 
+struct KeyBinding 
 {
 	KeyCode left, down, up, right;
 };
@@ -62,33 +62,33 @@ struct MovementSystem
 
 struct MovementControlSystem
 	: public ecs::System
-	, public MutAccessGroupStorage<KeyBindings, Movement, SpriteAnimation>
+	, public MutAccessGroupStorage<KeyBinding, Movement, SpriteAnimation>
 {
 	void on_tick() override
 	{
-		const auto& keys = KeyState::get();
+		const auto& key = KeyState::get();
 
-		if (keys.is_down(KeyCode::KEY_ESCAPE))
+		if (key.is_down(KeyCode::KEY_ESCAPE))
 		{
 			Engine::get_instance().quit();
 		}
 
-		for (auto&& [entity, keybinding, movement, sprite] : access_storage().each())
+		for (auto&& [entity, key_binding, movement, sprite] : access_storage().each())
 		{
-			if (keys.is_down(keybinding.up))         
+			if (key.is_down(key_binding.up))         
 				movement.force.y = -movement.move_force;
-			else if (keys.is_down(keybinding.down))  
+			else if (key.is_down(key_binding.down))  
 				movement.force.y =  movement.move_force;
 			else                                     
 				movement.force.y -= fsignf(movement.force.y)*movement.move_force;
 
-			if (keys.is_down(keybinding.left))
+			if (key.is_down(key_binding.left))
 			{
 				replace_component<Flip>(entity, Horizontal);
 				sprite.change_to("pyramidplunder/archaeologist_running");       
 				movement.force.x = -movement.move_force;
 			}
-			else if (keys.is_down(keybinding.right))
+			else if (key.is_down(key_binding.right))
 			{
 				replace_component<Flip>(entity, None);
 				sprite.change_to("pyramidplunder/archaeologist_running");
@@ -119,7 +119,7 @@ struct PyramidPlunder : public Game
 			.with<Position>(geometry::Vec2{ 300, 100 })
 			.with<Visibility>(true)
 			.with<Movement>(2000.0f, 50.0f)
-			.with<KeyBindings>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT)
+			.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT)
 			.done();
 	}
 };
