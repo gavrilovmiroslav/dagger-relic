@@ -8,11 +8,11 @@ using namespace core;
 struct Movement 
 {
 	geometry::Vec2 velocity;
-	geometry::Vec2 velocitymax;
+	geometry::Vec2 velocity_max;
 	geometry::Vec2 force;
-	F32            moveforce;
+	F32            move_force;
 
-	Movement(F32 moveforce, F32 velocitymax) : velocity(0.0f, 0.0f), moveforce(moveforce), velocitymax(velocitymax), force(0.0f, 0.0f) { }
+	Movement(F32 move_force, F32 velocity_max) : velocity(0.0f, 0.0f), move_force(move_force), velocity_max(velocity_max), force(0.0f, 0.0f) { }
 };
 
 struct KeyBindings 
@@ -54,8 +54,8 @@ struct MovementSystem
 			pos.xy              += movement.velocity*Time::delta_time();
 			movement.velocity.x += (fx/m)*Time::delta_time();
 			movement.velocity.y += (fy/m)*Time::delta_time();
-			movement.velocity.x = fclampf(movement.velocity.x, -movement.velocitymax.x, movement.velocitymax.x);
-			movement.velocity.y = fclampf(movement.velocity.y, -movement.velocitymax.y, movement.velocitymax.y);
+			movement.velocity.x = fclampf(movement.velocity.x, -movement.velocity_max.x, movement.velocity_max.x);
+			movement.velocity.y = fclampf(movement.velocity.y, -movement.velocity_max.y, movement.velocity_max.y);
 		}
 	}
 };
@@ -76,26 +76,26 @@ struct MovementControlSystem
 		for (auto&& [entity, keybinding, movement, sprite] : access_storage().each())
 		{
 			if (keys.is_down(keybinding.up))         
-				movement.force.y = -movement.moveforce;
+				movement.force.y = -movement.move_force;
 			else if (keys.is_down(keybinding.down))  
-				movement.force.y =  movement.moveforce;
+				movement.force.y =  movement.move_force;
 			else                                     
-				movement.force.y -= fsignf(movement.force.y)*movement.moveforce;
+				movement.force.y -= fsignf(movement.force.y)*movement.move_force;
 
 			if (keys.is_down(keybinding.left))
 			{
 				replace_component<Flip>(entity, Horizontal);
 				sprite.change_to("pyramidplunder/archaeologist_running");       
-				movement.force.x = -movement.moveforce;
+				movement.force.x = -movement.move_force;
 			}
 			else if (keys.is_down(keybinding.right))
 			{
 				replace_component<Flip>(entity, None);
 				sprite.change_to("pyramidplunder/archaeologist_running");
-				movement.force.x =  movement.moveforce;
+				movement.force.x =  movement.move_force;
 			}
 			else                                     
-				movement.force.x -= fsignf(movement.force.x)*movement.moveforce;
+				movement.force.x -= fsignf(movement.force.x)*movement.move_force;
 
 			spdlog::info("force: {} {}", movement.force.x, movement.force.y);
 		}
