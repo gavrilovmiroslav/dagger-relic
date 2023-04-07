@@ -3,6 +3,8 @@
 #include "Prelude.h"
 #include "Random.h"
 #include <iostream>
+#include <algorithm>
+
 
 using namespace core;
 
@@ -111,23 +113,44 @@ struct EnemyMovementSystem
 
 	void on_tick() override
 	{
+
+		auto player  = QueryPlayers::access_storage().front();
+		auto player_position = MutAccessComponentById<Position>::get(player);
 		
-		
-		for (auto &&[player_entity, player_pos] : QueryPlayers::access_storage().each())
+		//enemy flocking system
+		for (auto&& [entity, enemy, pos] : QueryEnemies::access_storage().each())
 		{
-			for (auto&& [entity, enemy, pos] : QueryEnemies::access_storage().each())
+			auto min_distance = INFINITY;
+			Position* nearest_enemy_pos = nullptr;
+
+			for (auto&& [entity2, enemy2, pos2] : QueryEnemies::access_storage().each())
 			{
-				if (pos.xy.y >= SCREEN_HEIGHT - BALL_RADIUS || pos.xy.y <= BALL_RADIUS)
+				if(entity != entity2)
 				{
-					enemy.speed.y *= -1;
+					auto dist = distance(pos.xy, pos2.xy);
+					if (dist < min_distance)
+					{
+						min_distance = dist;
+						nearest_enemy_pos = &pos2;
+					}
 				}
-
-				enemy.speed = (player_pos.xy - pos.xy);
-				enemy.speed /= sqrt(pow(enemy.speed.x, 2) + pow(enemy.speed.y, 2));
-				
-				pos.xy += enemy.speed* Time::delta_time() * ENEMY_SPEED_MOD;
-
 			}
+			
+			auto to_player =  normalize(player_position.xy - pos.xy);
+			auto from_nearest_enemy  = normalize(pos.xy - nearest_enemy_pos->xy);
+
+			auto enemy_tilt_coef = 0.02f;
+			std::cout << min_distance << std::endl;
+			if (min_distance < 50.0f)
+			{
+				enemy_tilt_coef = 1.0f;
+				std::cout << "to close" << std::endl;
+			}
+
+			enemy.speed += to_player + from_nearest_enemy * enemy_tilt_coef;
+			enemy.speed = normalize(enemy.speed);
+
+			pos.xy += enemy.speed* Time::delta_time() * ENEMY_SPEED_MOD;
 		}
 	}
 };
@@ -168,9 +191,9 @@ struct PlayerControlsSystem
 	}
 };
 
-struct Pong : public Game
+struct Brawl : public Game
 {
-	Pong()
+	Brawl()
 	{
 		auto &engine = Engine::get_instance();
 		engine.use<PlayerControlsSystem>();
@@ -198,10 +221,11 @@ struct Pong : public Game
 		// 	.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN)
 		// 	.done();
 
+			for (auto i = 0; i < 4 ; ++i)
 				auto enemy = spawn()
 					.with<Sprite>(ecs::no_entity)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))
-					.with<Position>(geometry::Vec2{ 760, 0 })
+					.with<Position>(geometry::Vec2{ 760 - 30*i, 60*i })
 					.with<Visibility>(true)
 					.with<Enemy>(geometry::Vec2{ 1, 0 })
 					.done();
@@ -216,7 +240,7 @@ int main(int argc, char *argv[])
 
 	engine.setup<Default2D>();
 
-	Pong game;
+	Brawl game;
 	engine.run();
 
 	return 0;
