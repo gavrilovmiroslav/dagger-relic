@@ -1,6 +1,6 @@
 project('dagger', 'c', 'cpp', default_options : [ 'cpp_std=c++17', 'default_library=static' ])
 
-if host_machine.cpu() == 'x86_64' and meson.get_compiler('c').get_id() != 'msvc' # Needed to compile FPNG.cpp and SDL2
+if host_machine.cpu() == 'x86_64' and meson.get_compiler('c').get_id() != 'msvc' # Needed to compile SDL2
     add_global_arguments('-march=native', language : 'c')
     add_global_arguments('-march=native', language : 'cpp')
 endif
@@ -23,7 +23,6 @@ sources = [
     'src/Config.cpp',
     'src/Diagnostics.cpp',
     'src/EventBus.cpp',
-    'src/FPNG.cpp',
     'src/FPSCalculator.cpp',
     'src/Loaders.cpp',
     'src/LodePNG.cpp',
