@@ -1,0 +1,35 @@
+texture: Attack
+dimensions: 1, 1
+sprites: 8
+
+clip: 0, 0, 150, 150
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 150, 0, 150, 150
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 300, 0, 150, 150
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 450, 0, 150, 150
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 600, 0, 150, 150
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 750, 0, 150, 150
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 900, 0, 150, 150
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 1050, 0, 150, 150
+pivot: 0.5, 0.5
+scale: 1, 1
