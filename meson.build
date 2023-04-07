@@ -28,7 +28,6 @@ sources = [
     'src/EventBus.cpp',
     'src/FPSCalculator.cpp',
     'src/Loaders.cpp',
-    'src/LodePNG.cpp',
     'src/Rendering.cpp',
     'src/SpriteRendering.cpp',
     'src/Windowing.cpp',
