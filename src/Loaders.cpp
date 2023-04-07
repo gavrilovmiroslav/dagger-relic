@@ -10,12 +10,10 @@
 #include "Windowing.h"
 #include "Textures.h"
 
-#include <LodePNG.h>
 #include <SDL.h>
 #include <SDL_image.h>
 
 #include <algorithm>
-
 
 // Texture loader
 
