@@ -11,7 +11,6 @@
 #include "Windowing.h"
 #include "Textures.h"
 
-#include <FPNG.h>
 #include <LodePNG.h>
 #include <SDL.h>
 
@@ -37,46 +36,28 @@ memory::RawPtr<Texture> TextureLoader::load_texture(String path)
 	std::vector<U8> data;
 
 	auto filepath = path.c_str();
-	auto result = fpng::fpng_decode_file(filepath, data, width, height, channelsInFile, 4);
-	Logger::info("[FPNG] W: {}, H: {}, C: {}", width, height, channelsInFile);
-	if (result == fpng::FPNG_DECODE_NOT_FPNG)
-	{
-		Logger::error("[FPNG] Decoder error: recoding into fpng", result);
-		RawPtr<U8> ptr;
+	RawPtr<U8> ptr;
 
-		error = lodepng_decode32_file(&ptr, &width, &height, filepath);
-		Logger::info("[LODE] W: {}, H: {}, C: {}", width, height, channelsInFile);
+	error = lodepng_decode32_file(&ptr, &width, &height, filepath);
+	Logger::info("[LODE] W: {}, H: {}, C: {}", width, height, channelsInFile);
 
-		if (error) {
-			Logger::error("[LODE] Decoder error {}: {}\n", error, lodepng_error_text(error));
-			delete texture;
-			return nullptr;
-		}
-
-		auto dataLength = width * height * sizeof(U32);
-		Logger::info("[LODE] Expected: {}", dataLength);
-
-		data.reserve(dataLength);
-		for (int i = 0; i < dataLength; i++)
-		{
-			data.push_back(ptr[i]);
-		}
-
-		if (ptr != nullptr)
-			free(ptr);
-
-		fpng::fpng_encode_image_to_file(filepath, data.data(), width, height, channelsInFile, 0);
-		Logger::info("[LODE] Recoding complete, will attempt to reload");
-
-		result = fpng::fpng_decode_file(filepath, data, width, height, channelsInFile, 4);
-		Logger::info("[FPNG] W: {}, H: {}, C: {}", width, height, channelsInFile);
-	}
-	else if (result != fpng::FPNG_DECODE_SUCCESS)
-	{
-		Logger::critical("[FPNG] Error: {}", result);
+	if (error) {
+		Logger::error("[LODE] Decoder error {}: {}\n", error, lodepng_error_text(error));
 		delete texture;
 		return nullptr;
 	}
+
+	auto dataLength = width * height * sizeof(U32);
+	Logger::info("[LODE] Expected: {}", dataLength);
+
+	data.reserve(dataLength);
+	for (int i = 0; i < dataLength; i++)
+	{
+		data.push_back(ptr[i]);
+	}
+
+	if (ptr != nullptr)
+		free(ptr);
 
 	Logger::info("Creating texture.");
 
@@ -419,7 +400,7 @@ ecs::Entity SpritesheetLoader::load_asset(String spritesheet_name, String sprite
 		read_line(input);
 		const auto& clip = read_4ints(read_pair(input, "clip").value());
 		const auto& pivot = read_2floats(read_pair(input, "pivot").value());
-		//auto& scale = read_2floats(read_pair(input, "scale").value());
+		const auto& scale = read_2floats(read_pair(input, "scale").value());
 
 		Sprite sprite;
 		sprite.texture = texture;

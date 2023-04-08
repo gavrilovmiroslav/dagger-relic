@@ -1,6 +1,5 @@
 #include "Rendering.h"
 #include "Access.h"
-#include "FPNG.h"
 
 #include <SDL.h>
 
@@ -13,7 +12,6 @@ RenderingModule::RenderingModule()
 
 bool RenderingModule::on_start()
 {
-	fpng::fpng_init();
 	return true;
 }
 
