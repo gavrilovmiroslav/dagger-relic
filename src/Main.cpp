@@ -157,7 +157,7 @@ struct EnemyMovementSystem
 
 struct PlayerControlsSystem
 	: public ecs::System,
-	  public MutAccessGroupStorage<Player, KeyBindings, Position>
+	  public MutAccessGroupStorage<Player, KeyBindings, Position, SpriteAnimation, Flip>
 {
 	void on_tick() override
 	{
@@ -168,24 +168,36 @@ struct PlayerControlsSystem
 			Engine::get_instance().quit();
 		}
 
-		for (auto &&[entity, bindings, pos] : access_storage().each())
+		for (auto &&[entity, bindings, pos, sprite, flip] : access_storage().each())
 		{
 			if (keys.is_down(bindings.up))
 			{
+				sprite.change_to("Moose/Moose1_run");
 				pos.xy.y -= SPEED_MOD * Time::delta_time();
 
 			}
 			else if (keys.is_down(bindings.down))
 			{
+				sprite.change_to("Moose/Moose1_run");
 				pos.xy.y += SPEED_MOD * Time::delta_time();
+
 			}
 			else if (keys.is_down(bindings.left))
 			{
+				flip = Flip::Horizontal;
+				sprite.change_to("Moose/Moose1_run");
 				pos.xy.x -= SPEED_MOD * Time::delta_time();
+
 			}
 			else if (keys.is_down(bindings.right))
 			{
+				flip = Flip::None;
+				sprite.change_to("Moose/Moose1_run");
 				pos.xy.x += SPEED_MOD * Time::delta_time();
+			}
+			else
+			{
+				sprite.change_to("Moose/Moose1_Idle");
 			}
 		}
 	}
@@ -203,12 +215,13 @@ struct Brawl : public Game
 
 	void on_start() override
 	{
-		auto pad_left = spawn()
+		auto player = spawn()
 							.with<Player>()
 							.with<Sprite>(ecs::no_entity)
-							.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
+							.with<SpriteAnimation>(Spritesheet::get_by_name("Moose/Moose1_Idle"))
 							.with<Position>(geometry::Vec2{400, 300})
 							.with<Visibility>(true)
+							.with<Flip>(None)
 							.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D)
 							.done();
 
@@ -221,14 +234,14 @@ struct Brawl : public Game
 		// 	.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN)
 		// 	.done();
 
-			for (auto i = 0; i < 4 ; ++i)
-				auto enemy = spawn()
-					.with<Sprite>(ecs::no_entity)
-					.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))
-					.with<Position>(geometry::Vec2{ 760 - 30*i, 60*i })
-					.with<Visibility>(true)
-					.with<Enemy>(geometry::Vec2{ 1, 0 })
-					.done();
+			// for (auto i = 0; i < 4 ; ++i)
+			// 	auto enemy = spawn()
+			// 		.with<Sprite>(ecs::no_entity)
+			// 		.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))
+			// 		.with<Position>(geometry::Vec2{ 760 - 30*i, 60*i })
+			// 		.with<Visibility>(true)
+			// 		.with<Enemy>(geometry::Vec2{ 1, 0 })
+			// 		.done();
 	}
 };
 

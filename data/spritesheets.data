@@ -1,2 +1,4 @@
 pong/ball: pong/ball.png.data
 pong/pad: pong/pad.png.data
+Moose/Moose1_Idle: Moose/Moose1_Idle.png.data
+Moose/Moose1_run: Moose/Moose1_run.png.data
