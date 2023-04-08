@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Player.h"
 #include "Prelude.h"
 #include "Random.h"
-#include "PlayerComponent.h"
+#include "Shuffle.h"
 
 using namespace core;
 
@@ -28,14 +29,14 @@ struct KeyBindings
 	KeyCode left, down, up, right;
 };
 
-static float fsignf(float x)
+static F32 fsignf(F32 x)
 {
 	if (x > 0.0f) return  1.0f;
 	if (x < 0.0f) return -1.0f;
 	else          return  0.0f;
 }
 
-static float fclampf(float x, float min, float max)
+static F32 fclampf(F32 x, F32 min, F32 max)
 {
 	if (x < min) return min;
 	if (x > max) return max;
@@ -91,9 +92,9 @@ struct MovementControlSystem
 	}
 };
 
-struct Pong : public Game
+struct PyramidPlunder : public Game
 {
-	Pong()
+	PyramidPlunder()
 	{
 		auto& engine = Engine::get_instance();
 		engine.use<MovementSystem>();
@@ -103,7 +104,7 @@ struct Pong : public Game
 	void on_start() override
 	{
 		auto player = spawn()
-			.with<Player>(HumanEyes, Map<SpecialBlindfold, U32>({{HumanEyes, INITIAL_VALUE}, {FoxEyes, INITIAL_VALUE}, {ScorpionEyes, INITIAL_VALUE}}))
+			.with<Player>(HumanEyes)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
 			.with<Position>(geometry::Vec2{ 40, 550 })
@@ -123,7 +124,7 @@ int main(int argc, char* argv[])
 
 	engine.setup<Default2D>();
 
-	Pong game;
+	PyramidPlunder game;
 	engine.run();
 
 	return 0;
