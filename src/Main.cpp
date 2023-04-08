@@ -27,6 +27,7 @@ struct Movement
 struct KeyBindings 
 {
 	KeyCode left, down, up, right;
+	KeyCode normal, fox_eyes, scorpion_eyes;
 };
 
 static F32 fsignf(F32 x)
@@ -92,11 +93,39 @@ struct MovementControlSystem
 	}
 };
 
+// TODO: move to separate file after refactoring Main.cpp and add signals to other components
+struct BlindfoldChangingSystem
+	: public ecs::System
+	, public MutAccessGroupStorage<Player, KeyBindings>
+{
+	void on_tick() override
+	{
+		const auto& keys = KeyState::get();
+
+		for (auto&& [entity, player, key_bindings] : access_storage().each())
+		{
+			if (keys.is_pressed(key_bindings.normal) && player.current_blindfold != HumanEyes)
+			{
+				player.current_blindfold = HumanEyes;
+			}
+			else if (keys.is_pressed(key_bindings.fox_eyes) && player.current_blindfold != FoxEyes && player.available_blindfolds[FoxEyes] != 0)
+			{
+				player.current_blindfold = FoxEyes;
+			}
+			else if (keys.is_pressed(key_bindings.scorpion_eyes) && player.current_blindfold != ScorpionEyes && player.available_blindfolds[ScorpionEyes] != 0)
+			{
+				player.current_blindfold = ScorpionEyes;
+			}
+		}
+	}
+};
+
 struct PyramidPlunder : public Game
 {
 	PyramidPlunder()
 	{
 		auto& engine = Engine::get_instance();
+		engine.use<BlindfoldChangingSystem>();
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
 	}
@@ -110,7 +139,7 @@ struct PyramidPlunder : public Game
 			.with<Position>(geometry::Vec2{ 40, 550 })
 			.with<Visibility>(true)
 			.with<Movement>(2000.0f, 50.0f)
-			.with<KeyBindings>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT)
+			.with<KeyBindings>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_A, KeyCode::KEY_S, KeyCode::KEY_D)
 			.done();
 	}
 };
