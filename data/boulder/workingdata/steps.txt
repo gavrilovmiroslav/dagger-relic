@@ -1,0 +1,11 @@
+cavas to 360*360
+center offset
+
+scale to 48*48
+interpolation nearest neighbour
+
+hue-saturation
+master:
+hue -11
+light -9,8
+saturation -8,5
