@@ -8,6 +8,8 @@
 #include "PushPlate.h"
 #include "FloorComponent.h"
 
+#include <iostream>
+
 #define TEXTURE_SIZE 48
 
 using namespace core;
@@ -19,7 +21,9 @@ struct Movement
 	geometry::Vec2 force;
 	F32            moveforce;
 
-	Movement(F32 moveforce, F32 velocitymax) : velocity(0.0f, 0.0f), moveforce(moveforce), velocitymax(velocitymax), force(0.0f, 0.0f) { }
+	F32            mass;
+
+	Movement(F32 moveforce, F32 velocitymax, F32 mass) : velocity(0.0f, 0.0f), moveforce(moveforce), velocitymax(velocitymax), force(0.0f, 0.0f), mass(mass) { }
 };
 
 struct KeyBindings 
@@ -41,6 +45,69 @@ static float fclampf(float x, float min, float max)
 	else         return x;
 }
 
+struct CollisionSquare
+{
+	I32 dimension;
+};
+
+struct CollisionSquareSystem
+	: public ecs::System
+	, public MutAccessGroupStorage<Position, Movement, CollisionSquare>
+{
+	void on_tick() override
+	{
+		for (auto&& [entity, pos, movement, collision] : access_storage().each())
+		{
+			//if (movement.velocity.x != 0.0f || movement.velocity.y != 0.0f)
+			{
+				for (auto&& [other_entity, other_pos, other_movement, other_collision] : access_storage().each())
+				{
+					if (entity <= other_entity)
+					{
+						continue;
+					}
+
+					if (pos.xy.x + collision.dimension > other_pos.xy.x &&
+						pos.xy.x                       < other_pos.xy.x + other_collision.dimension &&
+						pos.xy.y + collision.dimension > other_pos.xy.y &&
+						pos.xy.y                       < other_pos.xy.y + other_collision.dimension)
+					{
+						/* This is really not accurate... Too bad! */
+						F32 dvx = movement.velocity.x-other_movement.velocity.x;
+						F32 dvy = movement.velocity.y-other_movement.velocity.y;
+
+						other_movement.force.x -= (movement.mass*dvx)/1.0f;
+						other_movement.force.y -= (movement.mass*dvy)/1.0f;
+						movement.force.x       += (other_movement.mass*dvx)/1.0f;
+						movement.force.y       += (other_movement.mass*dvy)/1.0f;
+
+						if (movement.velocity.x > 0.0f)
+						{
+							pos.xy.x = other_pos.xy.x - collision.dimension;
+							movement.velocity.x = 0.0f;
+						}
+						else if (movement.velocity.x < 0.0f)
+						{
+							pos.xy.x = other_pos.xy.x + other_collision.dimension;
+							movement.velocity.x = 0.0f;
+						}
+						if (movement.velocity.y > 0.0f)
+						{
+							pos.xy.y = other_pos.xy.y - collision.dimension;
+							movement.velocity.y = 0.0f;
+						}
+						else if (movement.velocity.y < 0.0f)
+						{
+							pos.xy.y = other_pos.xy.y + other_collision.dimension;
+							movement.velocity.y = 0.0f;
+						}
+					}
+				}
+			}
+		}
+	}
+};
+
 struct MovementSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<Movement, Position>
@@ -49,8 +116,8 @@ struct MovementSystem
 	{
 		for (auto&& [entity, movement, pos] : access_storage().each())
 		{
-			F32 u = 16.0f;                              /* Friction coefficient. */
-			F32 m = 5.0f;                               /* Object mass (kg). */
+			F32 u = 0.8f;                               /* Friction coefficient. */
+			F32 m = movement.mass;                      /* Object mass (kg). */
 			F32 g = 9.807f;                             /* Gravity acceleration. */
 			F32 n = m*g;                                /* Normal force. */
 			F32 fnx = -fsignf(movement.velocity.x)*u*n; /* Friction force. */
@@ -114,8 +181,6 @@ struct MovementControlSystem
 			if (keys.is_down(keybinding.left))       movement.force.x = -movement.moveforce;
 			else if (keys.is_down(keybinding.right)) movement.force.x =  movement.moveforce;
 			else                                     movement.force.x -= fsignf(movement.force.x)*movement.moveforce;
-
-			spdlog::info("force: {} {}", movement.force.x, movement.force.y);
 		}
 	}
 };
@@ -130,6 +195,7 @@ struct Pong : public Game
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
 		engine.use<BoulderControlSystem>();
+		engine.use<CollisionSquareSystem>();
 
 		grid.resize(800/TEXTURE_SIZE+1);
 		for(int i=0;i<grid.size();i++)
@@ -160,30 +226,32 @@ struct Pong : public Game
 
 		auto box = spawn()
 				.with<Box>()
-				.with<Movement>(0, 2000)
+				.with<Movement>(0, 2000, 0.25f)
 				.with<Sprite>(ecs::no_entity, 0)
 				.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
 				.with<Visibility>(true)
-				.with<Position>(geometry::Vec2{ 600, 500 })
+				.with<Position>(geometry::Vec2{ 300, 500 })
+				.with<CollisionSquare>(32)
 				.done();
 
 		auto pushplate = spawn()
 				.with<PushPlate>()
-				.with<Movement>(0, 2000)
+				.with<Movement>(0, 0, 1.0f)
 				.with<Sprite>(ecs::no_entity, 0)
 				.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_1"))
 				.with<Visibility>(true)
 				.with<Position>(geometry::Vec2{ 100, 500 })
-				.with<PostProcessText>("active: no", geometry::Vec2{0, 0})
+				.with<PostProcessText>("active: no", geometry::Vec2{100, 548})
 				.done();
 
 		auto boulder = spawn()
 				.with<Boulder>()
-				.with<Movement>(1000, 2000)
+				.with<Movement>(1000, 2000, 50.0f)
 				.with<Sprite>(ecs::no_entity, 0)
 				.with<SpriteAnimation>(Spritesheet::get_by_name("boulder/boulder_r1"))
 				.with<Visibility>(true)
-				.with<Position>(geometry::Vec2{ 300, 500 })
+				.with<Position>(geometry::Vec2{ 500, 500 })
+				.with<CollisionSquare>(48)
 				.done();
 	}
 };
