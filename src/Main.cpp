@@ -3,6 +3,11 @@
 #include "Prelude.h"
 #include "Random.h"
 
+#include "RockComponent.h"
+#include "FloorComponent.h"
+
+#define TEXTURE_SIZE 48
+
 using namespace core;
 
 struct Movement 
@@ -62,6 +67,24 @@ struct MovementSystem
 	}
 };
 
+struct RockMovementSystem
+	: public ecs::System
+	, public MutAccessGroupStorage<Rock, Position>
+{
+	void on_tick() override
+	{
+		auto dy = 150.0f * Time::delta_time();
+		for (auto&& [entity, rock, pos] : access_storage().each())
+		{
+			if(rock.is_moving)
+			{
+				pos.xy.x+=rock.movement_direction.x*dy;
+				pos.xy.y+=rock.movement_direction.y*dy;
+			}
+		}
+	}
+};
+
 struct MovementControlSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<KeyBindings, Movement>
@@ -87,23 +110,49 @@ struct MovementControlSystem
 
 struct Pong : public Game
 {
+	DynamicArray<DynamicArray<FloorType>> grid;
+
 	Pong()
 	{
 		auto& engine = Engine::get_instance();
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
+		engine.use<RockMovementSystem>();
+
+		grid.resize(800/TEXTURE_SIZE+1);
+		for(int i=0;i<grid.size();i++)
+		{
+			grid[i].resize(600/TEXTURE_SIZE+1);
+			for(int j=0;j<grid[i].size();j++)
+			{
+				grid[i][j]=FT_Sand;
+			}
+		}
 	}
 
 	void on_start() override
 	{
-		auto ball = spawn()
-			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))
-			.with<Position>(geometry::Vec2{ 300, 100 })
-			.with<Visibility>(true)
-			.with<Movement>(2000.0f, 50.0f)
-			.with<KeyBindings>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT)
-			.done();
+		for(int i=0;i<grid.size();i++)
+		{
+			for(int j=0;j<grid[i].size();j++)
+			{
+				auto floor = spawn()
+						.with<Floor>(grid[i][j])
+						.with<Sprite>(ecs::no_entity)
+						.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/sand"))
+						.with<Visibility>(true)
+						.with<Position>(geometry::Vec2{TEXTURE_SIZE*i+25,TEXTURE_SIZE*j+25}) //idk, the screen starts at (25,25)
+						.done();
+			}
+		}
+
+		auto rock = spawn()
+				.with<Rock>()
+				.with<Sprite>(ecs::no_entity)
+				.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))  //to be replaced with texture of rock
+				.with<Visibility>(true)
+				.with<Position>(geometry::Vec2{ 300, 500 })
+				.done();
 	}
 };
 
