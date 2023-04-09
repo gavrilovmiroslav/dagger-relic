@@ -16,13 +16,11 @@ enum SpecialBlindfold
 struct Player
 {
 	Bool is_pushing;
-	Bool all_push_plates_checked;
 	SpecialBlindfold current_blindfold;
 	Map<SpecialBlindfold, U32> available_blindfolds;
 
 	Player(SpecialBlindfold blindfold)
 		: is_pushing(false)
-		, all_push_plates_checked(false)
 		, current_blindfold(blindfold)
 	{
 		DynamicArray<SpecialBlindfold> blindfolds = {};
