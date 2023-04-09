@@ -49,6 +49,7 @@ enum Direction
 {
 	DIR_Left, DIR_Down, DIR_Up, DIR_Right
 };
+using tid = std::uint32_t;
 
 namespace geometry {
 	using Vec2 = glm::vec2;
