@@ -4,6 +4,8 @@
 #include "Random.h"
 
 #include "Boulder.h"
+#include "Box.h"
+#include "PushPlate.h"
 #include "FloorComponent.h"
 
 #define TEXTURE_SIZE 48
@@ -158,6 +160,25 @@ struct Pong : public Game
 			}
 		}
 
+		auto box = spawn()
+				.with<Box>()
+				.with<Movement>(0, 2000)
+				.with<Sprite>(ecs::no_entity, 0)
+				.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
+				.with<Visibility>(true)
+				.with<Position>(geometry::Vec2{ 600, 500 })
+				.done();
+
+		auto pushplate = spawn()
+				.with<PushPlate>()
+				.with<Movement>(0, 2000)
+				.with<Sprite>(ecs::no_entity, 0)
+				.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_1"))
+				.with<Visibility>(true)
+				.with<Position>(geometry::Vec2{ 100, 500 })
+				.with<PostProcessText>("active: no", geometry::Vec2{0, 0})
+				.done();
+
 		auto boulder = spawn()
 				.with<Boulder>()
 				.with<Movement>(1000, 2000)
@@ -176,6 +197,7 @@ int main(int argc, char* argv[])
 	engine.configure(filePath.data(), argc, argv);
 
 	engine.setup<Default2D>();
+	engine.setup<PostProcess2D>();
 
 	Pong game;
 	engine.run();
