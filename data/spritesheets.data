@@ -1,3 +1,11 @@
 pong/ball: pong/ball.png.data
 pong/pad: pong/pad.png.data
 pyramidplunder/sand: pyramidplunder/sand.png.data
+boulder/boulder_r1: boulder/boulder_r1.png.data
+boulder/boulder_r2: boulder/boulder_r2.png.data
+boulder/boulder_r3: boulder/boulder_r3.png.data
+boulder/boulder_r4: boulder/boulder_r4.png.data
+boulder/boulder_r5: boulder/boulder_r5.png.data
+boulder/boulder_r6: boulder/boulder_r6.png.data
+boulder/boulder_r7: boulder/boulder_r7.png.data
+boulder/boulder_r8: boulder/boulder_r8.png.data

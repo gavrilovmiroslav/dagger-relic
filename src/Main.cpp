@@ -3,7 +3,7 @@
 #include "Prelude.h"
 #include "Random.h"
 
-#include "RockComponent.h"
+#include "Boulder.h"
 #include "FloorComponent.h"
 
 #define TEXTURE_SIZE 48
@@ -67,19 +67,31 @@ struct MovementSystem
 	}
 };
 
-struct RockMovementSystem
+struct BoulderControlSystem
 	: public ecs::System
-	, public MutAccessGroupStorage<Rock, Position>
+	, public MutAccessGroupStorage<Boulder, Movement>
 {
 	void on_tick() override
 	{
-		auto dy = 150.0f * Time::delta_time();
-		for (auto&& [entity, rock, pos] : access_storage().each())
+		for (auto&& [entity, boulder, movement] : access_storage().each())
 		{
-			if(rock.is_moving)
+			switch (boulder.direction)
 			{
-				pos.xy.x+=rock.movement_direction.x*dy;
-				pos.xy.y+=rock.movement_direction.y*dy;
+				case DIR_Left:
+				movement.force.x = -movement.moveforce;
+				break;
+
+				case DIR_Right:
+				movement.force.x = movement.moveforce;
+				break;
+
+				case DIR_Up:
+				movement.force.y = -movement.moveforce;
+				break;
+
+				case DIR_Down:
+				movement.force.y = movement.moveforce;
+				break;
 			}
 		}
 	}
@@ -117,7 +129,7 @@ struct Pong : public Game
 		auto& engine = Engine::get_instance();
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
-		engine.use<RockMovementSystem>();
+		engine.use<BoulderControlSystem>();
 
 		grid.resize(800/TEXTURE_SIZE+1);
 		for(int i=0;i<grid.size();i++)
@@ -138,7 +150,7 @@ struct Pong : public Game
 			{
 				auto floor = spawn()
 						.with<Floor>(grid[i][j])
-						.with<Sprite>(ecs::no_entity)
+						.with<Sprite>(ecs::no_entity, -999)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/sand"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{TEXTURE_SIZE*i+25,TEXTURE_SIZE*j+25}) //idk, the screen starts at (25,25)
@@ -146,10 +158,11 @@ struct Pong : public Game
 			}
 		}
 
-		auto rock = spawn()
-				.with<Rock>()
-				.with<Sprite>(ecs::no_entity)
-				.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))  //to be replaced with texture of rock
+		auto boulder = spawn()
+				.with<Boulder>()
+				.with<Movement>(1000, 2000)
+				.with<Sprite>(ecs::no_entity, 0)
+				.with<SpriteAnimation>(Spritesheet::get_by_name("boulder/boulder_r1"))
 				.with<Visibility>(true)
 				.with<Position>(geometry::Vec2{ 300, 500 })
 				.done();

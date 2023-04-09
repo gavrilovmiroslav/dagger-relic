@@ -16,7 +16,7 @@ enum Flip
 struct Sprite
 {
 	ecs::Entity texture;
-	I32 depth;
+	I32 depth = -1;
 	geometry::Rect clip;
 	geometry::Vec2 pivot{ 0.5f, 0.5f };
 };
