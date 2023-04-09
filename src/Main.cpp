@@ -22,64 +22,60 @@ struct SWMG : public Game {
 
 	void on_start() override
 	{
-		auto pickup1 = spawn()
-			.with<Pickup>("curseball" ,32)
-			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
-			.with<Position>(geometry::Vec2{ 600, 570 })
-			.with<Visibility>(true);
-
-		auto pickup2 = spawn()
-			.with<Pickup>("curseball" ,32)
-			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
-			.with<Position>(geometry::Vec2{ 200, 400 })
-			.with<Visibility>(true);
+		for (int i = 0; i < 100; i++)
+		{
+			spawn()
+				.with<Pickup>("curseball" , 32.0f)
+				.with<Sprite>(ecs::no_entity)
+				.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
+				.with<Position>(geometry::Vec2{ rand() % 600, rand() % 570 })
+				.with<Visibility>(true);
+		}
 	
 		auto platform1 = spawn()
-			.with<Platform>(128, 4)
+			.with<Platform>(128.0f, 4.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/platform"))
 			.with<Position>(geometry::Vec2{ 400, 550 })
 			.with<Visibility>(true);
 
 		auto platform2 = spawn()
-			.with<Platform>(128, 4)
+			.with<Platform>(128.0f, 4.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/platform"))
 			.with<Position>(geometry::Vec2{ 200, 450 })
 			.with<Visibility>(true);
 
 		auto platform3 = spawn()
-			.with<Platform>(128, 4)
+			.with<Platform>(128.0f, 4.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/platform"))
 			.with<Position>(geometry::Vec2{ 300, 500 })
 			.with<Visibility>(true);
 
 		auto platform4 = spawn()
-			.with<Platform>(128, 4)
+			.with<Platform>(128.0f, 4.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/platform"))
 			.with<Position>(geometry::Vec2{ 450, 450 })
 			.with<Visibility>(true);
 
 		auto platform5 = spawn()
-			.with<Platform>(128, 4)
+			.with<Platform>(128.0f, 4.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/platform"))
 			.with<Position>(geometry::Vec2{ 600, 400 })
 			.with<Visibility>(true);		
 
 		auto ground = spawn()
-			.with<Platform>(SCREEN_WIDTH, 4)
+			.with<Platform>((F32)SCREEN_WIDTH, 4.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/platform"))
 			.with<Position>(geometry::Vec2{ SCREEN_WIDTH / 2, SCREEN_HEIGHT })
 			.with<Visibility>(true);
 
 		auto player_one = spawn()
-			.with<Player>(false, 0, 0)
+			.with<Player>(false, 0.0f, 0.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
 			.with<Position>(geometry::Vec2{ 50, 600 - 32})
@@ -90,7 +86,7 @@ struct SWMG : public Game {
 			.done();
 
 		auto player_two = spawn()
-			.with<Player>(false, 0, 0)
+			.with<Player>(false, 0.0f, 0.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
 			.with<Position>(geometry::Vec2{ 750, 600 - 32})

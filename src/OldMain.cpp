@@ -83,9 +83,11 @@ struct BallMovementSystem
 {
 	virtual void process_signal(PadCollisionSignal& signal)
 	{
-		auto& ball = MutAccessComponentById<Ball>::get(signal.ball);
-		ball.speed.x *= -1;
-		ball.speed.y = get_random(-0.8f, 0.8f);
+		if (auto ball = MutAccessComponentById<Ball>::get(signal.ball))
+		{
+			*ball.speed.x *= -1;
+			*ball.speed.y = get_random(-0.8f, 0.8f);
+		}
 	}
 
 	void on_tick() override

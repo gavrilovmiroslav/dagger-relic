@@ -71,21 +71,45 @@ struct AccessUnique : public AccessTrait
 	}
 };
 
+struct AccessEntityValidity : public AccessTrait
+{
+	bool is_ok(ecs::Entity e) const 
+	{
+		return core::Engine::get_instance().registry.valid(e);
+	}
+};
+
 template<typename T>
 struct AccessComponentById : public AccessTrait
 {
-	const T& get(ecs::Entity e) const 
+	const T* get(ecs::Entity e) const
 	{
-		return core::Engine::get_instance().registry.get<const T>(e);
+		auto& registry = core::Engine::get_instance().registry;
+		if (registry.valid(e))
+		{
+			return &registry.get<const T>(e);
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 };
 
 template<typename T>
 struct MutAccessComponentById : public AccessTrait
 {
-	T& get(ecs::Entity e) const
+	T* get(ecs::Entity e) const
 	{
-		return core::Engine::get_instance().registry.get<T>(e);
+		auto& registry = core::Engine::get_instance().registry;
+		if (registry.valid(e))
+		{
+			return &registry.get<T>(e);
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 };
 
