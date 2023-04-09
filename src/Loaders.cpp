@@ -30,7 +30,8 @@ memory::RawPtr<Texture> TextureLoader::load_texture(String path)
 
 	auto* surface = IMG_Load(path.c_str());
 	texture->inner = SDL_CreateTextureFromSurface(state.renderer, surface);
-	
+	SDL_FreeSurface(surface);
+
 	Logger::info("Loading complete");
 	
 	return texture;
