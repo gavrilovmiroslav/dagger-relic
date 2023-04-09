@@ -243,14 +243,14 @@ struct Brawl : public Game
 		// 	.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN)
 		// 	.done();
 
-			// for (auto i = 0; i < 4 ; ++i)
-			// 	auto enemy = spawn()
-			// 		.with<Sprite>(ecs::no_entity)
-			// 		.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))
-			// 		.with<Position>(geometry::Vec2{ 760 - 30*i, 60*i })
-			// 		.with<Visibility>(true)
-			// 		.with<Enemy>(geometry::Vec2{ 1, 0 })
-			// 		.done();
+			for (auto i = 0; i < 4 ; ++i)
+				auto enemy = spawn()
+					.with<Sprite>(ecs::no_entity)
+					.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
+					.with<Position>(geometry::Vec2{ 760 - 30*i, 60*i })
+					.with<Visibility>(true)
+					.with<Enemy>(geometry::Vec2{ 1, 0 })
+					.done();
 	}
 };
 
