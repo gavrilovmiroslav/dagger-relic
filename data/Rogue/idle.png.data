@@ -1,0 +1,55 @@
+texture: Rogue/idle
+dimensions: 1, 1
+sprites: 13
+
+clip: 0, 0, 128, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 128, 0, 128, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 256, 0, 128, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 0, 128, 128, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 256, 0, 128, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 0, 128, 128, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 256, 0, 128, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 128, 0, 128, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 128, 128, 128, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 256, 128, 128, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 128, 128, 128, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 256, 128, 128, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 128, 128, 128, 128
+pivot: 1, 1
+scale: 1, 1

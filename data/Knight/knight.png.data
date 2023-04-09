@@ -4,4 +4,4 @@ sprites: 1
 
 clip: 0, 0, 128, 128
 pivot: 1, 1
-scale: 1, 10
+scale: 1, 1
