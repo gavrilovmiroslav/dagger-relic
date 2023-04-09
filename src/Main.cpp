@@ -8,6 +8,7 @@
 
 using namespace core;
 
+
 struct PlayerCollisionSignal {
 	ecs::Entity enemy;
 	ecs::Entity player;
@@ -33,6 +34,7 @@ struct KeyBindings
 	KeyCode down;
 	KeyCode left;
 	KeyCode right;
+	KeyCode attack_j;
 };
 
 struct PhysicsSystem
@@ -195,6 +197,12 @@ struct PlayerControlsSystem
 				sprite.change_to("Moose/Moose1_run");
 				pos.xy.x += SPEED_MOD * Time::delta_time();
 			}
+			else if(keys.is_down(bindings.attack_j))
+			{
+				sprite.change_to("Moose/Moose1_attack_all_effects");
+
+
+			}
 			else
 			{
 				sprite.change_to("Moose/Moose1_Idle");
@@ -222,7 +230,8 @@ struct Brawl : public Game
 							.with<Position>(geometry::Vec2{400, 300})
 							.with<Visibility>(true)
 							.with<Flip>(None)
-							.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D)
+							.with<AnimationSpeedController>(15.0f)
+							.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D, KeyCode::KEY_J)
 							.done();
 
 		// auto pad_right = spawn()
