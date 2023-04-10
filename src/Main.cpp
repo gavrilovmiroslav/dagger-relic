@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Algebra.h"
+#include "Player.h"
 #include "Prelude.h"
 #include "Random.h"
-#include "Algebra.h"
 
 using namespace core;
 
@@ -13,12 +14,20 @@ struct Movement
 	geometry::Vec2 force;
 	F32            move_force;
 
-	Movement(F32 move_force, F32 velocity_max) : velocity(0.0f, 0.0f), move_force(move_force), velocity_max(velocity_max), force(0.0f, 0.0f) { }
+	Movement(F32 move_force, F32 velocity_max) 
+		: velocity(0.0f, 0.0f)
+		, move_force(move_force)
+		, velocity_max(velocity_max)
+		, force(0.0f, 0.0f) 
+	{ 
+
+	}
 };
 
 struct KeyBinding 
 {
 	KeyCode left, down, up, right;
+	KeyCode blindfold_change;
 };
 
 struct MovementSystem
@@ -102,11 +111,39 @@ struct MovementControlSystem
 	}
 };
 
+// TODO: move to separate file after refactoring Main.cpp and add signals to other components
+struct BlindfoldChangingSystem
+	: public ecs::System
+	, public MutAccessGroupStorage<Player, KeyBinding>
+{
+	void on_tick() override
+	{
+		const auto& keys = KeyState::get();
+
+		U32 counter = 0;
+		StaticArray<SpecialBlindfold, 3> blindfolds = { SpecialBlindfold::HumanEyes, SpecialBlindfold::FoxEyes, SpecialBlindfold::ScorpionEyes };
+
+		for (auto&& [entity, player, key_binding] : access_storage().each())
+		{
+			SpecialBlindfold new_blindfold;
+			if (keys.is_pressed(key_binding.blindfold_change))
+			{
+				counter++;
+				new_blindfold = blindfolds[counter % 3];
+
+				if (player.available_blindfolds[new_blindfold] != 0)
+					player.current_blindfold = new_blindfold;
+			}
+		}
+	}
+};
+
 struct PyramidPlunder : public Game
 {
 	PyramidPlunder()
 	{
 		auto& engine = Engine::get_instance();
+		engine.use<BlindfoldChangingSystem>();
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
 		engine.use<ClickControlSystem>();
@@ -114,13 +151,14 @@ struct PyramidPlunder : public Game
 
 	void on_start() override
 	{
-		auto ball = spawn()
+		auto player = spawn()
+			.with<Player>(SpecialBlindfold::HumanEyes)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
-			.with<Position>(geometry::Vec2{ 300, 100 })
 			.with<Visibility>(true)
+			.with<Position>(geometry::Vec2{ 300, 100 })
 			.with<Movement>(2000.0f, 50.0f)
-			.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT)
+			.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
 			.done();
 	}
 };
