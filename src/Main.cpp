@@ -14,12 +14,14 @@ struct Movement
 	F32            move_force;
 
 	Movement(F32 move_force, F32 velocity_max) : velocity(0.0f, 0.0f), move_force(move_force), velocity_max(velocity_max), force(0.0f, 0.0f) { }
+
 };
 
 struct KeyBinding 
 {
 	KeyCode left, down, up, right;
 };
+
 
 struct MovementSystem
 	: public ecs::System
@@ -56,6 +58,7 @@ struct ClickControlSystem
 		if (key.is_down(KeyCode::KEY_ESCAPE))
 		{
 			Engine::get_instance().quit();
+
 		}
 
 	}
