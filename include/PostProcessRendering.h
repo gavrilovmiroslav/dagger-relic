@@ -23,6 +23,12 @@ struct PostProcessText
 	geometry::Vec2 position;
 };
 
+struct PostProcessSquare
+{
+	U32            dimension;
+	geometry::Vec2 position;
+};
+
 struct PostProcessTest
 {
 	U32 magic = 0; /* Define test number. */
@@ -48,6 +54,14 @@ class PostProcessLineRenderingModule
 class PostProcessTextRenderingModule
 	: public ecs::System
 	, public AccessStorage<PostProcessText>
+	, public SignalProcessor<core::PostProcessRenderSignal>
+{
+	void process_signal(core::PostProcessRenderSignal& signal) override;
+};
+
+class PostProcessSquareRenderingModule
+	: public ecs::System
+	, public AccessStorage<PostProcessSquare>
 	, public SignalProcessor<core::PostProcessRenderSignal>
 {
 	void process_signal(core::PostProcessRenderSignal& signal) override;

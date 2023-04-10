@@ -179,6 +179,22 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
 	}
 }
 
+void PostProcessSquareRenderingModule::process_signal(core::PostProcessRenderSignal& signal)
+{
+	for (const auto&& [ entity, square ] : AccessStorage<PostProcessSquare>::access_storage().each())
+	{
+		U32 x, y;
+
+		for (y = (U32) square.position.y; y < (U32) square.position.y + square.dimension; y++)
+		{
+			for (x = (U32) square.position.x; x < (U32) square.position.x + square.dimension; x++)
+			{
+				signal.pixels[y * signal.w + x] = 0x10ff10a0;
+			}
+		}
+	}
+}
+
 /*
  * Character width: 6, height: 11, total characters: 224, first character: ascii 32.
  * Each line defines 2 characters, every character is made from 11 'U8' bitmasks.

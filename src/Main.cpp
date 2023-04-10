@@ -16,14 +16,8 @@ using namespace core;
 
 struct Movement 
 {
-	geometry::Vec2 velocity;
-	geometry::Vec2 velocitymax;
-	geometry::Vec2 force;
-	F32            moveforce;
-
-	F32            mass;
-
-	Movement(F32 moveforce, F32 velocitymax, F32 mass) : velocity(0.0f, 0.0f), moveforce(moveforce), velocitymax(velocitymax), force(0.0f, 0.0f), mass(mass) { }
+	F32 velocity_x;
+	F32 velocity_y;
 };
 
 struct KeyBindings 
@@ -48,6 +42,9 @@ static float fclampf(float x, float min, float max)
 struct CollisionSquare
 {
 	I32 dimension;
+	I32 offset_x;
+	I32 offset_y;
+	bool pushable;
 };
 
 struct CollisionSquareSystem
@@ -58,28 +55,42 @@ struct CollisionSquareSystem
 	{
 		for (auto&& [entity, pos, movement, collision] : access_storage().each())
 		{
-			//if (movement.velocity.x != 0.0f || movement.velocity.y != 0.0f)
+			if (movement.velocity_x != 0.0f || movement.velocity_y != 0.0f)
 			{
 				for (auto&& [other_entity, other_pos, other_movement, other_collision] : access_storage().each())
 				{
-					if (entity <= other_entity)
+					if (entity == other_entity)
 					{
 						continue;
 					}
 
-					if (pos.xy.x + collision.dimension > other_pos.xy.x &&
-						pos.xy.x                       < other_pos.xy.x + other_collision.dimension &&
-						pos.xy.y + collision.dimension > other_pos.xy.y &&
-						pos.xy.y                       < other_pos.xy.y + other_collision.dimension)
+					if (other_collision.pushable == false &&
+					    pos.xy.x + collision.dimension + collision.offset_x > other_pos.xy.x + other_collision.offset_x                             &&
+						pos.xy.x + collision.offset_x                       < other_pos.xy.x + other_collision.offset_x + other_collision.dimension &&
+						pos.xy.y + collision.dimension + collision.offset_y > other_pos.xy.y + other_collision.offset_y &&
+						pos.xy.y + collision.offset_x                       < other_pos.xy.y + other_collision.offset_y + other_collision.dimension)
 					{
-						/* This is really not accurate... Too bad! */
-						F32 dvx = movement.velocity.x-other_movement.velocity.x;
-						F32 dvy = movement.velocity.y-other_movement.velocity.y;
-
-						other_movement.force.x = (movement.mass*dvx)/0.1f;
-						other_movement.force.y = (movement.mass*dvy)/0.1f;
-						movement.force.x       = (other_movement.mass*dvx)/0.1f;
-						movement.force.y       = (other_movement.mass*dvy)/0.1f;
+						if (movement.velocity_x > 0.0f)
+						{
+							pos.xy.x = other_pos.xy.x;
+							movement.velocity_x = 0.0f;
+						}
+						else if (movement.velocity_x < 0.0f)
+						{
+							pos.xy.x = other_pos.xy.x + other_collision.dimension;
+							movement.velocity_x = 0.0f;
+						}
+						
+						else if (movement.velocity_y > 0.0f)
+						{
+							pos.xy.y = other_pos.xy.y + other_collision.dimension;
+							movement.velocity_y = 0.0f;
+						}
+						else if (movement.velocity_y < 0.0f)
+						{
+							pos.xy.y = other_pos.xy.y;
+							movement.velocity_y = 0.0f;
+						}
 					}
 				}
 			}
@@ -95,20 +106,22 @@ struct MovementSystem
 	{
 		for (auto&& [entity, movement, pos] : access_storage().each())
 		{
-			F32 u = 6.2f;                               /* Friction coefficient. */
-			F32 m = movement.mass;                      /* Object mass (kg). */
-			F32 g = 9.807f;                             /* Gravity acceleration. */
-			F32 n = m*g;                                /* Normal force. */
-			F32 fnx = -fsignf(movement.velocity.x)*u*n; /* Friction force. */
-			F32 fny = -fsignf(movement.velocity.y)*u*n; 
-			F32 fx  = fnx+movement.force.x;             /* Total force. */
-			F32 fy  = fny+movement.force.y;
+			pos.xy.x += movement.velocity_x*Time::delta_time();
+			pos.xy.y += movement.velocity_y*Time::delta_time();
+		}
+	}
+};
 
-			pos.xy              += movement.velocity*Time::delta_time();
-			movement.velocity.x += (fx/m)*Time::delta_time();
-			movement.velocity.y += (fy/m)*Time::delta_time();
-			movement.velocity.x = fclampf(movement.velocity.x, -movement.velocitymax.x, movement.velocitymax.x);
-			movement.velocity.y = fclampf(movement.velocity.y, -movement.velocitymax.y, movement.velocitymax.y);
+struct DebugSquareSystem
+	: public ecs::System
+	, public MutAccessGroupStorage<Position, CollisionSquare, PostProcessSquare>
+{
+	void on_tick() override
+	{
+		for (auto&& [entity, pos, coll, square] : access_storage().each())
+		{
+			square.position.x = pos.xy.x + coll.offset_x;
+			square.position.y = pos.xy.y + coll.offset_x;
 		}
 	}
 };
@@ -124,19 +137,19 @@ struct BoulderControlSystem
 			switch (boulder.direction)
 			{
 				case DIR_Left:
-				movement.force.x = -movement.moveforce;
+				movement.velocity_x = -64.0f;
 				break;
 
 				case DIR_Right:
-				movement.force.x = movement.moveforce;
+				movement.velocity_x = 64.0f;
 				break;
 
 				case DIR_Up:
-				movement.force.y = -movement.moveforce;
+				movement.velocity_y = -64.0f;
 				break;
 
 				case DIR_Down:
-				movement.force.y = movement.moveforce;
+				movement.velocity_y = 64.0f;
 				break;
 			}
 		}
@@ -153,13 +166,13 @@ struct MovementControlSystem
 
 		for (auto&& [entity, keybinding, movement] : access_storage().each())
 		{
-			if (keys.is_down(keybinding.up))         movement.force.y = -movement.moveforce;
-			else if (keys.is_down(keybinding.down))  movement.force.y =  movement.moveforce;
-			else                                     movement.force.y -= fsignf(movement.force.y)*movement.moveforce;
+			if (keys.is_down(keybinding.up))         movement.velocity_y = -50.0f;
+			else if (keys.is_down(keybinding.down))  movement.velocity_y =  50.0f;
+			else                                     movement.velocity_y =  0.0f;
 
-			if (keys.is_down(keybinding.left))       movement.force.x = -movement.moveforce;
-			else if (keys.is_down(keybinding.right)) movement.force.x =  movement.moveforce;
-			else                                     movement.force.x -= fsignf(movement.force.x)*movement.moveforce;
+			if (keys.is_down(keybinding.left))       movement.velocity_x = -50.0f;
+			else if (keys.is_down(keybinding.right)) movement.velocity_x =  50.0f;
+			else                                     movement.velocity_x =  0.0f;
 		}
 	}
 };
@@ -175,6 +188,7 @@ struct Pong : public Game
 		engine.use<MovementControlSystem>();
 		engine.use<BoulderControlSystem>();
 		engine.use<CollisionSquareSystem>();
+		engine.use<DebugSquareSystem>();
 
 		grid.resize(800/TEXTURE_SIZE+1);
 		for(int i=0;i<grid.size();i++)
@@ -203,29 +217,41 @@ struct Pong : public Game
 			}
 		}
 
-		auto box2 = spawn()
+		auto player = spawn()
 				.with<KeyBindings>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT)
-				.with<Movement>(3000, 3000, 25.0f)
+				.with<Movement>()
 				.with<Sprite>(ecs::no_entity, 0)
 				.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
 				.with<Visibility>(true)
 				.with<Position>(geometry::Vec2{ 300, 300 })
-				.with<CollisionSquare>(32)
+				.with<CollisionSquare>(32, 8, 8, false)
+				.with<PostProcessSquare>(32u, geometry::Vec2{ 0, 0 })
 				.done();
 
-		auto box = spawn()
+		auto boxwall = spawn()
 				.with<Box>()
-				.with<Movement>(0, 3000, 10.0f)
+				.with<Movement>()
 				.with<Sprite>(ecs::no_entity, 0)
 				.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
 				.with<Visibility>(true)
 				.with<Position>(geometry::Vec2{ 300, 500 })
-				.with<CollisionSquare>(32)
+				.with<CollisionSquare>(32, 8, 8, false)
+				.with<PostProcessSquare>(32u, geometry::Vec2{ 0, 0 })
+				.done();
+		auto boxwalla2 = spawn()
+				.with<Box>()
+				.with<Movement>()
+				.with<Sprite>(ecs::no_entity, 0)
+				.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
+				.with<Visibility>(true)
+				.with<Position>(geometry::Vec2{ 300, 400 })
+				.with<CollisionSquare>(32, 8, 8, false)
+				.with<PostProcessSquare>(32u, geometry::Vec2{ 0, 0 })
 				.done();
 
 		auto pushplate = spawn()
 				.with<PushPlate>()
-				.with<Movement>(0, 0, 1.0f)
+				.with<Movement>()
 				.with<Sprite>(ecs::no_entity, 0)
 				.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_1"))
 				.with<Visibility>(true)
@@ -235,12 +261,12 @@ struct Pong : public Game
 
 		auto boulder = spawn()
 				.with<Boulder>()
-				.with<Movement>(1000, 3000, 50.0f)
+				.with<Movement>()
 				.with<Sprite>(ecs::no_entity, 0)
 				.with<SpriteAnimation>(Spritesheet::get_by_name("boulder/boulder_r1"))
 				.with<Visibility>(true)
 				.with<Position>(geometry::Vec2{ 500, 500 })
-				.with<CollisionSquare>(48)
+				//.with<CollisionSquare>(48, false)
 				.done();
 	}
 };

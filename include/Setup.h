@@ -44,5 +44,6 @@ struct PostProcess2D
 		engine.use<PostProcessTestRenderingModule>();
 		engine.use<PostProcessLineRenderingModule>();
 		engine.use<PostProcessTextRenderingModule>();
+		engine.use<PostProcessSquareRenderingModule>();
 	}
 };
