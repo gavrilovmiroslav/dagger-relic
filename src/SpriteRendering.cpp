@@ -32,7 +32,7 @@ void SpriteRenderingModule::process_signal(RenderSignal& signal)
 		if (!show_storage.contains(entity)) continue;
 
 		const auto& pos = position_storage.contains(entity) ? position_storage.get<Position>(entity) : Position{ geometry::Vec2{ 0, 0 } };
-		const auto& scale = scale_storage.contains(entity) ? scale_storage.get<Scale>(entity) : Scale{ geometry::Vec2{ 1, 1 } };
+		const auto& scale = scale_storage.contains(entity) ? scale_storage.get<Scale>(entity) : Scale{ geometry::Vec2{ 2.0f, 2.0f } };
 		const auto& flip = flip_storage.contains(entity) ? flip_storage.get<Flip>(entity) : Flip::None;
 	
 		const auto& texture = textures.get<Texture>(sprite.texture);

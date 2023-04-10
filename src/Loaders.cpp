@@ -355,6 +355,9 @@ ecs::Entity SpritesheetLoader::load_asset(String spritesheet_name, String sprite
 		sprite.pivot.x = pivot[0];
 		sprite.pivot.y = pivot[1];
 
+		sprite.scale.x = scale[0];
+		sprite.scale.x = scale[0];
+
 		auto entity = registry.create();
 		registry.emplace<Sprite>(entity, sprite);
 		registry.emplace<I32>(entity, index);

@@ -4,32 +4,32 @@ sprites: 8
 
 clip: 0, 0, 64, 32
 pivot: 0.5, 0.5
-scale: 3, 3
+scale: 2.0, 2.0
 
 clip: 64, 0, 64, 32
 pivot: 0.5, 0.5
-scale: 3, 3
+scale: 2.0, 2.0
 
 clip: 128, 0, 64, 32
 pivot: 0.5, 0.5
-scale: 3, 3
+scale: 2.0, 2.0
 
 clip: 192, 0, 64, 32
 pivot: 0.5, 0.5
-scale: 3, 3
+scale: 2.0, 2.0
 
 clip: 256, 0, 64, 32
 pivot: 0.5, 0.5
-scale: 3, 3
+scale: 2.0, 2.0
 
 clip: 320, 0, 64, 32
 pivot: 0.5, 0.5
-scale: 3, 3
+scale: 2.0, 2.0
 
 clip: 384, 0, 64, 32
 pivot: 0.5, 0.5
-scale: 3, 3
+scale: 2.0, 2.0
 
 clip: 448, 0, 64, 32
 pivot: 0.5, 0.5
-scale: 3, 3
+scale: 2.0, 2.0
