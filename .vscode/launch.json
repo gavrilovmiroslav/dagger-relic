@@ -21,7 +21,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "Meson: Build dagger"
+            "preLaunchTask": "Meson: Build Unix"
         },
         {
             "name": "Dagger (Windows)",
@@ -32,7 +32,7 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "preLaunchTask": "Meson: Build dagger"
+            "preLaunchTask": "Meson: Build Windows"
         },
         {
             "name": "Dagger (macOS)",
@@ -44,7 +44,7 @@
             "cwd": "${workspaceFolder}",
             "environment": [],
             "MIMode": "lldb",
-            "preLaunchTask": "Meson: Build dagger"
+            "preLaunchTask": "Meson: Build Unix"
         }
     ]
 }
