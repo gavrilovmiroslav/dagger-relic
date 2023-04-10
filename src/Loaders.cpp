@@ -1,5 +1,4 @@
 #include "Loaders.h"
-
 #include "Assets.h"
 #include "Definitions.h"
 #include "Engine.h"
@@ -11,11 +10,10 @@
 #include "Windowing.h"
 #include "Textures.h"
 
-#include <LodePNG.h>
 #include <SDL.h>
+#include <SDL_image.h>
 
 #include <algorithm>
-
 
 // Texture loader
 
@@ -30,66 +28,9 @@ memory::RawPtr<Texture> TextureLoader::load_texture(String path)
 	auto& state = MutAccessUnique<core::WindowingState>::access_unique();
 	auto* texture = new Texture();
 
-	U32 error;
-	U32 width, height;
-	U32 channelsInFile = 4;
-	std::vector<U8> data;
-
-	auto filepath = path.c_str();
-	RawPtr<U8> ptr;
-
-	error = lodepng_decode32_file(&ptr, &width, &height, filepath);
-	Logger::info("[LODE] W: {}, H: {}, C: {}", width, height, channelsInFile);
-
-	if (error) {
-		Logger::error("[LODE] Decoder error {}: {}\n", error, lodepng_error_text(error));
-		delete texture;
-		return nullptr;
-	}
-
-	auto dataLength = width * height * sizeof(U32);
-	Logger::info("[LODE] Expected: {}", dataLength);
-
-	data.reserve(dataLength);
-	for (int i = 0; i < dataLength; i++)
-	{
-		data.push_back(ptr[i]);
-	}
-
-	if (ptr != nullptr)
-		free(ptr);
-
-	Logger::info("Creating texture.");
-
-	texture->inner = SDL_CreateTexture(state.renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
-	Logger::info("Creating underlying texture storage.");
-
-	auto* pixels = (RawPtr<U32>)malloc(width * height * sizeof(U32));
-	if (!pixels)
-	{
-		Logger::info("Failed to allocate pixels");
-		delete texture;
-		return nullptr;
-	}
-
-	Logger::info("Filling pixel data");
-	for (U32 y = 0; y < height; y++)
-	{
-		for (U32 x = 0; x < width; x++)
-		{
-			auto fy = 4 * y * width;
-			auto fx = 4 * x;
-			auto fs = fx + fy;
-
-			pixels[(y * width + x)] = 65536 * data[fs + 0] + 256 * data[fs + 1] + data[fs + 2];
-		}
-	}
-
-	Logger::info("Updating texture");
-	SDL_UpdateTexture(texture->inner, nullptr, pixels, width * sizeof(U32));
-
-	Logger::info("Freeing texture storage");
-	free(pixels);
+	auto* surface = IMG_Load(path.c_str());
+	texture->inner = SDL_CreateTextureFromSurface(state.renderer, surface);
+	SDL_FreeSurface(surface);
 
 	Logger::info("Loading complete");
 	
