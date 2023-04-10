@@ -76,31 +76,10 @@ struct CollisionSquareSystem
 						F32 dvx = movement.velocity.x-other_movement.velocity.x;
 						F32 dvy = movement.velocity.y-other_movement.velocity.y;
 
-						other_movement.force.x -= (movement.mass*dvx)/1.0f;
-						other_movement.force.y -= (movement.mass*dvy)/1.0f;
-						movement.force.x       += (other_movement.mass*dvx)/1.0f;
-						movement.force.y       += (other_movement.mass*dvy)/1.0f;
-
-						if (movement.velocity.x > 0.0f)
-						{
-							pos.xy.x = other_pos.xy.x - collision.dimension;
-							movement.velocity.x = 0.0f;
-						}
-						else if (movement.velocity.x < 0.0f)
-						{
-							pos.xy.x = other_pos.xy.x + other_collision.dimension;
-							movement.velocity.x = 0.0f;
-						}
-						if (movement.velocity.y > 0.0f)
-						{
-							pos.xy.y = other_pos.xy.y - collision.dimension;
-							movement.velocity.y = 0.0f;
-						}
-						else if (movement.velocity.y < 0.0f)
-						{
-							pos.xy.y = other_pos.xy.y + other_collision.dimension;
-							movement.velocity.y = 0.0f;
-						}
+						other_movement.force.x = (movement.mass*dvx)/0.1f;
+						other_movement.force.y = (movement.mass*dvy)/0.1f;
+						movement.force.x       = (other_movement.mass*dvx)/0.1f;
+						movement.force.y       = (other_movement.mass*dvy)/0.1f;
 					}
 				}
 			}
@@ -116,7 +95,7 @@ struct MovementSystem
 	{
 		for (auto&& [entity, movement, pos] : access_storage().each())
 		{
-			F32 u = 0.8f;                               /* Friction coefficient. */
+			F32 u = 6.2f;                               /* Friction coefficient. */
 			F32 m = movement.mass;                      /* Object mass (kg). */
 			F32 g = 9.807f;                             /* Gravity acceleration. */
 			F32 n = m*g;                                /* Normal force. */
@@ -224,9 +203,19 @@ struct Pong : public Game
 			}
 		}
 
+		auto box2 = spawn()
+				.with<KeyBindings>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT)
+				.with<Movement>(3000, 3000, 25.0f)
+				.with<Sprite>(ecs::no_entity, 0)
+				.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
+				.with<Visibility>(true)
+				.with<Position>(geometry::Vec2{ 300, 300 })
+				.with<CollisionSquare>(32)
+				.done();
+
 		auto box = spawn()
 				.with<Box>()
-				.with<Movement>(0, 2000, 0.25f)
+				.with<Movement>(0, 3000, 10.0f)
 				.with<Sprite>(ecs::no_entity, 0)
 				.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
 				.with<Visibility>(true)
@@ -246,7 +235,7 @@ struct Pong : public Game
 
 		auto boulder = spawn()
 				.with<Boulder>()
-				.with<Movement>(1000, 2000, 50.0f)
+				.with<Movement>(1000, 3000, 50.0f)
 				.with<Sprite>(ecs::no_entity, 0)
 				.with<SpriteAnimation>(Spritesheet::get_by_name("boulder/boulder_r1"))
 				.with<Visibility>(true)
