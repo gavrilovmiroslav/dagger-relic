@@ -155,8 +155,8 @@ struct PyramidPlunder : public Game
 			.with<Player>(SpecialBlindfold::HumanEyes)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
-			.with<Visibility>(true)			
-      		.with<Position>(geometry::Vec2{ 300, 100 })
+			.with<Visibility>(true)
+			.with<Position>(geometry::Vec2{ 300, 100 })
 			.with<Movement>(2000.0f, 50.0f)
 			.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
 			.done();
