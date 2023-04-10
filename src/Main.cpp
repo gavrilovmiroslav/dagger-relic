@@ -2,22 +2,20 @@
 
 #include "Player.h"
 #include "Prelude.h"
-#include "Random.h"
-#include "Shuffle.h"
 
 using namespace core;
 
 struct Movement 
 {
 	geometry::Vec2 velocity;
-	geometry::Vec2 velocitymax;
+	geometry::Vec2 velocity_max;
 	geometry::Vec2 force;
-	F32            moveforce;
+	F32            move_force;
 
-	Movement(F32 moveforce, F32 velocitymax) 
+	Movement(F32 move_force, F32 velocity_max) 
 		: velocity(0.0f, 0.0f)
-		, moveforce(moveforce)
-		, velocitymax(velocitymax)
+		, move_force(move_force)
+		, velocity_max(velocity_max)
 		, force(0.0f, 0.0f) 
 	{ 
 
@@ -27,7 +25,7 @@ struct Movement
 struct KeyBindings 
 {
 	KeyCode left, down, up, right;
-	KeyCode normal, fox_eyes, scorpion_eyes;
+	KeyCode blindfold_change;
 };
 
 static F32 fsignf(F32 x)
@@ -64,8 +62,8 @@ struct MovementSystem
 			pos.xy              += movement.velocity*Time::delta_time();
 			movement.velocity.x += (fx/m)*Time::delta_time();
 			movement.velocity.y += (fy/m)*Time::delta_time();
-			movement.velocity.x = fclampf(movement.velocity.x, -movement.velocitymax.x, movement.velocitymax.x);
-			movement.velocity.y = fclampf(movement.velocity.y, -movement.velocitymax.y, movement.velocitymax.y);
+			movement.velocity.x = fclampf(movement.velocity.x, -movement.velocity_max.x, movement.velocity_max.x);
+			movement.velocity.y = fclampf(movement.velocity.y, -movement.velocity_max.y, movement.velocity_max.y);
 		}
 	}
 };
@@ -78,15 +76,15 @@ struct MovementControlSystem
 	{
 		const auto& keys = KeyState::get();
 
-		for (auto&& [entity, keybinding, movement] : access_storage().each())
+		for (auto&& [entity, key_binding, movement] : access_storage().each())
 		{
-			if (keys.is_down(keybinding.up))         movement.force.y = -movement.moveforce;
-			else if (keys.is_down(keybinding.down))  movement.force.y =  movement.moveforce;
-			else                                     movement.force.y -= fsignf(movement.force.y)*movement.moveforce;
+			if (keys.is_down(key_binding.up))         movement.force.y = -movement.move_force;
+			else if (keys.is_down(key_binding.down))  movement.force.y =  movement.move_force;
+			else                                     movement.force.y -= fsignf(movement.force.y)*movement.move_force;
 
-			if (keys.is_down(keybinding.left))       movement.force.x = -movement.moveforce;
-			else if (keys.is_down(keybinding.right)) movement.force.x =  movement.moveforce;
-			else                                     movement.force.x -= fsignf(movement.force.x)*movement.moveforce;
+			if (keys.is_down(key_binding.left))       movement.force.x = -movement.move_force;
+			else if (keys.is_down(key_binding.right)) movement.force.x =  movement.move_force;
+			else                                     movement.force.x -= fsignf(movement.force.x)*movement.move_force;
 
 			spdlog::info("force: {} {}", movement.force.x, movement.force.y);
 		}
@@ -102,19 +100,19 @@ struct BlindfoldChangingSystem
 	{
 		const auto& keys = KeyState::get();
 
-		for (auto&& [entity, player, key_bindings] : access_storage().each())
+		U32 counter = 0;
+		StaticArray<SpecialBlindfold, 3> blindfolds = { SpecialBlindfold::HumanEyes, SpecialBlindfold::FoxEyes, SpecialBlindfold::ScorpionEyes };
+
+		for (auto&& [entity, player, key_binding] : access_storage().each())
 		{
-			if (keys.is_pressed(key_bindings.normal) && player.current_blindfold != HumanEyes)
+			SpecialBlindfold new_blindfold;
+			if (keys.is_pressed(key_binding.blindfold_change))
 			{
-				player.current_blindfold = HumanEyes;
-			}
-			else if (keys.is_pressed(key_bindings.fox_eyes) && player.current_blindfold != FoxEyes && player.available_blindfolds[FoxEyes] != 0)
-			{
-				player.current_blindfold = FoxEyes;
-			}
-			else if (keys.is_pressed(key_bindings.scorpion_eyes) && player.current_blindfold != ScorpionEyes && player.available_blindfolds[ScorpionEyes] != 0)
-			{
-				player.current_blindfold = ScorpionEyes;
+				counter++;
+				new_blindfold = blindfolds[counter % 3];
+
+				if (player.available_blindfolds[new_blindfold] != 0)
+					player.current_blindfold = new_blindfold;
 			}
 		}
 	}
@@ -133,13 +131,13 @@ struct PyramidPlunder : public Game
 	void on_start() override
 	{
 		auto player = spawn()
-			.with<Player>(HumanEyes)
+			.with<Player>(SpecialBlindfold::HumanEyes)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
 			.with<Position>(geometry::Vec2{ 40, 550 })
 			.with<Visibility>(true)
 			.with<Movement>(2000.0f, 50.0f)
-			.with<KeyBindings>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_A, KeyCode::KEY_S, KeyCode::KEY_D)
+			.with<KeyBindings>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
 			.done();
 	}
 };

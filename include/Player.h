@@ -3,14 +3,17 @@
 #include "Prelude.h"
 #include "Shuffle.h"
 
-#define MAX_NUMBER_OF_BLINDFOLDS 6
-#define NUMBER_OF_BLINDFOLDS 20
-
-enum SpecialBlindfold
+enum class SpecialBlindfold
 {
-	HumanEyes = 0,
-	FoxEyes = 1,
-	ScorpionEyes = 2
+	HumanEyes,
+	FoxEyes,
+	ScorpionEyes
+};
+
+struct Constraints
+{
+	U32 number_of_blindfolds = 6;
+	U32 max_number_of_blindfolds = 20;
 };
 
 struct Player
@@ -24,11 +27,13 @@ struct Player
 		, current_blindfold(blindfold)
 	{
 		DynamicArray<SpecialBlindfold> blindfolds = {};
-		blindfolds.insert(blindfolds.begin(), NUMBER_OF_BLINDFOLDS, FoxEyes);
-		blindfolds.insert(blindfolds.begin(), NUMBER_OF_BLINDFOLDS, ScorpionEyes);
+
+		Constraints constraint;
+		blindfolds.insert(blindfolds.begin(), constraint.max_number_of_blindfolds, SpecialBlindfold::FoxEyes);
+		blindfolds.insert(blindfolds.begin(), constraint.max_number_of_blindfolds, SpecialBlindfold::ScorpionEyes);
 
 		randomize(blindfolds);
-		for (U32 i = 0; i < MAX_NUMBER_OF_BLINDFOLDS; ++i)
+		for (U32 i = 0; i < constraint.number_of_blindfolds; ++i)
 		{
 			available_blindfolds[blindfolds[i]]++;
 		}
