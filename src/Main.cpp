@@ -114,7 +114,7 @@ struct MovementControlSystem
 // TODO: move to separate file after refactoring Main.cpp and add signals to other components
 struct BlindfoldChangingSystem
 	: public ecs::System
-	, public MutAccessGroupStorage<Player, KeyBindings>
+	, public MutAccessGroupStorage<Player, KeyBinding>
 {
 	void on_tick() override
 	{
@@ -156,9 +156,9 @@ struct PyramidPlunder : public Game
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
 			.with<Visibility>(true)			
-      .with<Position>(geometry::Vec2{ 300, 100 })
+      		.with<Position>(geometry::Vec2{ 300, 100 })
 			.with<Movement>(2000.0f, 50.0f)
-			.with<KeyBindings>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
+			.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
 			.done();
 	}
 };
