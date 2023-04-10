@@ -1,11 +1,13 @@
 #pragma once
 
+#include "Algebra.h"
 #include "Player.h"
 #include "Prelude.h"
+#include "Random.h"
 
 using namespace core;
 
-struct Movement 
+struct Movement
 {
 	geometry::Vec2 velocity;
 	geometry::Vec2 velocity_max;
@@ -22,25 +24,11 @@ struct Movement
 	}
 };
 
-struct KeyBindings 
+struct KeyBinding 
 {
 	KeyCode left, down, up, right;
 	KeyCode blindfold_change;
 };
-
-static F32 fsignf(F32 x)
-{
-	if (x > 0.0f) return  1.0f;
-	if (x < 0.0f) return -1.0f;
-	else          return  0.0f;
-}
-
-static F32 fclampf(F32 x, F32 min, F32 max)
-{
-	if (x < min) return min;
-	if (x > max) return max;
-	else         return x;
-}
 
 struct MovementSystem
 	: public ecs::System
@@ -68,23 +56,55 @@ struct MovementSystem
 	}
 };
 
+struct ClickControlSystem
+	: public ecs::System
+{
+	void on_exit(){
+		const auto& key = KeyState::get();
+
+		if (key.is_down(KeyCode::KEY_ESCAPE))
+		{
+			Engine::get_instance().quit();
+		}
+
+	}
+};
+
 struct MovementControlSystem
 	: public ecs::System
-	, public MutAccessGroupStorage<KeyBindings, Movement>
+	, public MutAccessGroupStorage<KeyBinding, Movement, SpriteAnimation>
 {
 	void on_tick() override
 	{
-		const auto& keys = KeyState::get();
+		const auto& key = KeyState::get();
 
-		for (auto&& [entity, key_binding, movement] : access_storage().each())
+		for (auto&& [entity, key_binding, movement, sprite] : access_storage().each())
 		{
-			if (keys.is_down(key_binding.up))         movement.force.y = -movement.move_force;
-			else if (keys.is_down(key_binding.down))  movement.force.y =  movement.move_force;
-			else                                     movement.force.y -= fsignf(movement.force.y)*movement.move_force;
+			if (key.is_down(key_binding.up)){       
+				movement.force.y = -movement.move_force;
+			}
+			else if (key.is_down(key_binding.down)){
+				movement.force.y =  movement.move_force;
+			}
+			else{                                     
+				movement.force.y -= fsignf(movement.force.y)*movement.move_force;
+			}
 
-			if (keys.is_down(key_binding.left))       movement.force.x = -movement.move_force;
-			else if (keys.is_down(key_binding.right)) movement.force.x =  movement.move_force;
-			else                                     movement.force.x -= fsignf(movement.force.x)*movement.move_force;
+			if (key.is_down(key_binding.left))
+			{
+				replace_component<Flip>(entity, Horizontal);
+				sprite.change_to("pyramidplunder/archaeologist_running");       
+				movement.force.x = -movement.move_force;
+			}
+			else if (key.is_down(key_binding.right))
+			{
+				replace_component<Flip>(entity, None);
+				sprite.change_to("pyramidplunder/archaeologist_running");
+				movement.force.x =  movement.move_force;
+			}
+			else{                                    
+				movement.force.x -= fsignf(movement.force.x)*movement.move_force;
+			}
 
 			spdlog::info("force: {} {}", movement.force.x, movement.force.y);
 		}
@@ -126,6 +146,7 @@ struct PyramidPlunder : public Game
 		engine.use<BlindfoldChangingSystem>();
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
+		engine.use<ClickControlSystem>();
 	}
 
 	void on_start() override
@@ -133,9 +154,9 @@ struct PyramidPlunder : public Game
 		auto player = spawn()
 			.with<Player>(SpecialBlindfold::HumanEyes)
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
-			.with<Position>(geometry::Vec2{ 40, 550 })
-			.with<Visibility>(true)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
+			.with<Visibility>(true)			
+      .with<Position>(geometry::Vec2{ 300, 100 })
 			.with<Movement>(2000.0f, 50.0f)
 			.with<KeyBindings>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
 			.done();
