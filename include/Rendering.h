@@ -12,6 +12,7 @@ namespace core
 	struct RenderFrameEnd {};
 	struct RenderSignal {};
 	struct PostRenderSignal {};
+	struct PostProcessRenderSignal { U32 *pixels; I32 pitch; U32 w; U32 h; };
 
 	struct WindowingState;
 
@@ -22,11 +23,14 @@ namespace core
 		, public SignalEmitter<RenderFrameStart>
 		, public SignalEmitter<RenderFrameEnd>
 		, public SignalEmitter<RenderSignal>
+		, public SignalEmitter<PostProcessRenderSignal>
 		, public SignalEmitter<PostRenderSignal>
 	{
 
 	public:
 		RawPtr<SDL_Texture> render_texture;
+		RawPtr<SDL_Texture> post_render_texture;
+		I32 width, height;
 
 		RenderingModule();
 

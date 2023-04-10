@@ -6,7 +6,7 @@
 
 using namespace core;
 
-struct Movement 
+struct Movement
 {
 	geometry::Vec2 velocity;
 	geometry::Vec2 velocity_max;
@@ -18,6 +18,7 @@ struct Movement
 
 struct KeyBinding 
 {
+	KeyCode left, down, up, right;
 	KeyCode left, down, up, right;
 };
 
