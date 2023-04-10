@@ -16,6 +16,7 @@ enum Flip
 struct Sprite
 {
 	ecs::Entity texture;
+	I32 depth;
 	geometry::Rect clip;
 	geometry::Vec2 pivot{ 0.5f, 0.5f };
 };
@@ -43,12 +44,14 @@ namespace core {
 
 class SpriteRenderingModule
 	: public ecs::System
+	, public AccessDirect
 	, public AccessStorage<Texture>
 	, public AccessStorage<Flip>
 	, public AccessStorage<Position>
 	, public AccessStorage<Scale>
+	, public AccessStorage<Visibility>
 	, public MutAccessStorage<Sprite>
-	, public AccessGroupStorage<Sprite, Visibility>
+	, public AccessGroupStorage<Sprite>
 	, public AccessUnique<core::WindowingState>
 	, public SignalProcessor<core::RenderSignal>
 	, public SignalProcessor<core::AssetUnloadingSignal<Texture>>

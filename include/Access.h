@@ -22,6 +22,14 @@ struct AccessTrait
 	}
 };
 
+struct AccessDirect : public AccessTrait
+{
+	entt::registry& get_registry() const
+	{
+		return core::Engine::get_instance().registry;
+	}
+};
+
 template<typename T>
 struct AccessSystem : public AccessTrait
 {
