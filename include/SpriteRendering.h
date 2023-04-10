@@ -19,6 +19,7 @@ struct Sprite
 	I32 depth;
 	geometry::Rect clip;
 	geometry::Vec2 pivot{ 0.5f, 0.5f };
+	geometry::Vec2 scale{ 2.0f, 2.0f };
 };
 
 struct Image
