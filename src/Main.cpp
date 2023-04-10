@@ -19,7 +19,6 @@ struct Movement
 struct KeyBinding 
 {
 	KeyCode left, down, up, right;
-	KeyCode left, down, up, right;
 };
 
 struct MovementSystem
