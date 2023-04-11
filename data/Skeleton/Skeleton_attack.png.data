@@ -1,0 +1,75 @@
+texture: Skeleton/Skeleton_attack
+dimensions: 1, 1
+sprites: 18
+
+clip: 0, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 43, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 86, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 129, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 172, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 215, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 258, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 301, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 344, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 387, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 430, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 473, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 516, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 559, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 602, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 645, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 688, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 731, 0, 43, 37
+pivot: 0.5, 0.5
+scale: 1, 1

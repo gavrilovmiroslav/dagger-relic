@@ -93,7 +93,7 @@ struct PhysicsSystem
 
 struct EnemyMovementSystem
 	: public ecs::System
-	, public MutAccessGroupStorage<Enemy, Position>
+	, public MutAccessGroupStorage<Enemy, Position,SpriteAnimation>
  	, public AccessGroupStorage<Player, Position>
 	, public MutAccessComponentById<Enemy>
 	, public MutAccessComponentById<Position>
@@ -101,7 +101,7 @@ struct EnemyMovementSystem
 {
 	
 	using QueryPlayers = AccessGroupStorage<Player, Position>;
-	using QueryEnemies = MutAccessGroupStorage<Enemy, Position>;
+	using QueryEnemies = MutAccessGroupStorage<Enemy, Position,SpriteAnimation>;
 	
 	virtual void process_signal(PlayerCollisionSignal& signal)
 	{
@@ -120,12 +120,12 @@ struct EnemyMovementSystem
 		auto player_position = MutAccessComponentById<Position>::get(player);
 		
 		//enemy flocking system
-		for (auto&& [entity, enemy, pos] : QueryEnemies::access_storage().each())
+		for (auto&& [entity, enemy, pos,sprite] : QueryEnemies::access_storage().each())
 		{
 			auto min_distance = INFINITY;
 			Position* nearest_enemy_pos = nullptr;
 
-			for (auto&& [entity2, enemy2, pos2] : QueryEnemies::access_storage().each())
+			for (auto&& [entity2, enemy2, pos2,sprite] : QueryEnemies::access_storage().each())
 			{
 				if(entity != entity2)
 				{
@@ -140,6 +140,11 @@ struct EnemyMovementSystem
 			
 			auto to_player =  normalize(player_position.xy - pos.xy);
 			auto from_nearest_enemy  = normalize(pos.xy - nearest_enemy_pos->xy);
+
+			// auto dist_pl_en = distance(pos.xy,player_position.xy);
+			// if(dist_pl_en < 80.0f){
+			// 	sprite.change_to("Skeleton/Skeleton_attack");
+			// }
 
 			auto enemy_tilt_coef = 0.02f;
 			std::cout << min_distance << std::endl;
@@ -246,12 +251,24 @@ struct Brawl : public Game
 			for (auto i = 0; i < 4 ; ++i)
 				auto enemy = spawn()
 					.with<Sprite>(ecs::no_entity)
-					.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
+					.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
 					.with<Position>(geometry::Vec2{ 760 - 30*i, 60*i })
 					.with<Visibility>(true)
+					.with<AnimationSpeedController>(1.0f)
 					.with<Enemy>(geometry::Vec2{ 1, 0 })
 					.done();
+
+		auto background = spawn()
+						.with<Sprite>(ecs::no_entity)
+						.with<SpriteAnimation>(Spritesheet::get_by_name("background/background"))
+						.with<Position>(geometry::Vec2{ SCREEN_WIDTH,SCREEN_HEIGHT })
+						.with<Visibility>(true)
+						//.with<AnimationSpeedController>(0.0f)
+						.done();
+
 	}
+
+		
 };
 
 int main(int argc, char *argv[])
