@@ -16,7 +16,7 @@ void LevelManager::LoadLevel(String file) {
 				rowCount++;
 			}
 			else {
-				levelMap[colCount][rowCount] = inChar;
+				levelMap[rowCount][colCount] = inChar;
 				colCount++;
 			}
 		}
@@ -26,7 +26,7 @@ void LevelManager::LoadLevel(String file) {
 
     for(int i = 0; i < rowCount; i++){
         for(int j = 0; j < colCount; j++){
-            std::cout << levelMap[j][i];
+            std::cout << levelMap[i][j];
         }
         std::cout << std::endl;
     }

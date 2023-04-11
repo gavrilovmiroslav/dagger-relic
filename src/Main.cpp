@@ -161,9 +161,17 @@ struct PyramidPlunder : public Game
 
 		for(int i = 0; i < TILE_ROWS; i++){
         	for(int j = 0; j < TILE_COLS; j++){
-				Char c = levelManager->levelMap[j][i];
-				if(c == 'x' || c == 'o' || c == 'a'){
-					auto smth = spawn()
+				Char c = levelManager->levelMap[i][j];
+				if(c == 'x'){
+					auto wall = spawn()
+						.with<Sprite>(ecs::no_entity)
+						.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/wall"))
+						.with<Visibility>(true)
+						.with<Position>(geometry::Vec2{ i*96 + 25, j*96 + 25})
+						.done();
+				}
+				else if( c == 'o' || c == 'a'){
+					auto floor = spawn()
 						.with<Sprite>(ecs::no_entity)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/sand"))
 						.with<Visibility>(true)
@@ -173,7 +181,7 @@ struct PyramidPlunder : public Game
 				else if(c == 'b'){
 					auto box = spawn()
 						.with<Sprite>(ecs::no_entity)
-						.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_1"))
+						.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96, j*96})
 						.done();
@@ -181,7 +189,7 @@ struct PyramidPlunder : public Game
 				else if(c == 'p'){
 					auto pushPlate = spawn()
 						.with<Sprite>(ecs::no_entity)
-						.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
+						.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_1"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96, j*96})
 						.done();
@@ -214,6 +222,12 @@ int main(int argc, char* argv[])
 
 	PyramidPlunder game;
 	engine.run();
+	for(int i = 0; i < 10; i++){
+        for(int j = 0; j < 10; j++){
+            std::cout << game.levelManager->levelMap[i][j];
+        }
+        std::cout << std::endl;
+    }
 
 	return 0;
 }
