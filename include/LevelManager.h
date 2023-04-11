@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 
-#define TILE_SIZE 64
+#define TILE_SIZE 48
 #define TILE_ROWS 10
 #define TILE_COLS 10
 #define HEIGHT = ILE_SIZE * TILE_ROWS

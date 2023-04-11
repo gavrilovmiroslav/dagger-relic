@@ -142,6 +142,8 @@ struct BlindfoldChangingSystem
 
 struct PyramidPlunder : public Game
 {
+	LevelManager* levelManager;
+
 	PyramidPlunder()
 	{
 		auto& engine = Engine::get_instance();
@@ -149,19 +151,55 @@ struct PyramidPlunder : public Game
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
 		engine.use<ClickControlSystem>();
+
 	}
 
 	void on_start() override
 	{
-		auto player = spawn()
-			.with<Player>(SpecialBlindfold::HumanEyes)
-			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
-			.with<Visibility>(true)
-			.with<Position>(geometry::Vec2{ 300, 100 })
-			.with<Movement>(2000.0f, 50.0f)
-			.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
-			.done();
+		levelManager = new LevelManager();
+		levelManager->LoadLevel("Levels/level1.txt");
+
+		for(int i = 0; i < TILE_ROWS; i++){
+        	for(int j = 0; j < TILE_COLS; j++){
+				Char c = levelManager->levelMap[j][i];
+				if(c == 'x' || c == 'o' || c == 'a'){
+					auto smth = spawn()
+						.with<Sprite>(ecs::no_entity)
+						.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/sand"))
+						.with<Visibility>(true)
+						.with<Position>(geometry::Vec2{ i*96 +25, j*96+25})
+						.done();
+				}
+				else if(c == 'b'){
+					auto box = spawn()
+						.with<Sprite>(ecs::no_entity)
+						.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_1"))
+						.with<Visibility>(true)
+						.with<Position>(geometry::Vec2{ i*96, j*96})
+						.done();
+				}
+				else if(c == 'p'){
+					auto pushPlate = spawn()
+						.with<Sprite>(ecs::no_entity)
+						.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
+						.with<Visibility>(true)
+						.with<Position>(geometry::Vec2{ i*96, j*96})
+						.done();
+				}
+				if(c == 'a'){
+					auto player = spawn()
+						.with<Player>(SpecialBlindfold::HumanEyes)
+						.with<Sprite>(ecs::no_entity)
+						.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
+						.with<Visibility>(true)
+						.with<Position>(geometry::Vec2{ i*96, j*96})
+						.with<Movement>(2000.0f, 50.0f)
+						.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
+						.done();
+				}
+        	}
+        	
+		}
 	}
 };
 
@@ -176,9 +214,6 @@ int main(int argc, char* argv[])
 
 	PyramidPlunder game;
 	engine.run();
-
-	LevelManager* levelManager = new LevelManager();
-	levelManager->LoadLevel("Levels/level1.txt");
 
 	return 0;
 }

@@ -1,0 +1,7 @@
+texture: pyramidplunder/sand
+dimensions: 1, 1
+sprites: 1
+
+clip: 0, 0, 48, 48
+pivot: 0.5, 0.5
+scale: 1, 1
