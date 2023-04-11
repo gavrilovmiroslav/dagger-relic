@@ -8,22 +8,26 @@ void BackgroundSystem::on_tick()
 	const auto& keys = KeyState::get();
 	auto& ourGlobal = MutAccessUnique<OurGlobalVar>::access_unique();
 		
-	for (auto&& [background_entity, bindings, background_pos, sprite] :access_storage().each())
+	for (auto&& [background_entity, background, bindings, background_pos, sprite] :access_storage().each())
 	{
 		sprite.depth = -100;
 		
 		if (keys.is_down(bindings.up))
 		{
-			background_pos.xy.y += SPEED_MOD * Time::delta_time();
+			background.verticalVelocity = 200;
 		}	
-		if (keys.is_down(bindings.down))
+		if (!ourGlobal.isGrounded)
 		{
 			if(counter < 8)
 			{
-				background_pos.xy.y -= SPEED_MOD * Time::delta_time();
+				background.verticalVelocity += GRAVITY * Time::delta_time();
+				background_pos.xy.y -= background.verticalVelocity * Time::delta_time();
 			}
 			else
+			{
+				background.verticalVelocity=0;
 				ourGlobal.canPlayerMove = true;
+			}
 			if(background_pos.xy.y <  -SCREEN_HEIGHT*2)
 			{
 				counter++;	

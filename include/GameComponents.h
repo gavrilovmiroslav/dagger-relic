@@ -4,19 +4,29 @@
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
-#define BALL_RADIUS 16
-#define SPEED_MOD 200.0f
+#define SPEED_MOD 350.0f
 #define NUMBER_OF_BACKGROUND 10
 #define NUMBER_OF_PLATFORM 13
+#define GRAVITY 200.0f
 
 //bool playerMove = false;
 
-struct Player {};
-struct Background {};
-struct Platform{};
+struct Player 
+{
+	F32 verticalVelocity;
+};
+struct Background 
+{
+	F32 verticalVelocity;
+};
+struct Platform
+{
+	F32 verticalVelocity;
+};
 
 struct OurGlobalVar{
 	bool canPlayerMove = false;
+	bool isGrounded=false;
 };
 struct KeyBindings 
 {

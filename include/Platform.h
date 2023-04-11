@@ -7,6 +7,10 @@
 struct PlatformSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<Platform, KeyBindings, Position, Sprite>
+	, public MutAccessGroupStorage<Player,Position>
+	, public MutAccessUnique<OurGlobalVar>
 {
-   void on_tick() override;
+	using QueryPlayer = MutAccessGroupStorage<Player,Position>;
+	using QueryPlatform = MutAccessGroupStorage<Platform, KeyBindings, Position, Sprite>;
+    void on_tick() override;
 };

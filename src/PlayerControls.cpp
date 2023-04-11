@@ -13,16 +13,17 @@ void PlayerControlsSystem::on_tick()
 		Engine::get_instance().quit();
 	}
 
-	for (auto&& [entity, bindings, pos, sprite] :access_storage().each())
+	for (auto&& [entity, player, bindings, pos, sprite] :access_storage().each())
 	{
 		// if (keys.is_down(bindings.up))
 		// {
 			// 	background_pos.xy.y += SPEED_MOD * Time::delta_time();
 		// }
 
-		if (keys.is_down(bindings.down) && ourGlobal.canPlayerMove)
+		if (!ourGlobal.isGrounded && ourGlobal.canPlayerMove)
 		{
-			pos.xy.y += SPEED_MOD * Time::delta_time();
+			player.verticalVelocity += GRAVITY * Time::delta_time();
+			pos.xy.y += player.verticalVelocity * Time::delta_time();
 		}
 		if (keys.is_down(bindings.left))
 		{
