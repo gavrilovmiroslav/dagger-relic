@@ -6,12 +6,11 @@
 #define SCREEN_HEIGHT 600
 #define SPEED_MOD 300.0f
 #define GRAVITY_MOD 400.0f
-#define JUMP_MOD 600.0f
+#define JUMP_MOD 400.0f
 
 struct Player
 {
 	Bool is_grounded;
-	F32 jump_speed;
 	F32 vertical_velocity;
 };
 
