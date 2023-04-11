@@ -5,12 +5,12 @@ struct PushPlate
 {
     Bool active         = false; /* If being pressed by something. */
     Bool activeprevious = false; /* Previous state of 'active'.    */
-    tid  tid            = 0;     /* Unique ID of this PushPlate.   */
+    U32  tid            = 0;     /* Unique ID of this PushPlate.   */
 };
 
 struct PushPlateSignal
 {
-    tid  tid    = 0;     /* ID of the PushPlate that was triggered. */
+    U32  tid    = 0;     /* ID of the PushPlate that was triggered. */
     bool active = false; /* Current state of the PushPlate. */
 };
 

@@ -51,6 +51,14 @@ struct CollisionSquareSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<Position, Movement, CollisionSquare>
 {
+	Bool collision_possible(CollisionSquare& fst, CollisionSquare& snd, geometry::Vec2& pos, geometry::Vec2& other_pos)
+	{
+		return !snd.pushable && pos.x + fst.dimension + fst.offset_x > other_pos.x + snd.offset_x &&
+		        pos.x + fst.offset_x < other_pos.x + snd.offset_x + snd.dimension &&
+			    pos.y + fst.dimension + fst.offset_y > other_pos.y + snd.offset_y &&
+			    pos.y + fst.offset_x < other_pos.y + snd.offset_y + snd.dimension;
+	}
+
 	void on_tick() override
 	{
 		for (auto&& [entity, pos, movement, collision] : access_storage().each())
@@ -64,31 +72,28 @@ struct CollisionSquareSystem
 						continue;
 					}
 
-					if (other_collision.pushable == false &&
-					    pos.xy.x + collision.dimension + collision.offset_x > other_pos.xy.x + other_collision.offset_x                             &&
-						pos.xy.x + collision.offset_x                       < other_pos.xy.x + other_collision.offset_x + other_collision.dimension &&
-						pos.xy.y + collision.dimension + collision.offset_y > other_pos.xy.y + other_collision.offset_y &&
-						pos.xy.y + collision.offset_x                       < other_pos.xy.y + other_collision.offset_y + other_collision.dimension)
+					if (collision_possible(collision, other_collision, pos.xy, other_pos.xy))
 					{
-						if (movement.velocity_x > 0.0f)
+						if ((movement.velocity_x < 0.0f || movement.velocity_x > 0.0f) && pos.xy.x < other_pos.xy.x)
 						{
-							pos.xy.x = other_pos.xy.x;
+							spdlog::info("{} {} {}", movement.velocity_x, pos.xy.x, other_pos.xy.x);
+							other_pos.xy.x += other_collision.dimension;
 							movement.velocity_x = 0.0f;
 						}
-						else if (movement.velocity_x < 0.0f)
+						else if ((movement.velocity_x < 0.0f || movement.velocity_x > 0.0f) && pos.xy.x > other_pos.xy.x)
 						{
-							pos.xy.x = other_pos.xy.x + other_collision.dimension;
+							spdlog::info("{} {} {}", movement.velocity_x, pos.xy.x, other_pos.xy.x);
+							other_pos.xy.x -= other_collision.dimension;
 							movement.velocity_x = 0.0f;
 						}
-						
-						else if (movement.velocity_y > 0.0f)
+						else if ((movement.velocity_y < 0.0f || movement.velocity_y > 0.0f) && pos.xy.y < other_pos.xy.y)
 						{
-							pos.xy.y = other_pos.xy.y + other_collision.dimension;
+							other_pos.xy.y += other_collision.dimension;
 							movement.velocity_y = 0.0f;
 						}
-						else if (movement.velocity_y < 0.0f)
+						else if ((movement.velocity_y < 0.0f ||  movement.velocity_y > 0.0f) && pos.xy.y > other_pos.xy.y)
 						{
-							pos.xy.y = other_pos.xy.y;
+							other_pos.xy.y -= other_collision.dimension;
 							movement.velocity_y = 0.0f;
 						}
 					}
@@ -136,19 +141,19 @@ struct BoulderControlSystem
 		{
 			switch (boulder.direction)
 			{
-				case DIR_Left:
+				case Direction::DIR_Left:
 				movement.velocity_x = -64.0f;
 				break;
 
-				case DIR_Right:
+				case Direction::DIR_Right:
 				movement.velocity_x = 64.0f;
 				break;
 
-				case DIR_Up:
+				case Direction::DIR_Up:
 				movement.velocity_y = -64.0f;
 				break;
 
-				case DIR_Down:
+				case Direction::DIR_Down:
 				movement.velocity_y = 64.0f;
 				break;
 			}
@@ -166,13 +171,30 @@ struct MovementControlSystem
 
 		for (auto&& [entity, keybinding, movement] : access_storage().each())
 		{
-			if (keys.is_down(keybinding.up))         movement.velocity_y = -50.0f;
-			else if (keys.is_down(keybinding.down))  movement.velocity_y =  50.0f;
-			else                                     movement.velocity_y =  0.0f;
+			if (keys.is_down(keybinding.up))
+			{         
+				movement.velocity_y = -50.0f;
+			}
+			else if (keys.is_down(keybinding.down))
+			{
+				movement.velocity_y =  50.0f;
+			}
+			else
+			{                                     
+				movement.velocity_y =  0.0f;
+			}
 
-			if (keys.is_down(keybinding.left))       movement.velocity_x = -50.0f;
-			else if (keys.is_down(keybinding.right)) movement.velocity_x =  50.0f;
-			else                                     movement.velocity_x =  0.0f;
+			if (keys.is_down(keybinding.left))
+			{       
+				movement.velocity_x = -50.0f;
+			}
+			else if (keys.is_down(keybinding.right)) 
+			{
+				movement.velocity_x =  50.0f;
+			}
+			else {                                     
+				movement.velocity_x =  0.0f;
+			}
 		}
 	}
 };
@@ -238,6 +260,7 @@ struct Pong : public Game
 				.with<CollisionSquare>(32, 8, 8, false)
 				.with<PostProcessSquare>(32u, geometry::Vec2{ 0, 0 })
 				.done();
+
 		auto boxwalla2 = spawn()
 				.with<Box>()
 				.with<Movement>()
@@ -259,15 +282,15 @@ struct Pong : public Game
 				.with<PostProcessText>("active: no", geometry::Vec2{100, 548})
 				.done();
 
-		auto boulder = spawn()
-				.with<Boulder>()
-				.with<Movement>()
-				.with<Sprite>(ecs::no_entity, 0)
-				.with<SpriteAnimation>(Spritesheet::get_by_name("boulder/boulder_r1"))
-				.with<Visibility>(true)
-				.with<Position>(geometry::Vec2{ 500, 500 })
-				//.with<CollisionSquare>(48, false)
-				.done();
+		// auto boulder = spawn()
+		// 		.with<Boulder>()
+		// 		.with<Movement>()
+		// 		.with<Sprite>(ecs::no_entity, 0)
+		// 		.with<SpriteAnimation>(Spritesheet::get_by_name("boulder/boulder_r1"))
+		// 		.with<Visibility>(true)
+		// 		.with<Position>(geometry::Vec2{ 500, 500 })
+		// 		//.with<CollisionSquare>(48, false)
+		// 		.done();
 	}
 };
 

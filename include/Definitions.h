@@ -45,10 +45,11 @@ using I64 = std::int64_t;
 using F32 = std::float_t;
 using F64 = std::double_t;
 
-enum Direction
+enum class Direction
 {
 	DIR_Left, DIR_Down, DIR_Up, DIR_Right
 };
+
 using tid = std::uint32_t;
 
 namespace geometry {
