@@ -4,3 +4,7 @@ Rogue/rogue: Rogue/rogue.png.data
 Knight/knight: Knight/knight.png.data
 Knight/idle: Knight/idle.png.data
 Rogue/idle: Rogue/idle.png.data
+Knight/jump: Knight/jump.png.data
+Rogue/jump: Rogue/jump.png.data
+Knight/walk: Knight/walk.png.data
+Rogue/walk: Rogue/walk.png.data

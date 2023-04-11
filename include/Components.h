@@ -11,6 +11,7 @@ using namespace core;
 
 struct Player {
     geometry::Vec2 speed;
+	bool on_platform;
 };
 
 struct KeyBindings {
@@ -21,4 +22,10 @@ struct KeyBindings {
 
 struct Gravity {
 	geometry::Vec2 acceleration;
+};
+
+struct Animation{
+	String jump;
+	String walk;
+	String idle;
 };

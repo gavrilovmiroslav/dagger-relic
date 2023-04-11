@@ -20,8 +20,10 @@ struct PurgatoryPals : public Game
 			.with<Position>(geometry::Vec2{600, 300})
 			.with<Gravity>(geometry::Vec2{0, 0.03})
 			.with<Visibility>(true)
-			.with<Player>(geometry::Vec2{ 0, 0 })
+			.with<Player>(geometry::Vec2{ 0, 0 }, false)
 			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT)
+			.with<Animation>("Rogue/jump", "Rogue/walk", "Rogue/idle")
+			.with<Flip>(None)
 			.done();
 
 		auto knight = spawn()
@@ -30,8 +32,10 @@ struct PurgatoryPals : public Game
 			.with<Position>(geometry::Vec2{200, 300})
 			.with<Gravity>(geometry::Vec2{0, 0.03})
 			.with<Visibility>(true)
-			.with<Player>(geometry::Vec2{ 0, 0 })
+			.with<Player>(geometry::Vec2{ 0, 0 }, false)
 			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_A, KeyCode::KEY_D)
+			.with<Animation>("Knight/jump", "Knight/walk", "Knight/idle")
+			.with<Flip>(None)
 			.done();
 			
 	}
