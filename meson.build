@@ -32,7 +32,8 @@ sources = [
     'src/Rendering.cpp',
     'src/SpriteRendering.cpp',
     'src/Windowing.cpp',
-    'src/Main.cpp'
+    'src/Main.cpp',
+    'src/LevelManager.cpp'
 ]
 
 executable('dagger',

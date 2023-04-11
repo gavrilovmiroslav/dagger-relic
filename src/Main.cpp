@@ -4,6 +4,8 @@
 #include "Player.h"
 #include "Prelude.h"
 #include "Random.h"
+#include "LevelManager.h"
+#include <iostream>
 
 using namespace core;
 
@@ -174,6 +176,9 @@ int main(int argc, char* argv[])
 
 	PyramidPlunder game;
 	engine.run();
+
+	LevelManager* levelManager = new LevelManager();
+	levelManager->LoadLevel("Levels/level1.txt");
 
 	return 0;
 }
