@@ -25,8 +25,9 @@ void ProjectileSpawnSystem::on_tick()
             .with<Clipping>(Pass);
         }
 
-        else if (keys.is_pressed(bindings.special_attack))
+        else if (keys.is_pressed(bindings.special_attack) && item.uses > 0)
         {
+            item.uses -= 1;
             if(item.name == "curseball")
             {
                 spawn()

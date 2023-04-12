@@ -25,11 +25,13 @@ struct Pickup
 {
 	String name;
 	F64 radius;
+	I32 uses;
 };
 
 struct Item
 {
 	String name;
+	I32 uses;
 };
 
 struct Spell
