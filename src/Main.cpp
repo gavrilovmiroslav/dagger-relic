@@ -164,7 +164,7 @@ struct PyramidPlunder : public Game
 				Char c = levelManager->levelMap[i][j];
 				if(c == 'x'){
 					auto wall = spawn()
-						.with<Sprite>(ecs::no_entity)
+						.with<Sprite>(ecs::no_entity, 0)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/wall"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96 + 25, j*96 + 25})
@@ -172,7 +172,7 @@ struct PyramidPlunder : public Game
 				}
 				else if( c == 'o' || c == 'a'){
 					auto floor = spawn()
-						.with<Sprite>(ecs::no_entity)
+						.with<Sprite>(ecs::no_entity, 0)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/sand"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96 +25, j*96+25})
@@ -180,7 +180,7 @@ struct PyramidPlunder : public Game
 				}
 				else if(c == 'b'){
 					auto box = spawn()
-						.with<Sprite>(ecs::no_entity)
+						.with<Sprite>(ecs::no_entity, 0)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_3"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96, j*96})
@@ -188,7 +188,7 @@ struct PyramidPlunder : public Game
 				}
 				else if(c == 'p'){
 					auto pushPlate = spawn()
-						.with<Sprite>(ecs::no_entity)
+						.with<Sprite>(ecs::no_entity, 0)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_3"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96, j*96})
@@ -197,7 +197,7 @@ struct PyramidPlunder : public Game
 				if(c == 'a'){
 					auto player = spawn()
 						.with<Player>(SpecialBlindfold::HumanEyes)
-						.with<Sprite>(ecs::no_entity)
+						.with<Sprite>(ecs::no_entity, 1)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96, j*96})
