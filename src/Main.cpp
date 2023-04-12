@@ -83,6 +83,7 @@ struct SWMG : public Game {
 			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D, KeyCode::KEY_F, KeyCode::KEY_G)
 			.with<Flip>(None)
 			.with<Item>("None")
+			.with<Status>(100)
 			.done();
 
 		auto player_two = spawn()
@@ -94,6 +95,7 @@ struct SWMG : public Game {
 			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT, KeyCode::KEY_K, KeyCode::KEY_L)
 			.with<Flip>(Horizontal)
 			.with<Item>("None")
+			.with<Status>(100)
 			.done();
 	}
 };
