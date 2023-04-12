@@ -27,12 +27,19 @@ struct AnimationSpeedController
 	F32 animation_speed;
 };
 
+struct AnimationIsFinishedSignal
+{
+	bool finished;
+	ecs::Entity ent;
+};
+
 class AnimationModule
 	: public ecs::System
 	, public AccessStorage<Sprite>
 	, public AccessStorage<Spritesheet>
 	, public MutAccessGroupStorage<Sprite, SpriteAnimation, AnimationSpeedController>
 	, public SignalProcessor<core::PostRenderSignal>
+	, public SignalEmitter<AnimationIsFinishedSignal>
 {
 	void process_signal(core::PostRenderSignal&) override;
 };

@@ -30,7 +30,6 @@ void AnimationModule::process_signal(core::PostRenderSignal&)
 		auto current_sprite = sheet.sprites[anim.current_frame];
 		sprite = sprites.get<Sprite>(current_sprite);
 
-		// TODO: instead of using hardcoded value as a multiplier, create a component called AnimationSpeedController
 		frame_switch_delay[entity] += Time::delta_time() * anim_speed_ctrl.animation_speed;
 		if (frame_switch_delay[entity] >= anim.frame_length)
 		{
@@ -39,6 +38,7 @@ void AnimationModule::process_signal(core::PostRenderSignal&)
 			if (anim.current_frame >= sheet.sprites.size())
 			{
 				anim.current_frame = 0;
+				emit(AnimationIsFinishedSignal{true, entity});
 			}
 		}
 	}

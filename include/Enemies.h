@@ -7,6 +7,7 @@ struct EnemyMovementSystem
  	, public AccessGroupStorage<Player, Position>
 	, public MutAccessComponentById<Enemy>
 	, public MutAccessComponentById<Position>
+	, public MutAccessComponentById<SpriteAnimation>
 	, public SignalProcessor<PlayerCollisionSignal>
 {
 	using QueryPlayers = AccessGroupStorage<Player, Position>;
@@ -19,6 +20,8 @@ struct EnemyMovementSystem
 		
 		enemy.speed *= -1;
 		enemy_pos.xy += enemy.speed * ENEMY_SPEED_MOD;
+		// auto &sprite = MutAccessComponentById<SpriteAnimation>::get(signal.enemy);
+		// sprite.change_to("Skeleton/Skeleton_attack");
 	}
 
 	void on_tick() override
