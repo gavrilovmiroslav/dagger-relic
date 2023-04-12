@@ -181,7 +181,7 @@ struct PyramidPlunder : public Game
 				else if(c == 'b'){
 					auto box = spawn()
 						.with<Sprite>(ecs::no_entity)
-						.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
+						.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_3"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96, j*96})
 						.done();
@@ -189,7 +189,7 @@ struct PyramidPlunder : public Game
 				else if(c == 'p'){
 					auto pushPlate = spawn()
 						.with<Sprite>(ecs::no_entity)
-						.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_1"))
+						.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_3"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96, j*96})
 						.done();
