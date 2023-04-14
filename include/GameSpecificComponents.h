@@ -8,9 +8,11 @@
 #define GRAVITY_MOD 400.0f
 #define JUMP_MOD 400.0f
 
+#include "PlayerFSM.h"
+
 struct Player
 {
-	Bool is_grounded;
+	PlayerFSM fsm;
 	F32 vertical_velocity;
 };
 

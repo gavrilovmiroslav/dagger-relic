@@ -7,7 +7,8 @@ enum PlayerTransition
     JUMP,
     WALK,
     STOP,
-    ATTACK
+    ATTACK,
+    FALL
 };
 
 enum PlayerState

@@ -18,6 +18,15 @@ void PlatformSystem::on_tick()
                 break;
             }
         }
-        player.is_grounded = on_platform;	
+
+        if(on_platform)
+        {
+            if(player.fsm.currentState == PlayerState::AIRBORNE)
+                player.fsm.change_state(PlayerTransition::STOP);
+        }
+        else
+        {
+            player.fsm.change_state(PlayerTransition::FALL);
+        }
     }
 }

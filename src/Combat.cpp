@@ -10,6 +10,7 @@ void ProjectileSpawnSystem::on_tick()
         int direction = (flip == None) ? 1 : -1;
         if (keys.is_pressed(bindings.basic_attack)) 
         {
+            // player.fsm.change_state(PlayerTransition::ATTACK);
             spawn()
             .with<Spell>(300.0f, pos.xy.x + direction * 30.0f, 400.0f, 25.0f, 5)
             .with<Sprite>(ecs::no_entity)
@@ -27,6 +28,8 @@ void ProjectileSpawnSystem::on_tick()
 
         else if (keys.is_pressed(bindings.special_attack) && item.uses > 0)
         {
+            // player.fsm.change_state(PlayerTransition::ATTACK);
+
             item.uses -= 1;
             if(item.name == "curseball")
             {

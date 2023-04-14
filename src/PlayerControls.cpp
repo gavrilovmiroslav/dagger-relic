@@ -6,18 +6,15 @@ void PlayerControlsSystem::on_tick()
 
     for (auto&& [player_entity, player, bindings, pos, sprite, flip] : access_storage().each())
     {
-        if (keys.is_pressed(bindings.up) && player.is_grounded) // keys.is_down() causes a bug where player can levitate trough platforms 
+        if (keys.is_pressed(bindings.up) && player.fsm.currentState != PlayerState::AIRBORNE) // keys.is_down() causes a bug where player can levitate trough platforms 
         {
             player.vertical_velocity = -JUMP_MOD;
-            player.is_grounded = false;
+            player.fsm.change_state(PlayerTransition::JUMP);
         }
-        if (keys.is_down(bindings.down))  // deleted player.is_grounded condition, player can now go down from platform
+        if (keys.is_pressed(bindings.down) && player.fsm.currentState != PlayerState::AIRBORNE) 
         {
-            pos.xy.y += SPEED_MOD * Time::delta_time();
-            if (player.vertical_velocity < 0.0f)
-            {
-                player.vertical_velocity = 0.0f;
-            }
+            player.fsm.change_state(PlayerTransition::FALL);
+            pos.xy.y += 5;
             if (pos.xy.y > SCREEN_HEIGHT - 16) 
             {
                 pos.xy.y = SCREEN_HEIGHT - 16;
@@ -25,6 +22,7 @@ void PlayerControlsSystem::on_tick()
         }
         if (keys.is_down(bindings.left))
         {
+            player.fsm.change_state(PlayerTransition::WALK);
             replace_component<Flip>(player_entity, Horizontal);
             sprite.change_to("test/WizardRun");
             pos.xy.x -= SPEED_MOD * Time::delta_time();
@@ -35,6 +33,7 @@ void PlayerControlsSystem::on_tick()
         }
         if (keys.is_down(bindings.right))
         {
+            player.fsm.change_state(PlayerTransition::WALK);
             replace_component<Flip>(player_entity, None);
             sprite.change_to("test/WizardRun");
             pos.xy.x += SPEED_MOD * Time::delta_time();
@@ -46,6 +45,10 @@ void PlayerControlsSystem::on_tick()
         else if (!keys.is_down(bindings.left))
         {
             sprite.change_to("test/WizardIdle");
+        }
+        if (player.fsm.currentState == PlayerState::WALKING && (keys.is_released(bindings.left) || keys.is_released(bindings.right)))
+        {
+            player.fsm.change_state(PlayerTransition::STOP);
         }
         if (keys.is_released(bindings.up) && player.vertical_velocity < 0)
         {
