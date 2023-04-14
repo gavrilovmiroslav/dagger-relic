@@ -5,19 +5,20 @@
 
 using namespace core;
 
-struct PadCollisionSignal {
+struct PadCollisionSignal
+{
 	ecs::Entity ball;
 	ecs::Entity pad;
 };
 
 struct Player {};
 
-struct Ball 
+struct Ball
 {
 	geometry::Vec2 speed;
 };
 
-struct KeyBindings 
+struct KeyBindings
 {
 	KeyCode up;
 	KeyCode down;
@@ -182,4 +183,3 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
-

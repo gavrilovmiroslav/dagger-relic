@@ -9,4 +9,3 @@ struct Texture
 {
 	memory::RawPtr<SDL_Texture> inner;
 };
-

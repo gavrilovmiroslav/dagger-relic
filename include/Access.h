@@ -4,7 +4,7 @@
 #include "Definitions.h"
 #include "Engine.h"
 
-struct AccessTrait 
+struct AccessTrait
 {
 	static containers::Map<Size, ecs::Entity> unique_resources;
 
@@ -82,7 +82,7 @@ struct AccessUnique : public AccessTrait
 template<typename T>
 struct AccessComponentById : public AccessTrait
 {
-	const T& get(ecs::Entity e) const 
+	const T& get(ecs::Entity e) const
 	{
 		return core::Engine::get_instance().registry.get<const T>(e);
 	}
@@ -100,7 +100,7 @@ struct MutAccessComponentById : public AccessTrait
 template<typename T>
 struct AccessStorage : public AccessTrait
 {
-	auto access_storage() const 
+	auto access_storage() const
 	{
 		return core::Engine::get_instance().registry.view<const T>();
 	}
