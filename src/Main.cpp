@@ -75,7 +75,7 @@ struct SWMG : public Game {
 			.with<Visibility>(true);
 
 		auto player_one = spawn()
-			.with<Player>(false, 0.0f, 0.0f)
+			.with<Player>(false, 0.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
 			.with<Position>(geometry::Vec2{ 50, 600 - 32})
@@ -86,7 +86,7 @@ struct SWMG : public Game {
 			.done();
 
 		auto player_two = spawn()
-			.with<Player>(false, 0.0f, 0.0f)
+			.with<Player>(false, 0.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
 			.with<Position>(geometry::Vec2{ 750, 600 - 32})
