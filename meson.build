@@ -36,7 +36,8 @@ sources = [
     'src/Gravity.cpp',
     'src/Pickup.cpp',
     'src/PlayerControls.cpp',
-    'src/Combat.cpp'
+    'src/Combat.cpp',
+    'src/PlayerFSM.cpp'
 ]
 
 executable('dagger',
