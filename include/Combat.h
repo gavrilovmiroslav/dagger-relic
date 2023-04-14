@@ -34,6 +34,8 @@ struct SpellCollisionSystem
 	, public SignalProcessor<SpellPlayerCollisionSignal>
 	, public AccessEntityValidity
 	, public MutAccessComponentById<Duration>
+	, public MutAccessComponentById<Status>
+	, public MutAccessComponentById<Spell>
 {
 	virtual void process_signal(SpellPlayerCollisionSignal& signal);
 };

@@ -11,7 +11,7 @@ void ProjectileSpawnSystem::on_tick()
         if (keys.is_pressed(bindings.basic_attack)) 
         {
             spawn()
-            .with<Spell>(300.0f, pos.xy.x + direction * 30.0f, 400.0f, 25.0f)
+            .with<Spell>(300.0f, pos.xy.x + direction * 30.0f, 400.0f, 25.0f, 5)
             .with<Sprite>(ecs::no_entity)
             .with<SpriteAnimation>(Spritesheet::get_by_name("test/Fireball"))
             .with<Position>(geometry::Vec2{ pos.xy.x + direction * 30.0f , pos.xy.y })
@@ -25,12 +25,13 @@ void ProjectileSpawnSystem::on_tick()
             .with<Clipping>(Pass);
         }
 
-        else if (keys.is_pressed(bindings.special_attack))
+        else if (keys.is_pressed(bindings.special_attack) && item.uses > 0)
         {
+            item.uses -= 1;
             if(item.name == "curseball")
             {
                 spawn()
-                .with<Spell>(100.0f, pos.xy.x + direction * 30.0f, 400.0f, 25.0f)
+                .with<Spell>(100.0f, pos.xy.x + direction * 30.0f, 800.0f, 25.0f, 30)
                 .with<Sprite>(ecs::no_entity)
                 .with<SpriteAnimation>(Spritesheet::get_by_name("test/Curseball"))
                 .with<Position>(geometry::Vec2{ pos.xy.x + direction * 30.0f , pos.xy.y })
@@ -86,9 +87,20 @@ void SpellMovementSystem::on_tick()
 }
 
 void SpellCollisionSystem::process_signal(SpellPlayerCollisionSignal& signal){
-    if (is_ok(signal.player))
-        despawn(signal.player);
-    
+    if (is_ok(signal.player) && is_ok(signal.spell))
+    {
+        if (auto* spell = MutAccessComponentById<Spell>::get(signal.spell))
+		{
+			if (auto* status = MutAccessComponentById<Status>::get(signal.player))
+            {
+                status->health -= spell->damage;
+                if(status->health <= 0) 
+                {
+                    despawn(signal.player);
+                }
+            }
+		}
+    }
     if (is_ok(signal.spell))
     {
         if (auto* linger = MutAccessComponentById<Duration>::get(signal.spell))

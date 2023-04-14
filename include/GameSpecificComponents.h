@@ -24,11 +24,13 @@ struct Pickup
 {
 	String name;
 	F64 radius;
+	I32 uses;
 };
 
 struct Item
 {
 	String name;
+	I32 uses;
 };
 
 struct Spell
@@ -37,6 +39,12 @@ struct Spell
 	F32 start_pos;
 	F32 range;
 	F32 radius;
+	I32 damage;
+};
+
+struct Status
+{
+	I32 health;
 };
 
 enum Element // Spell element

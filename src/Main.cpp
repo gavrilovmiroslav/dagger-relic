@@ -22,10 +22,10 @@ struct SWMG : public Game {
 
 	void on_start() override
 	{
-		for (int i = 0; i < 100; i++)
+		for (int i = 0; i < 10; i++)
 		{
 			spawn()
-				.with<Pickup>("curseball" , 32.0f)
+				.with<Pickup>("curseball" , 32.0f, 5)
 				.with<Sprite>(ecs::no_entity)
 				.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
 				.with<Position>(geometry::Vec2{ rand() % 600, rand() % 570 })
@@ -82,7 +82,8 @@ struct SWMG : public Game {
 			.with<Visibility>(true)
 			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D, KeyCode::KEY_F, KeyCode::KEY_G)
 			.with<Flip>(None)
-			.with<Item>("None")
+			.with<Item>("None", 3)
+			.with<Status>(100)
 			.done();
 
 		auto player_two = spawn()
@@ -93,7 +94,8 @@ struct SWMG : public Game {
 			.with<Visibility>(true)
 			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT, KeyCode::KEY_K, KeyCode::KEY_L)
 			.with<Flip>(Horizontal)
-			.with<Item>("None")
+			.with<Item>("None", 3)
+			.with<Status>(100)
 			.done();
 	}
 };

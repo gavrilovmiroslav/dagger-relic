@@ -11,7 +11,7 @@ void PickupSystem::on_tick()
             if (abs(player_pos.xy.x - pickup_pos.xy.x) <= pickup.radius &&
              	abs(player_pos.xy.y - pickup_pos.xy.y) <= pickup.radius)
             {
-                replace_component<Item>(player_entity, pickup.name); // Removing this line, in addition to the despawn line will stop the crashing issue.                
+                replace_component<Item>(player_entity, pickup.name, pickup.uses); // Removing this line, in addition to the despawn line will stop the crashing issue.                
                 to_remove.push_back(pickup_entity);                
             }
         }
