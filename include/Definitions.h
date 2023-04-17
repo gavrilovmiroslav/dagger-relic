@@ -45,7 +45,8 @@ using I64 = std::int64_t;
 using F32 = std::float_t;
 using F64 = std::double_t;
 
-namespace geometry {
+namespace geometry
+{
 	using Vec2 = glm::vec2;
 	using Vec3 = glm::vec3;
 	using Vec4 = glm::vec4;
@@ -54,7 +55,8 @@ namespace geometry {
 	using Rect = SDL_Rect;
 }
 
-namespace containers {
+namespace containers
+{
 	template<typename T, I32 N>
 	using StaticArray = std::array<T, N>;
 
@@ -74,7 +76,7 @@ namespace containers {
 	using Set = std::unordered_set<T>;
 
 	template<typename T, typename IndexSize = I8, IndexSize N = 10>
-	struct SmallBuffer 
+	struct SmallBuffer
 	{
 		SmallBuffer()
 			: free{}
@@ -149,7 +151,8 @@ using String = std::string;
 template<typename T>
 using Function = std::function<T>;
 
-namespace memory {
+namespace memory
+{
 	template<typename T>
 	using RawPtr = T*;
 
@@ -172,7 +175,8 @@ namespace memory {
 	using WeakPtr = std::weak_ptr<T>;
 }
 
-namespace async {
+namespace async
+{
 	template<typename T>
 	using Future = std::future<T>;
 
@@ -183,7 +187,8 @@ namespace async {
 	using Lock = std::lock_guard<Mutex>;
 }
 
-namespace bus {
+namespace bus
+{
 	using Event = SDL_Event;
 
 	// TODO: this is a sad thing because all `SDL_Scancode` entries have the prefix `SDL_` :(
@@ -193,10 +198,11 @@ namespace bus {
 	const auto PollEvent = SDL_PollEvent;
 }
 
-namespace ecs {
+namespace ecs
+{
 	using Registry = entt::registry;
 	using Dispatcher = entt::dispatcher;
-	
+
 	using Entity = entt::entity;
 
 	const auto no_entity = entt::null;
@@ -205,7 +211,7 @@ namespace ecs {
 namespace fs
 {
 	using Dir = std::filesystem::directory_entry;
-	
+
 	using DirIter = std::filesystem::directory_iterator;
 
 	inline String get_simple_name(Dir& path)

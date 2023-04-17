@@ -35,7 +35,8 @@ void EventBusModule::on_tick()
 			break;
 
 		case SDL_WINDOWEVENT:
-			if (e.window.event == SDL_WINDOWEVENT_RESIZED) {
+			if (e.window.event == SDL_WINDOWEVENT_RESIZED)
+			{
 				SignalEmitter<core::WindowResizedSignal>::emit(core::WindowResizedSignal{ (U32)e.window.data1, (U32)e.window.data2 });
 			}
 			break;
