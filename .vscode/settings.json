@@ -18,5 +18,6 @@
         "string_view": "cpp",
         "vector": "cpp"
     },
-    "mesonbuild.configureOnOpen": true
+    "mesonbuild.configureOnOpen": false,
+    "C_Cpp.errorSquiggles": "disabled"
 }

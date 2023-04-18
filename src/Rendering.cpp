@@ -1,8 +1,7 @@
 #include "Rendering.h"
 #include "Access.h"
-#include "FPNG.h"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 using namespace core;
 
@@ -13,7 +12,6 @@ RenderingModule::RenderingModule()
 
 bool RenderingModule::on_start()
 {
-	fpng::fpng_init();
 	return true;
 }
 

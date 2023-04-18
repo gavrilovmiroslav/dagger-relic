@@ -1,7 +1,7 @@
-texture: background/bg47
+texture: platform/platformPack
 dimensions: 1, 1
 sprites: 1
 
-clip: 0, 0, 200, 200
+clip: 0, 0, 64, 64
 pivot: 0.0, 0.0
 scale: 1, 1
