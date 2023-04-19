@@ -11,9 +11,12 @@ std::string stateName(PlayerState state) {
     }
 }
 
-PlayerFSM::PlayerFSM()
+PlayerFSM::PlayerFSM(entt::entity entity)
+    : id(entity)
 {
     currentState = PlayerState::AIRBORNE;
+
+    sprite = MutAccessComponentById<SpriteAnimation>::get(id);
 
     add_transition_to_new_state(PlayerTransition::STOP, PlayerState::IDLE);
     add_transition_to_new_state(PlayerTransition::WALK, PlayerState::WALKING);
@@ -33,10 +36,29 @@ PlayerFSM::PlayerFSM()
 
 void PlayerFSM::on_exit(PlayerState fromState)
 {
-    std::cout << "exiting state: [" << stateName(currentState) << "], ";
+    std::cout << "exiting state: [" << stateName(fromState) << "], ";
 }
 
 void PlayerFSM::on_enter(PlayerState toState)
 {
-    std::cout << "entering state: [" << stateName(currentState) << "]" << std::endl;
+    std::cout << "entering state: [" << stateName(toState) << "]" << std::endl;
+
+    switch (toState)
+    {
+        case PlayerState::WALKING:
+        {
+            sprite->change_to("test/WizardRun");
+            //std::cout << "changed animation to RUN" << std::endl;
+            break;
+        }
+        case PlayerState::IDLE:
+        {
+            sprite->change_to("test/WizardIdle");
+            //std::cout << "changed animation to IDLE" << std::endl;
+            break;
+        }
+        default:
+            break;
+    }
+    
 }

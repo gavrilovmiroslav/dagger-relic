@@ -1,5 +1,4 @@
 #include "Combat.h"
-#include <iostream>
 
 void ProjectileSpawnSystem::on_tick()
 {

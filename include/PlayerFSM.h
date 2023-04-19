@@ -1,6 +1,10 @@
 #pragma once
 
+#include "Definitions.h"
+#include "Access.h"
 #include "FiniteStateMachine.h"
+#include "Animations.h"
+#include "SpriteRendering.h"
 
 enum PlayerTransition
 {
@@ -19,10 +23,17 @@ enum PlayerState
     ATTACKING
 };
 
-class PlayerFSM : public FSM<PlayerTransition, PlayerState>
+class PlayerFSM 
+    : public FSM<PlayerTransition, PlayerState>
+    , public ecs::System
+    , public MutAccessComponentById<SpriteAnimation>
+    , public MutAccessComponentById<Flip>
 {
 public:
-    PlayerFSM();
+    PlayerFSM(entt::entity id);
+
+    entt::entity id;
+    SpriteAnimation* sprite;
 
 private:
     void on_exit(PlayerState fromState) override;

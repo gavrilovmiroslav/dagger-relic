@@ -22,11 +22,11 @@ void PlatformSystem::on_tick()
         if(on_platform)
         {
             if(player.fsm.currentState == PlayerState::AIRBORNE)
-                player.fsm.change_state(PlayerTransition::STOP);
+                player.fsm.trigger(PlayerTransition::STOP);
         }
         else
         {
-            player.fsm.change_state(PlayerTransition::FALL);
+            player.fsm.trigger(PlayerTransition::FALL);
         }
     }
 }

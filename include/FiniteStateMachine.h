@@ -11,10 +11,10 @@ public:
 
     State currentState;
 
-    void change_state(Transition transition)
+    void trigger(Transition transition)
     {
         if (validTransitionsFromState[currentState].find(transition) == validTransitionsFromState[currentState].end())
-            return;
+            return;            
 
         on_exit(currentState);
         currentState = newState[transition];
@@ -33,8 +33,8 @@ public:
 
 private:
     // if a pair (t, s) is in the map, performing the transition t from the current state leads to state s
-    containers::Map< Transition, State > newState;
+    containers::Map<Transition, State> newState;
 
     // for every state the map contains a set of valid transitions from that state
-    containers::Map< State, containers::Set<Transition> > validTransitionsFromState;
+    containers::Map<State, containers::Set<Transition>> validTransitionsFromState;
 };
