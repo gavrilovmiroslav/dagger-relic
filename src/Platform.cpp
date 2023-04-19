@@ -10,10 +10,11 @@ void PlatformSystem::on_tick()
             if (player_pos.xy.x <= platform_pos.xy.x + platform.width / 2 + 11 &&
                 player_pos.xy.x >= platform_pos.xy.x - platform.width / 2 - 11 && 
                 player_pos.xy.y + 16 >= platform_pos.xy.y - 1 && 
-                player_pos.xy.y + 16 <= platform_pos.xy.y + 1) 
+                player_pos.xy.y + 16 <= platform_pos.xy.y + 1 &&
+                player.vertical_velocity >= 0.0f) // last check = check if player is falling
             {
                 on_platform = true;
-                player.vertical_velocity = 0;
+                player.vertical_velocity = 0.0f;
                 break;
             }
         }

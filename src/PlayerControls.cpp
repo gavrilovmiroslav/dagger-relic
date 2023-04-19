@@ -8,11 +8,16 @@ void PlayerControlsSystem::on_tick()
     {
         if (keys.is_pressed(bindings.up) && player.is_grounded) // keys.is_down() causes a bug where player can levitate trough platforms 
         {
-            player.jump_speed = JUMP_MOD;
+            player.vertical_velocity = -JUMP_MOD;
+            player.is_grounded = false;
         }
         if (keys.is_down(bindings.down))  // deleted player.is_grounded condition, player can now go down from platform
         {
             pos.xy.y += SPEED_MOD * Time::delta_time();
+            if (player.vertical_velocity < 0.0f)
+            {
+                player.vertical_velocity = 0.0f;
+            }
             if (pos.xy.y > SCREEN_HEIGHT - 16) 
             {
                 pos.xy.y = SCREEN_HEIGHT - 16;
@@ -42,40 +47,12 @@ void PlayerControlsSystem::on_tick()
         {
             sprite.change_to("test/WizardIdle");
         }
-        if (player.jump_speed > 0) 
+        if (keys.is_released(bindings.up) && player.vertical_velocity < 0)
         {
-            pos.xy.y -= player.jump_speed * Time::delta_time();
-            player.jump_speed -= 0.1;
+            player.vertical_velocity/=2;
         }
-        if (keys.is_released(bindings.up))
-        {
-            player.is_grounded = false;
-            player.jump_speed/=2;
-        }
-        if (keys.is_pressed(bindings.basic_attack))
-        {
-            if (flip == None)
-            {
-                auto attack = spawn()
-                .with<BasicAttack>(300.0f, pos.xy.x + 400.0f, 25.0f)
-                .with<Sprite>(ecs::no_entity)
-                .with<SpriteAnimation>(Spritesheet::get_by_name("test/Fireball"))
-                .with<Position>(geometry::Vec2{ pos.xy.x + 30.0f , pos.xy.y })
-                .with<Visibility>(true)
-                .with<Flip>(None)
-                .with<Scale>(geometry::Vec2{0.1f,0.1f}); // There must exist a better way to scale objects.
-            }
-            else
-            {
-                auto attack = spawn()
-                .with<BasicAttack>(300.0f, pos.xy.x - 400.0f, 25.0f)
-                .with<Sprite>(ecs::no_entity)
-                .with<SpriteAnimation>(Spritesheet::get_by_name("test/Fireball"))
-                .with<Position>(geometry::Vec2{ pos.xy.x - 30.0f , pos.xy.y })
-                .with<Visibility>(true)
-                .with<Flip>(Horizontal)
-                .with<Scale>(geometry::Vec2{0.1f,0.1f}); // There must exist a better way to scale objects.
-            }
-        }
+
+        // Always happening vertical velocity movement
+        pos.xy.y += player.vertical_velocity * Time::delta_time();
     }
 }

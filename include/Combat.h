@@ -4,13 +4,38 @@
 #include "Access.h"
 #include "GameSpecificComponents.h"
 
-struct CombatSystem
+struct ProjectileSpawnSystem
 	: public ecs::System
-	, public MutAccessGroupStorage<Player, Position>
-	, public MutAccessGroupStorage<BasicAttack, Position, SpriteAnimation, Flip>
+	, public MutAccessGroupStorage<Player, KeyBindings, Position, SpriteAnimation, Flip, Item>
 {
+	void on_tick() override;
+};
+
+struct SpellMovementSystem
+	: public ecs::System
+	, public MutAccessGroupStorage<Spell, Position, SpriteAnimation, Flip, Move, Clipping>
+	, public MutAccessGroupStorage<Platform, Position>
+	, public MutAccessGroupStorage<Player, Position>
+	, public SignalEmitter<SpellPlatformCollisionSignal>
+	, public SignalEmitter<SpellPlayerCollisionSignal>
+{
+	using QuerySpells = MutAccessGroupStorage<Spell, Position, SpriteAnimation, Flip, Move, Clipping>;
+	using QueryPlatforms = MutAccessGroupStorage<Platform, Position>;
 	using QueryPlayers = MutAccessGroupStorage<Player, Position>;
-	using QueryAttacks = MutAccessGroupStorage<BasicAttack, Position, SpriteAnimation, Flip>;
+
+	using PlatformCollisionEmitter = SignalEmitter<SpellPlatformCollisionSignal>;
+	using PlayerCollisionEmitter = SignalEmitter<SpellPlayerCollisionSignal>;
 
 	void on_tick() override;
+};
+
+struct SpellCollisionSystem
+	: public ecs::System
+	, public SignalProcessor<SpellPlayerCollisionSignal>
+	, public AccessEntityValidity
+	, public MutAccessComponentById<Duration>
+	, public MutAccessComponentById<Status>
+	, public MutAccessComponentById<Spell>
+{
+	virtual void process_signal(SpellPlayerCollisionSignal& signal);
 };
