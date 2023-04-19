@@ -18,7 +18,7 @@ void BackgroundSystem::on_tick()
 		}	
 		if (!ourGlobal.isGrounded)
 		{
-			if(counter < 8)
+			if(counter < NUMBER_OF_BACKGROUND-2)
 			{
 				background.verticalVelocity += GRAVITY * Time::delta_time();
 				background_pos.xy.y -= background.verticalVelocity * Time::delta_time();

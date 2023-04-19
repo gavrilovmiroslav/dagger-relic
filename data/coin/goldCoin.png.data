@@ -1,0 +1,23 @@
+texture: coin/goldCoin
+dimensions: 1, 1
+sprites: 5
+
+clip: 0, 0, 16, 16
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 16, 0, 16, 16
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 32, 0, 16, 16
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 48, 0, 16, 16
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 64, 0, 16, 16
+pivot: 0.5, 0.5
+scale: 1, 1

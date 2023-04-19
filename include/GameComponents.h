@@ -5,7 +5,7 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 #define SPEED_MOD 350.0f
-#define NUMBER_OF_BACKGROUND 10
+#define NUMBER_OF_BACKGROUND 20
 #define NUMBER_OF_PLATFORM 13
 #define GRAVITY 200.0f
 
@@ -14,6 +14,7 @@
 struct Player 
 {
 	F32 verticalVelocity;
+	I32 coinNumber;
 };
 struct Background 
 {
@@ -22,6 +23,11 @@ struct Background
 struct Platform
 {
 	F32 verticalVelocity;
+};
+struct Item
+{
+	F32 verticalVelocity;
+	F64 pickupRadius;
 };
 
 struct OurGlobalVar{

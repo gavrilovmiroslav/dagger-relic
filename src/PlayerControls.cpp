@@ -30,16 +30,16 @@ void PlayerControlsSystem::on_tick()
 			side = false;
 			sprite.change_to("fallingHero/runningLeft");
 			pos.xy.x -= SPEED_MOD * Time::delta_time();
-			if(pos.xy.x < 11)
-				pos.xy.x = 11;
+			if(pos.xy.x < -35)
+				pos.xy.x = -35;
 		}
 		else if (keys.is_down(bindings.right))
 		{
 			side = true;
 			sprite.change_to("fallingHero/runningRight");
 			pos.xy.x += SPEED_MOD * Time::delta_time();
-			if(pos.xy.x > SCREEN_WIDTH - 157)
-				pos.xy.x = SCREEN_WIDTH - 157;
+			if(pos.xy.x > SCREEN_WIDTH - 70)
+				pos.xy.x = SCREEN_WIDTH - 70;
 		}
 		else if (keys.is_down(bindings.attack))
 		{

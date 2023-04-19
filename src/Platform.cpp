@@ -1,5 +1,5 @@
 #include "Platform.h"
-
+#include <iostream>
 void PlatformSystem::on_tick()
 {
 				
