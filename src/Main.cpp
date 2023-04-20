@@ -15,12 +15,16 @@ struct Movement
 	geometry::Vec2 velocity_max;
 	geometry::Vec2 force;
 	F32            move_force;
+	F32            collision_box_width;
+	F32            collision_box_height;
 
-	Movement(F32 move_force, F32 velocity_max) 
+	Movement(F32 move_force, F32 velocity_max, F32 collision_w, F32 collision_h) 
 		: velocity(0.0f, 0.0f)
 		, move_force(move_force)
 		, velocity_max(velocity_max)
-		, force(0.0f, 0.0f) 
+		, force(0.0f, 0.0f)
+		, collision_box_width(collision_w)
+		, collision_box_height(collision_h)
 	{ 
 
 	}
@@ -48,6 +52,56 @@ struct MovementSystem
 			F32 fny = -fsignf(movement.velocity.y)*u*n; 
 			F32 fx  = fnx+movement.force.x;             /* Total force. */
 			F32 fy  = fny+movement.force.y;
+
+			for (auto&& [entity2, movement2, pos2] : access_storage().each())
+			{
+				F32 dx, dy;
+
+				if (entity <= entity2)
+				{
+					continue;
+				}
+
+				dx = pos2.xy.x - pos.xy.x;
+				dy = pos2.xy.y - pos.xy.y;
+				if (fabsf(dx) < (movement.collision_box_width + movement2.collision_box_width) / 2.0f &&
+					fabsf(dy) < (movement.collision_box_height + movement2.collision_box_height) / 2.0f)
+				{
+					if (fabsf(dx) > fabsf(dy))
+					{
+						if (dx > 0.0f)
+						{
+							pos.xy.x -= (movement.collision_box_width + movement2.collision_box_width) / 2.0f - dx;
+						}
+						else
+						{
+							pos.xy.x += (movement.collision_box_width + movement2.collision_box_width) / 2.0f + dx;
+						}
+
+						/*
+						movement.velocity.x = 0.0f;
+						movement2.velocity.x = 0.0f;
+						*/
+					}
+					else
+					{
+						if (dy > 0.0f)
+						{
+							pos.xy.y -= (movement.collision_box_height + movement2.collision_box_height) / 2.0f - dy;
+						}
+						else
+						{
+							pos.xy.y += (movement.collision_box_height + movement2.collision_box_height) / 2.0f + dy;
+						}
+
+						/*
+						movement.velocity.y = 0.0f;
+						movement2.velocity.y = 0.0f;
+						*/
+					}
+				}
+			
+			}
 
 			pos.xy              += movement.velocity*Time::delta_time();
 			movement.velocity.x += (fx/m)*Time::delta_time();
@@ -181,9 +235,10 @@ struct PyramidPlunder : public Game
 				else if(c == 'b'){
 					auto box = spawn()
 						.with<Sprite>(ecs::no_entity, 5)
-						.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_3"))
+						.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96, j*96})
+						.with<Movement>(2000.0f, 50.0f, 32, 32)
 						.done();
 				}
 				else if(c == 'p'){
@@ -201,7 +256,7 @@ struct PyramidPlunder : public Game
 						.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96, j*96})
-						.with<Movement>(2000.0f, 50.0f)
+						.with<Movement>(3000.0f, 50.0f, 16, 16)
 						.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
 						.done();
 				}
