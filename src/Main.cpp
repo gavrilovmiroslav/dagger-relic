@@ -5,7 +5,6 @@
 #include "Prelude.h"
 #include "Random.h"
 #include "LevelManager.h"
-#include <iostream>
 
 using namespace core;
 
@@ -61,7 +60,7 @@ struct MovementSystem
 struct ClickControlSystem
 	: public ecs::System
 {
-	void on_exit(){
+	void on_tick(){
 		const auto& key = KeyState::get();
 
 		if (key.is_down(KeyCode::KEY_ESCAPE))
@@ -151,7 +150,6 @@ struct PyramidPlunder : public Game
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
 		engine.use<ClickControlSystem>();
-
 	}
 
 	void on_start() override
@@ -170,7 +168,7 @@ struct PyramidPlunder : public Game
 						.with<Position>(geometry::Vec2{ i*96 + 25, j*96 + 25})
 						.done();
 				}
-				else if( c == 'o' || c == 'a'){
+				if( c == 'o' || c == 'a' || c == 'b'){
 					auto floor = spawn()
 						.with<Sprite>(ecs::no_entity, 2)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/sand"))
@@ -178,7 +176,7 @@ struct PyramidPlunder : public Game
 						.with<Position>(geometry::Vec2{ i*96 +25, j*96+25})
 						.done();
 				}
-				else if(c == 'b'){
+				if(c == 'b'){
 					auto box = spawn()
 						.with<Sprite>(ecs::no_entity, 5)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_3"))
@@ -186,7 +184,7 @@ struct PyramidPlunder : public Game
 						.with<Position>(geometry::Vec2{ i*96, j*96})
 						.done();
 				}
-				else if(c == 'p'){
+				if(c == 'p'){
 					auto pushPlate = spawn()
 						.with<Sprite>(ecs::no_entity, 4)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_3"))
@@ -206,8 +204,12 @@ struct PyramidPlunder : public Game
 						.done();
 				}
         	}
-        	
 		}
+	}
+
+	void on_end() override
+	{
+		delete levelManager;
 	}
 };
 
@@ -222,12 +224,6 @@ int main(int argc, char* argv[])
 
 	PyramidPlunder game;
 	engine.run();
-	for(int i = 0; i < 10; i++){
-        for(int j = 0; j < 10; j++){
-            std::cout << game.levelManager->levelMap[i][j];
-        }
-        std::cout << std::endl;
-    }
 
 	return 0;
 }
