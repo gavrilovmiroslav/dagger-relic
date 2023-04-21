@@ -14,17 +14,18 @@ struct Movement
 	geometry::Vec2 force;
 	F32            move_force;
 
-	Movement(F32 move_force, F32 velocity_max) 
+	Movement(F32 move_force, F32 velocity_max)
 		: velocity(0.0f, 0.0f)
 		, move_force(move_force)
 		, velocity_max(velocity_max)
-		, force(0.0f, 0.0f) 
-	{ 
+		, force(0.0f, 0.0f)
+	{
+
 
 	}
 };
 
-struct KeyBinding 
+struct KeyBinding
 {
 	KeyCode left, down, up, right;
 	KeyCode blindfold_change;
@@ -43,7 +44,7 @@ struct MovementSystem
 			F32 g = 9.807f;                             /* Gravity acceleration. */
 			F32 n = m*g;                                /* Normal force. */
 			F32 fnx = -fsignf(movement.velocity.x)*u*n; /* Friction force. */
-			F32 fny = -fsignf(movement.velocity.y)*u*n; 
+			F32 fny = -fsignf(movement.velocity.y)*u*n;
 			F32 fx  = fnx+movement.force.x;             /* Total force. */
 			F32 fy  = fny+movement.force.y;
 
@@ -80,20 +81,20 @@ struct MovementControlSystem
 
 		for (auto&& [entity, key_binding, movement, sprite] : access_storage().each())
 		{
-			if (key.is_down(key_binding.up)){       
+			if (key.is_down(key_binding.up)){
 				movement.force.y = -movement.move_force;
 			}
 			else if (key.is_down(key_binding.down)){
 				movement.force.y =  movement.move_force;
 			}
-			else{                                     
+			else{
 				movement.force.y -= fsignf(movement.force.y)*movement.move_force;
 			}
 
 			if (key.is_down(key_binding.left))
 			{
 				replace_component<Flip>(entity, Horizontal);
-				sprite.change_to("pyramidplunder/archaeologist_running");       
+				sprite.change_to("pyramidplunder/archaeologist_running");
 				movement.force.x = -movement.move_force;
 			}
 			else if (key.is_down(key_binding.right))
@@ -102,7 +103,7 @@ struct MovementControlSystem
 				sprite.change_to("pyramidplunder/archaeologist_running");
 				movement.force.x =  movement.move_force;
 			}
-			else{                                    
+			else{
 				movement.force.x -= fsignf(movement.force.x)*movement.move_force;
 			}
 

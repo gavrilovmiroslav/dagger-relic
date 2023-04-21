@@ -5,7 +5,7 @@
 
 using namespace core;
 
-RenderingModule::RenderingModule() 
+RenderingModule::RenderingModule()
 	: render_texture{nullptr}
 	, post_render_texture{nullptr}
 {
@@ -18,6 +18,7 @@ bool RenderingModule::on_start()
 
 void RenderingModule::on_tick()
 {
+
 	U32 *postprocess_pixels;
 	I32  postprocess_pitch;
 
@@ -88,6 +89,7 @@ void RenderingModule::on_end()
 	{
 		SDL_DestroyTexture(render_texture);
 	}
+
 	if (post_render_texture != nullptr)
 	{
 		SDL_DestroyTexture(render_texture);
