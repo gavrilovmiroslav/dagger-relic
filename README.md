@@ -42,6 +42,7 @@ Afterwards simply run the following commands in the terminal to get the needed e
 ```sh
 code --install-extension ms-vscode.cpptools
 code --install-extension mesonbuild.mesonbuild
+code --install-extension editorconfig.editorconfig
 ```
 
 ## Compile and Run
