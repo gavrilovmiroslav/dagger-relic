@@ -1,33 +1,33 @@
 #include "LevelManager.h"
 
-void LevelManager::LoadLevel(String file) {
-	int rowCount = 0;
-	int colCount = 0;
+void LevelManager::load_level(String file)
+{
+	int row_count = 0;
+	int col_count = 0;
 
-	levelFile.open(file);
-	if (levelFile.is_open()) {
-		Char inChar;
-		while (levelFile.get(inChar)) {
+	level_file.open(file);
+	if (level_file.is_open())
+	{
+		Char in_char;
+		while (level_file.get(in_char))
+		{
 			//TODO: Windows problems
-			if( inChar == '\r')	
-				continue; 
-			if (inChar == '\n') {
-				colCount = 0;
-				rowCount++;
+			if(in_char == '\r')
+			{
+				continue;
 			}
-			else {
-				levelMap[rowCount][colCount] = inChar;
-				colCount++;
+			if (in_char == '\n')
+			{
+				col_count = 0;
+				row_count++;
+			}
+			else
+			{
+				level_map[row_count][col_count] = in_char;
+				col_count++;
 			}
 		}
 	}
 
-	levelFile.close();
-
-    for(int i = 0; i < rowCount; i++){
-        for(int j = 0; j < colCount; j++){
-            std::cout << levelMap[i][j];
-        }
-        std::cout << std::endl;
-    }
+	level_file.close();
 }

@@ -27,13 +27,13 @@ sources = [
     'src/Diagnostics.cpp',
     'src/EventBus.cpp',
     'src/FPSCalculator.cpp',
+    'src/LevelManager.cpp',
     'src/Loaders.cpp',
     'src/PostProcessRendering.cpp',
     'src/Rendering.cpp',
     'src/SpriteRendering.cpp',
     'src/Windowing.cpp',
-    'src/Main.cpp',
-    'src/LevelManager.cpp'
+    'src/Main.cpp'
 ]
 
 executable('dagger',
