@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Algebra.h"
+#include "LevelManager.h"
 #include "Player.h"
 #include "Prelude.h"
 #include "Random.h"
-#include "LevelManager.h"
 
 using namespace core;
 
@@ -141,7 +141,7 @@ struct BlindfoldChangingSystem
 
 struct PyramidPlunder : public Game
 {
-	LevelManager* levelManager;
+	RawPtr<LevelManager> level_manager;
 
 	PyramidPlunder()
 	{
@@ -154,46 +154,53 @@ struct PyramidPlunder : public Game
 
 	void on_start() override
 	{
-		levelManager = new LevelManager();
-		levelManager->LoadLevel("Levels/level1.txt");
+		level_manager = new LevelManager();
+		level_manager->load_level("Levels/level1.txt");
 
-		for(int i = 0; i < TILE_ROWS; i++){
-        	for(int j = 0; j < TILE_COLS; j++){
-				Char c = levelManager->levelMap[j][i];
-				if(c == 'x'){
-					auto wall = spawn()
+		for(int i = 0; i < TILE_ROWS; i++)
+		{
+        	for(int j = 0; j < TILE_COLS; j++)
+			{
+				Char c = level_manager->level_map[j][i];
+				if(c == 'x')
+				{
+						spawn()
 						.with<Sprite>(ecs::no_entity, 6)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/wall"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96 + 25, j*96 + 25})
 						.done();
 				}
-				if( c == 'o' || c == 'a' || c == 'b'){
-					auto floor = spawn()
+				if(c == 'o' || c == 'a' || c == 'b')
+				{
+						spawn()
 						.with<Sprite>(ecs::no_entity, 2)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/sand"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96 +25, j*96+25})
 						.done();
 				}
-				if(c == 'b'){
-					auto box = spawn()
+				if(c == 'b')
+				{
+						spawn()
 						.with<Sprite>(ecs::no_entity, 5)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_3"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96, j*96})
 						.done();
 				}
-				if(c == 'p'){
-					auto pushPlate = spawn()
+				if(c == 'p')
+				{
+						spawn()
 						.with<Sprite>(ecs::no_entity, 4)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_3"))
 						.with<Visibility>(true)
 						.with<Position>(geometry::Vec2{ i*96, j*96})
 						.done();
 				}
-				if(c == 'a'){
-					auto player = spawn()
+				if(c == 'a')
+				{
+						spawn()
 						.with<Player>(SpecialBlindfold::HumanEyes)
 						.with<Sprite>(ecs::no_entity, 6)
 						.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
@@ -209,7 +216,7 @@ struct PyramidPlunder : public Game
 
 	void on_end() override
 	{
-		delete levelManager;
+		delete level_manager;
 	}
 };
 

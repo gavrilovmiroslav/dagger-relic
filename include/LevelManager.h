@@ -1,21 +1,17 @@
 #pragma once
 
-#include "Prelude.h"
 #include <fstream>
-#include <iostream>
+#include "Prelude.h"
 
-#define TILE_SIZE 48
 #define TILE_ROWS 10
 #define TILE_COLS 10
-#define HEIGHT = ILE_SIZE * TILE_ROWS
-#define WIDTH = ILE_SIZE * TTILE_COLS 
 
 class LevelManager
 {
 public:
-	void LoadLevel(String file);
-	char levelMap[TILE_ROWS][TILE_COLS] = { '0' };
+	void load_level(String file);
+	char level_map[TILE_ROWS][TILE_COLS] = { '0' };
 
 private:
-	std::ifstream levelFile;
+	std::ifstream level_file;
 };
