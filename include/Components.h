@@ -11,7 +11,7 @@ using namespace core;
 
 struct Player {
     geometry::Vec2 speed;
-	bool on_platform;
+	bool isGrounded;
 };
 
 struct KeyBindings {

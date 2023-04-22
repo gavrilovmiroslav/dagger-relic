@@ -32,7 +32,7 @@ struct PurgatoryPals : public Game
 			.with<Position>(geometry::Vec2{200, 300})
 			.with<Gravity>(geometry::Vec2{0, 0.03})
 			.with<Visibility>(true)
-			.with<Player>(geometry::Vec2{ 0, 0 }, false)
+			.with<Player>(geometry::Vec2{ 0, 0 }, true)
 			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_A, KeyCode::KEY_D)
 			.with<Animation>("Knight/jump", "Knight/walk", "Knight/idle")
 			.with<Flip>(None)
