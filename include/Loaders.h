@@ -6,7 +6,7 @@
 
 // TODO (reported by @mstojanovic): one loader per file and just link them together
 
-class TextureLoader 
+class TextureLoader
 	: public core::AssetLoader<Texture>
 	, public AccessStorage<Texture>
 	, public MutAccessUnique<core::WindowingState>

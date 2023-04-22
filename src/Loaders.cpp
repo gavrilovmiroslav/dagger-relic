@@ -33,7 +33,7 @@ memory::RawPtr<Texture> TextureLoader::load_texture(String path)
 	SDL_FreeSurface(surface);
 
 	Logger::info("Loading complete");
-	
+
 	return texture;
 }
 
@@ -145,7 +145,7 @@ Bool TextureLoader::contains(String name) const
 // Sprite loader
 
 
-String SpritesheetLoader::get_default_asset_name() const 
+String SpritesheetLoader::get_default_asset_name() const
 {
 	return "spritesheets";
 }
@@ -153,44 +153,50 @@ String SpritesheetLoader::get_default_asset_name() const
 #include <cstring>
 #include <optional>
 #include <tuple>
-#include <algorithm> 
+#include <algorithm>
 #include <cctype>
 #include <locale>
 
 // trim from start (in place)
-static inline void ltrim(std::string& s) {
+static inline void ltrim(std::string& s)
+{
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
 		return !std::isspace(ch);
 		}));
 }
 
 // trim from end (in place)
-static inline void rtrim(std::string& s) {
+static inline void rtrim(std::string& s)
+{
 	s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
 		return !std::isspace(ch);
 		}).base(), s.end());
 }
 
 // trim from both ends (in place)
-static inline void trim(std::string& s) {
+static inline void trim(std::string& s)
+{
 	rtrim(s);
 	ltrim(s);
 }
 
 // trim from start (copying)
-static inline std::string ltrim_copy(std::string s) {
+static inline std::string ltrim_copy(std::string s)
+{
 	ltrim(s);
 	return s;
 }
 
 // trim from end (copying)
-static inline std::string rtrim_copy(std::string s) {
+static inline std::string rtrim_copy(std::string s)
+{
 	rtrim(s);
 	return s;
 }
 
 // trim from both ends (copying)
-static inline std::string trim_copy(std::string s) {
+static inline std::string trim_copy(std::string s)
+{
 	trim(s);
 	return s;
 }
@@ -263,15 +269,15 @@ std::array<float, 4> read_4floats(std::string str)
 	return std::array<float, 4>{ a, b, c, d };
 }
 
-void SpritesheetLoader::load_assets() 
+void SpritesheetLoader::load_assets()
 {
 	auto& registry = core::Engine::get_instance().registry;
 	auto asset_path = get_loader_path();
-	
+
 	containers::DynamicArray<String> entries;
 	containers::DynamicArray<String> to_remove;
 
-	std::ifstream entry("data/" + asset_path);	
+	std::ifstream entry("data/" + asset_path);
 
 	String line;
 	while (std::getline(entry, line))
@@ -290,7 +296,7 @@ void SpritesheetLoader::load_assets()
 
 		to_remove.push_back(loaded.first);
 	}
-	
+
 	for (auto del : to_remove)
 	{
 		loaded_entity_mapping.erase(del);
@@ -314,8 +320,8 @@ ecs::Entity SpritesheetLoader::load_asset(String spritesheet_name, String sprite
 		return ecs::no_entity;
 	}
 
-	std::ifstream input(spritesheet_path);		
-	
+	std::ifstream input(spritesheet_path);
+
 	geometry::Vec2 cell_count;
 
 	auto texture = AccessSystem<core::AssetModule>::access_system()->
@@ -335,7 +341,7 @@ ecs::Entity SpritesheetLoader::load_asset(String spritesheet_name, String sprite
 	auto& registry = core::Engine::get_instance().registry;
 
 	I32 index = 0;
-	
+
 	for (int i = 0; i < sprite_count; i++)
 	{
 		read_line(input);
@@ -351,7 +357,7 @@ ecs::Entity SpritesheetLoader::load_asset(String spritesheet_name, String sprite
 		I32 w{ clip[2] };
 		I32 h{ clip[3] };
 		sprite.clip = geometry::Rect{ x, y, w, h };
-		
+
 		sprite.pivot.x = pivot[0];
 		sprite.pivot.y = pivot[1];
 
@@ -370,7 +376,7 @@ ecs::Entity SpritesheetLoader::load_asset(String spritesheet_name, String sprite
 	return sheet_entity;
 }
 
-SpritesheetLoader::SpritesheetLoader() 
+SpritesheetLoader::SpritesheetLoader()
 {}
 
 Bool SpritesheetLoader::contains(String name) const

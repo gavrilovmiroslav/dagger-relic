@@ -10,7 +10,7 @@ namespace core
 	struct WindowingState;
 
 	class AssetLoadStartSignal {};
-	class AssetLoadEndSignal {};	
+	class AssetLoadEndSignal {};
 
 	template<typename PhantomT>
 	struct AssetUnloadingSignal
@@ -19,8 +19,8 @@ namespace core
 	};
 
 	struct AbstractAssetLoader
-		: public SignalProcessor<AssetLoadStartSignal>		
-	{		
+		: public SignalProcessor<AssetLoadStartSignal>
+	{
 		friend class AssetModule;
 
 		containers::Map<String, ecs::Entity> loaded_entity_mapping;
@@ -42,7 +42,7 @@ namespace core
 	{
 		static containers::Map<Size, memory::SharedPtr<AbstractAssetLoader>> loaders;
 
-		bool on_start();	
+		bool on_start();
 
 	public:
 		AssetModule() = default;
@@ -99,7 +99,7 @@ namespace core
 	};
 
 	template<typename T>
-	struct AssetLoader 
+	struct AssetLoader
 		: public AbstractAssetLoader
 	{
 		virtual String get_default_asset_name() const = 0;
