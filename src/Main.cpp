@@ -18,6 +18,7 @@ struct SWMG : public Game {
 		engine.use<SpellMovementSystem>();
 		engine.use<SpellCollisionSystem>();
 		engine.use<ProjectileSpawnSystem>();
+		engine.use<PickupSpawnTimer>();
 	}
 
 	void on_start() override
