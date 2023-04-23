@@ -35,7 +35,8 @@ struct Spritesheet
 	static ecs::Entity get_by_name(String name);
 };
 
-namespace core {
+namespace core
+{
 	struct WindowingState;
 	struct RenderSignal;
 
