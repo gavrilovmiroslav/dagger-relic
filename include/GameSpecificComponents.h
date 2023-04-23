@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Prelude.h"
+#include "Timer.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -90,6 +91,9 @@ struct SpellPlayerCollisionSignal
 	ecs::Entity player;
 	ecs::Entity spell;
 };
+
+struct PickupSpawnSignal
+{};
 
 struct KeyBindings
 {
