@@ -45,6 +45,8 @@ using I64 = std::int64_t;
 using F32 = std::float_t;
 using F64 = std::double_t;
 
+using tid = std::uint32_t;
+
 namespace geometry {
 	using Vec2 = glm::vec2;
 	using Vec3 = glm::vec3;
