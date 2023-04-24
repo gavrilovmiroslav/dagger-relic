@@ -3,6 +3,7 @@
 #include "Prelude.h"
 #include "Components.h"
 #include "PlayerControlsSystem.h"
+#include "Platforms.h"
 
 struct PurgatoryPals : public Game
 {
@@ -10,6 +11,7 @@ struct PurgatoryPals : public Game
 	{
 		auto& engine = Engine::get_instance();
 		engine.use<PlayerControlsSystem>();
+		engine.use<PlatformSystem>();
 	}
 
 	void on_start() override
@@ -42,7 +44,7 @@ struct PurgatoryPals : public Game
 			.with<Platform>(128.0f, 4.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
-			.with<Position>(geometry::Vec2{ 400, 300 })
+			.with<Position>(geometry::Vec2{ 400, 500 })
 			.with<Visibility>(true);
 			
 	}
