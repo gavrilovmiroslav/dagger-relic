@@ -2,8 +2,8 @@
 
 void LevelManager::load_level(String file)
 {
-	int row_count = 0;
-	int col_count = 0;
+	U32 row_count = 0;
+	U32 col_count = 0;
 
 	level_file.open(file);
 	if (level_file.is_open())

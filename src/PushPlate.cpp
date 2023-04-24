@@ -3,23 +3,23 @@
 
 void PushPlateTriggerSystem::on_tick(void)
 {
-    for (auto&& [entity, pushplate] : access_storage().each())
-    {
-        if (pushplate.active != pushplate.activeprevious)
-        {
-            pushplate.activeprevious = pushplate.active;
-            SignalEmitter<PushPlateSignal>::emit({ pushplate.tid, pushplate.active });
-        }
-    }
+	for (auto &&[entity, push_plate] : access_storage().each())
+	{
+		if (push_plate.active != push_plate.active_previous)
+		{
+			push_plate.active_previous = push_plate.active;
+			SignalEmitter<PushPlateSignal>::emit({push_plate.tid, push_plate.active});
+		}
+	}
 }
 
-void PushPlateCounterSystem::process_signal(PushPlateSignal&)
+void PushPlateCounterSystem::process_signal(PushPlateSignal &)
 {
-	auto& state = MutAccessUnique<PushPlateCounter>::access_unique();
+	auto &state = MutAccessUnique<PushPlateCounter>::access_unique();
 
-    state.count++;
-    if (state.count == state.count_target)
-    {
-        SignalEmitter<PushPlateAllActiveSignal>::emit({ state.count });
-    }
+	state.count++;
+	if (state.count == state.count_target)
+	{
+		SignalEmitter<PushPlateAllActiveSignal>::emit({state.count});
+	}
 }

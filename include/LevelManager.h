@@ -10,7 +10,7 @@ class LevelManager
 {
 public:
 	void load_level(String file);
-	char level_map[TILE_ROWS][TILE_COLS] = { '0' };
+	Char level_map[TILE_ROWS][TILE_COLS] = { '0' };
 
 private:
 	std::ifstream level_file;
