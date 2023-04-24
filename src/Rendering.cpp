@@ -5,7 +5,7 @@
 
 using namespace core;
 
-RenderingModule::RenderingModule() 
+RenderingModule::RenderingModule()
 	: render_texture{nullptr}
 {
 }
@@ -16,7 +16,7 @@ bool RenderingModule::on_start()
 }
 
 void RenderingModule::on_tick()
-{	
+{
 	SignalEmitter<RenderFrameStart>::emit(RenderFrameStart{});
 	auto& state = AccessUnique<WindowingState>::access_unique();
 	SDL_RenderClear(state.renderer);
