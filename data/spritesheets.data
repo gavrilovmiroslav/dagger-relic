@@ -8,3 +8,4 @@ Knight/jump: Knight/jump.png.data
 Rogue/jump: Rogue/jump.png.data
 Knight/walk: Knight/walk.png.data
 Rogue/walk: Rogue/walk.png.data
+platform/platform: platform/platform.png.data

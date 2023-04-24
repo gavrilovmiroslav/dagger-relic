@@ -9,6 +9,11 @@
 
 using namespace core;
 
+struct Platform {
+	F32 width;
+	F32 height;
+};
+
 struct Player {
     geometry::Vec2 speed;
 	bool isGrounded;

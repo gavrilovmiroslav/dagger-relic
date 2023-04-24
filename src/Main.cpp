@@ -37,6 +37,13 @@ struct PurgatoryPals : public Game
 			.with<Animation>("Knight/jump", "Knight/walk", "Knight/idle")
 			.with<Flip>(None)
 			.done();
+
+		auto platform1 = spawn()
+			.with<Platform>(128.0f, 4.0f)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
+			.with<Position>(geometry::Vec2{ 400, 300 })
+			.with<Visibility>(true);
 			
 	}
 };
