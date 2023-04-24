@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdlib.h>
+#include <time.h>
+
 #include "Prelude.h"
 
 #include "GameSpecificComponents.h"
@@ -94,6 +97,7 @@ struct SWMG : public Game {
 
 int main(int argc, char* argv[])
 {
+	srand(time(NULL));
 	auto& engine = Engine::get_instance();
 	std::string filePath = "dagger.ini";
 	engine.configure(filePath.data(), argc, argv);

@@ -6,3 +6,4 @@ test/platform: test/platform.png.data
 test/pickup: test/pickup.png.data
 test/Fireball: test/Fireball.png.data
 test/Curseball: test/Curseball.png.data
+test/Fastball: test/Fastball.png.data
