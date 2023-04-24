@@ -7,7 +7,7 @@
 
 struct PickupTimeoutSignal {};
 
-using PickupTimer = Timer<500, PickupTimeoutSignal>;
+using PickupTimer = Timer<3000, PickupTimeoutSignal>;
 
 struct PickupSystem
 	: public ecs::System
@@ -20,16 +20,9 @@ struct PickupSystem
 	using QueryPlayers = MutAccessGroupStorage<Player, Position>;
 	using QueryPickups = MutAccessGroupStorage<Pickup, Position>;
 
-	Bool on_start() override 
-	{ 
-		MutAccessUnique<PickupTimer>::access_unique().start();
-		return true; 
-	}
+	Bool on_start() override;
 
 	void on_tick() override;
 
-	void process_signal(PickupTimeoutSignal& signal) override
-	{
-		// do stuff here every 500ms!
-	}
+	void process_signal(PickupTimeoutSignal& signal) override;
 };

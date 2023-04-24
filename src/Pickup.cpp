@@ -22,3 +22,19 @@ void PickupSystem::on_tick()
 		}
 	}
 }
+
+Bool PickupSystem::on_start()
+{
+	MutAccessUnique<PickupTimer>::access_unique().start();
+	return true;
+}
+
+void PickupSystem::process_signal(PickupTimeoutSignal& signal)
+{
+	spawn()
+		.with<Pickup>("curseball" , 32.0f, 5)
+		.with<Sprite>(ecs::no_entity)
+		.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
+		.with<Position>(geometry::Vec2{ rand() % 600, rand() % 570 })
+		.with<Visibility>(true);
+}
