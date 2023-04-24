@@ -27,6 +27,7 @@ sources = [
     'src/Diagnostics.cpp',
     'src/EventBus.cpp',
     'src/FPSCalculator.cpp',
+    'src/LevelManager.cpp',
     'src/Loaders.cpp',
     'src/PostProcessRendering.cpp',
     'src/Rendering.cpp',
