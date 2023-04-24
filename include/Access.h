@@ -4,7 +4,7 @@
 #include "Definitions.h"
 #include "Engine.h"
 
-struct AccessTrait 
+struct AccessTrait
 {
 	static containers::Map<Size, ecs::Entity> unique_resources;
 
@@ -81,7 +81,7 @@ struct AccessUnique : public AccessTrait
 
 struct AccessEntityValidity : public AccessTrait
 {
-	bool is_ok(ecs::Entity e) const 
+	bool is_ok(ecs::Entity e) const
 	{
 		return core::Engine::get_instance().registry.valid(e);
 	}
@@ -90,7 +90,7 @@ struct AccessEntityValidity : public AccessTrait
 template<typename T>
 struct AccessComponentById : public AccessTrait
 {
-	const T* get(ecs::Entity e) const
+	const T& get(ecs::Entity e) const
 	{
 		auto& registry = core::Engine::get_instance().registry;
 		if (registry.valid(e))
@@ -124,7 +124,7 @@ struct MutAccessComponentById : public AccessTrait
 template<typename T>
 struct AccessStorage : public AccessTrait
 {
-	auto access_storage() const 
+	auto access_storage() const
 	{
 		return core::Engine::get_instance().registry.view<const T>();
 	}

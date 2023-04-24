@@ -31,7 +31,7 @@ struct SWMG : public Game {
 				.with<Position>(geometry::Vec2{ rand() % 600, rand() % 570 })
 				.with<Visibility>(true);
 		}
-	
+
 		auto platform1 = spawn()
 			.with<Platform>(128.0f, 4.0f)
 			.with<Sprite>(ecs::no_entity)
@@ -65,7 +65,7 @@ struct SWMG : public Game {
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/platform"))
 			.with<Position>(geometry::Vec2{ 600, 400 })
-			.with<Visibility>(true);		
+			.with<Visibility>(true);
 
 		auto ground = spawn()
 			.with<Platform>((F32)SCREEN_WIDTH, 4.0f)
@@ -113,4 +113,3 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
-

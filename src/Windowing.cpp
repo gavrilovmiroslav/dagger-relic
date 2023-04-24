@@ -31,7 +31,7 @@ bool WindowingModule::on_start()
 		return false;
 	}
 
-	state.renderer = SDL_CreateRenderer(state.window, -1, SDL_RENDERER_ACCELERATED);	
+	state.renderer = SDL_CreateRenderer(state.window, -1, SDL_RENDERER_ACCELERATED);
 	SignalEmitter<WindowInitSignal>::emit(WindowInitSignal{});
 
 	int w, h;
@@ -59,7 +59,7 @@ void WindowingModule::on_end()
 		SDL_DestroyWindow(state.window);
 		Logger::info("Window destroyed successfully.");
 	}
-	
+
 	// TODO: SDL_Quit hangs! Issue likely reported: https://github.com/libsdl-org/SDL/issues/4276
 	//SDL_Quit();
 	Logger::info("Quitting.");
