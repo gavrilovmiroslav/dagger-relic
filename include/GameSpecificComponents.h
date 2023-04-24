@@ -91,7 +91,7 @@ struct SpellPlayerCollisionSignal
 	ecs::Entity spell;
 };
 
-struct KeyBindings 
+struct KeyBindings
 {
 	KeyCode up;
 	KeyCode down;

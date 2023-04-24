@@ -15,9 +15,9 @@ void CountFPSCalculatorModule::process_signal(core::FrameDurationSignal& signal)
 
 void SMAFPSCalculatorModule::process_signal(core::FrameDurationSignal& signal)
 {
-	duration_sum -= duration_list[current_index];  /* subtract value falling off */
-	duration_sum += signal.frame_duration;              /* add new value */
-	duration_list[current_index] = signal.frame_duration;   /* save new value so it can be subtracted later */
+	duration_sum -= duration_list[current_index];	/* subtract value falling off */
+	duration_sum += signal.frame_duration;		/* add new value */
+	duration_list[current_index] = signal.frame_duration;	/* save new value so it can be subtracted later */
 	current_index = (current_index + 1) % MAXSAMPLES;
 
 	delta_sum += signal.frame_duration;
