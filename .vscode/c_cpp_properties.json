@@ -3,7 +3,8 @@
         {
             "name": "CppConfig",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/usr/include/c++/11"
             ],
             "defines": [],
             "macFrameworkPath": [

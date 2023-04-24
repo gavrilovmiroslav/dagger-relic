@@ -1,0 +1,31 @@
+texture: Knight/jump
+dimensions: 1, 1
+sprites: 7
+
+clip: 0, 0, 100, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 128, 0, 100, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 256, 0, 100, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 0, 128, 100, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 128, 128, 100, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 256, 128, 100, 128
+pivot: 1, 1
+scale: 1, 1
+
+clip: 0, 256, 100, 128
+pivot: 1, 1
+scale: 1, 1
