@@ -33,40 +33,45 @@ struct SWMG : public Game {
 		}
 	
 		auto platform1 = spawn()
-			.with<Platform>(128.0f, 4.0f)
+			.with<Platform>(130.0f, 49.6f)
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("test/platform"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
+            .with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 400, 550 })
 			.with<Visibility>(true);
 
 		auto platform2 = spawn()
-			.with<Platform>(128.0f, 4.0f)
+			.with<Platform>(130.0f, 49.6f)
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("test/platform"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
+            .with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 200, 450 })
 			.with<Visibility>(true);
 
 		auto platform3 = spawn()
-			.with<Platform>(128.0f, 4.0f)
+			.with<Platform>(130.0f, 49.6f)
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("test/platform"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
+            .with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 300, 500 })
 			.with<Visibility>(true);
 
 		auto platform4 = spawn()
-			.with<Platform>(128.0f, 4.0f)
+			.with<Platform>(130.0f, 49.6f)
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("test/platform"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
+            .with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 450, 450 })
 			.with<Visibility>(true);
 
 		auto platform5 = spawn()
-			.with<Platform>(128.0f, 4.0f)
+			.with<Platform>(130.0f, 49.6f)
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("test/platform"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
+            .with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 600, 400 })
 			.with<Visibility>(true);		
-
+		
 		auto ground = spawn()
 			.with<Platform>((F32)SCREEN_WIDTH, 4.0f)
 			.with<Sprite>(ecs::no_entity)
