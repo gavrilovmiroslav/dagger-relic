@@ -50,7 +50,10 @@ Config override_config_with_command_line(Config get_config, Size argumentCount, 
 		{
 			Bool sign = !(flag.at(0) == '~');
 			value = sign ? "true" : "false";
-			if (sign == false) { flag.erase(0, 1); }
+			if (sign == false)
+			{
+				flag.erase(0, 1);
+			}
 			token = flag;
 		}
 

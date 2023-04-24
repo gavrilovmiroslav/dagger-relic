@@ -26,7 +26,7 @@ namespace core
 		RawPtr<SDL_Renderer> renderer;
 	};
 
-	class WindowingModule 
+	class WindowingModule
 		: public ecs::System
 		, public AllocateUnique<WindowingState>
 		, public MutAccessUnique<WindowingState>

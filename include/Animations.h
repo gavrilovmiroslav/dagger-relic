@@ -18,7 +18,8 @@ struct SpriteAnimation
 struct Sprite;
 struct Spritesheet;
 
-namespace core {
+namespace core
+{
 	struct PostRenderSignal;
 }
 
