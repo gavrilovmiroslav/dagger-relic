@@ -20,4 +20,3 @@ private:
 	StaticArray<DiagEntry, DIAG_TYPE_COUNT> diagnostics;
 	void process_signal(DiagnosticsSignal&) override;
 };
-

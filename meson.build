@@ -8,7 +8,7 @@ endif
 deps = [
     dependency('entt'),
     dependency('glm'),
-    dependency('spdlog'),
+    dependency('spdlog', default_options : [ 'tests=false' ]),
     dependency('sdl2', default_options : [ 'test=false' ]),
     dependency('sdl2_image'),
     dependency('sdl2_net'),
@@ -34,7 +34,8 @@ sources = [
     'src/Main.cpp',
     'src/PlayerControls.cpp',
     'src/Platform.cpp',
-    'src/Background.cpp'
+    'src/Background.cpp',
+    'src/Item.cpp'
 ]
 
 executable('dagger',

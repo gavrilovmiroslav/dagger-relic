@@ -19,12 +19,12 @@ brew install meson sdl2 yaml-cpp
 
 ### Ubuntu 22.04:
 ```sh
-sudo apt install git meson ninja-build clang libyaml-cpp-dev libsdl2-dev
+sudo apt install git meson ninja-build clang gdb libsdl2-dev
 ```
 
 ### Fedora 37:
 ```sh
-sudo dnf install git meson ninja-build clang yaml-cpp-devel SDL2-devel
+sudo dnf install git meson ninja-build clang gdb yaml-cpp-devel SDL2-devel
 ```
 
 ## Clone the repository
@@ -42,6 +42,7 @@ Afterwards simply run the following commands in the terminal to get the needed e
 ```sh
 code --install-extension ms-vscode.cpptools
 code --install-extension mesonbuild.mesonbuild
+code --install-extension editorconfig.editorconfig
 ```
 
 ## Compile and Run

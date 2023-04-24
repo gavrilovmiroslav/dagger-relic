@@ -4,7 +4,6 @@
 #include "Access.h"
 #include "GameComponents.h"
 
-
 struct PlayerControlsSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<Player, KeyBindings, Position, SpriteAnimation>

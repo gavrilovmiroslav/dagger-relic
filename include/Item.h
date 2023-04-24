@@ -4,13 +4,13 @@
 #include "Access.h"
 #include "GameComponents.h"
 
-struct PlatformSystem
+struct ItemSystem
 	: public ecs::System
-	, public MutAccessGroupStorage<Platform, KeyBindings, Position, Sprite>
+	, public MutAccessGroupStorage<Item, KeyBindings, Position, Sprite, Visibility>
 	, public MutAccessGroupStorage<Player, Position>
 	, public MutAccessUnique<OurGlobalVar>
 {
 	using QueryPlayer = MutAccessGroupStorage<Player, Position>;
-	using QueryPlatform = MutAccessGroupStorage<Platform, KeyBindings, Position, Sprite>;
+	using QueryItem = MutAccessGroupStorage<Item, KeyBindings, Position, Sprite, Visibility>;
 	void on_tick() override;
 };

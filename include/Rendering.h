@@ -15,7 +15,7 @@ namespace core
 
 	struct WindowingState;
 
-	class RenderingModule 
+	class RenderingModule
 		: public ecs::System
 		, public AccessUnique<WindowingState>
 		, public SignalProcessor<core::WindowResizedSignal>
@@ -35,6 +35,6 @@ namespace core
 		void on_end() override;
 
 		void recreate_render_surface_texture();
-		void process_signal(core::WindowResizedSignal&) override;		
+		void process_signal(core::WindowResizedSignal&) override;
 	};
 }
