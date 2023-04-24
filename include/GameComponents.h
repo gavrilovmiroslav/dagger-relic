@@ -8,15 +8,18 @@
 #define NUMBER_OF_BACKGROUND 20
 #define NUMBER_OF_PLATFORM 13
 #define GRAVITY 200.0f
+#define PLAYER_OFFSET_LEFT 35
+#define PLAYER_OFFSET_RIGHT 70
+#define PLAYER_OFFSET_DOWN 142
+#define PLATFORM_OFFSET 64
+// bool playerMove = false;
 
-//bool playerMove = false;
-
-struct Player 
+struct Player
 {
 	F32 verticalVelocity;
 	I32 coinNumber;
 };
-struct Background 
+struct Background
 {
 	F32 verticalVelocity;
 };
@@ -30,11 +33,12 @@ struct Item
 	F64 pickupRadius;
 };
 
-struct OurGlobalVar{
+struct OurGlobalVar
+{
 	bool canPlayerMove = false;
-	bool isGrounded=false;
+	bool isGrounded = false;
 };
-struct KeyBindings 
+struct KeyBindings
 {
 	KeyCode up;
 	KeyCode down;
@@ -42,5 +46,3 @@ struct KeyBindings
 	KeyCode right;
 	KeyCode attack;
 };
-
-

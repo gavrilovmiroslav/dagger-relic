@@ -4,11 +4,10 @@
 #include "Access.h"
 #include "GameComponents.h"
 
-
 struct BackgroundSystem
-	: public ecs::System
-	, public MutAccessGroupStorage<Background,KeyBindings, Position, Sprite>
-	, public MutAccessUnique<OurGlobalVar>
+    : public ecs::System,
+      public MutAccessGroupStorage<Background, KeyBindings, Position, Sprite>,
+      public MutAccessUnique<OurGlobalVar>
 {
-   void on_tick() override;
+	void on_tick() override;
 };

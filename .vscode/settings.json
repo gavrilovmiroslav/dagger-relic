@@ -77,5 +77,6 @@
         "semaphore": "cpp"
     },
     "mesonbuild.configureOnOpen": false,
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "C_Cpp.default.compileCommands": "builddir/vscode_compile_commands.json"
 }

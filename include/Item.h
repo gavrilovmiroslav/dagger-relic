@@ -5,12 +5,12 @@
 #include "GameComponents.h"
 
 struct ItemSystem
-	: public ecs::System
-	, public MutAccessGroupStorage<Item, KeyBindings, Position, Sprite, Visibility>
-	, public MutAccessGroupStorage<Player,Position>
-	, public MutAccessUnique<OurGlobalVar>
+    : public ecs::System,
+      public MutAccessGroupStorage<Item, KeyBindings, Position, Sprite, Visibility>,
+      public MutAccessGroupStorage<Player, Position>,
+      public MutAccessUnique<OurGlobalVar>
 {
-	using QueryPlayer = MutAccessGroupStorage<Player,Position>;
+	using QueryPlayer = MutAccessGroupStorage<Player, Position>;
 	using QueryItem = MutAccessGroupStorage<Item, KeyBindings, Position, Sprite, Visibility>;
-    void on_tick() override;
+	void on_tick() override;
 };
