@@ -11,8 +11,8 @@
 using namespace core;
 
 struct FallingHero
-    : public Game,
-      public AllocateUnique<OurGlobalVar>
+	: public Game
+	, public AllocateUnique<OurGlobalVar>
 {
 	FallingHero()
 	{

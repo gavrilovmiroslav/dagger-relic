@@ -32,7 +32,6 @@ struct Item
 	F32 verticalVelocity;
 	F64 pickupRadius;
 };
-
 struct OurGlobalVar
 {
 	bool canPlayerMove = false;

@@ -5,10 +5,10 @@
 #include "GameComponents.h"
 
 struct PlatformSystem
-    : public ecs::System,
-      public MutAccessGroupStorage<Platform, KeyBindings, Position, Sprite>,
-      public MutAccessGroupStorage<Player, Position>,
-      public MutAccessUnique<OurGlobalVar>
+	: public ecs::System
+	, public MutAccessGroupStorage<Platform, KeyBindings, Position, Sprite>
+	, public MutAccessGroupStorage<Player, Position>
+	, public MutAccessUnique<OurGlobalVar>
 {
 	using QueryPlayer = MutAccessGroupStorage<Player, Position>;
 	using QueryPlatform = MutAccessGroupStorage<Platform, KeyBindings, Position, Sprite>;
