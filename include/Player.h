@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GameComponents.h"
 #include "Prelude.h"
 #include "Shuffle.h"
 

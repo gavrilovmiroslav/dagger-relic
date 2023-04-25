@@ -31,6 +31,7 @@ sources = [
     'src/Loaders.cpp',
     'src/PostProcessRendering.cpp',
     'src/Rendering.cpp',
+    'src/SoundManager.cpp',
     'src/SpriteRendering.cpp',
     'src/Windowing.cpp',
     'src/Main.cpp'

@@ -1,39 +1,14 @@
 #pragma once
 
 #include "Algebra.h"
+#include "GameComponents.h"
 #include "LevelManager.h"
 #include "Player.h"
 #include "Prelude.h"
 #include "Random.h"
+#include "SoundManager.h"
 
 using namespace core;
-
-struct Movement
-{
-	geometry::Vec2 velocity;
-	geometry::Vec2 velocity_max;
-	geometry::Vec2 force;
-	F32            move_force;
-	F32            collision_box_width;
-	F32            collision_box_height;
-
-	Movement(F32 move_force, F32 velocity_max, F32 collision_w, F32 collision_h)
-		: velocity(0.0f, 0.0f)
-		, move_force(move_force)
-		, velocity_max(velocity_max)
-		, force(0.0f, 0.0f)
-		, collision_box_width(collision_w)
-		, collision_box_height(collision_h)
-	{
-
-	}
-};
-
-struct KeyBinding
-{
-	KeyCode left, down, up, right;
-	KeyCode blindfold_change;
-};
 
 struct MovementSystem
 	: public ecs::System
@@ -168,36 +143,7 @@ struct MovementControlSystem
 				movement.force.x -= fsignf(movement.force.x)*movement.move_force;
 			}
 
-			spdlog::info("force: {} {}", movement.force.x, movement.force.y);
-		}
-	}
-};
-
-// TODO: move to separate file after refactoring Main.cpp and add signals to other components
-struct BlindfoldChangingSystem
-	: public ecs::System
-	, public MutAccessGroupStorage<Player, KeyBinding>
-{
-	void on_tick() override
-	{
-		const auto& keys = KeyState::get();
-
-		U32 counter = 0;
-		StaticArray<SpecialBlindfold, 3> blindfolds = { SpecialBlindfold::HumanEyes, SpecialBlindfold::FoxEyes, SpecialBlindfold::ScorpionEyes };
-
-		for (auto&& [entity, player, key_binding] : access_storage().each())
-		{
-			SpecialBlindfold new_blindfold;
-			if (keys.is_pressed(key_binding.blindfold_change))
-			{
-				counter++;
-				new_blindfold = blindfolds[counter % 3];
-
-				if (player.available_blindfolds[new_blindfold] != 0)
-				{
-					player.current_blindfold = new_blindfold;
-				}
-			}
+			// spdlog::info("force: {} {}", movement.force.x, movement.force.y);
 		}
 	}
 };
@@ -209,10 +155,10 @@ struct PyramidPlunder : public Game
 	PyramidPlunder()
 	{
 		auto& engine = Engine::get_instance();
-		engine.use<BlindfoldChangingSystem>();
+		engine.use<ClickControlSystem>();
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
-		engine.use<ClickControlSystem>();
+		engine.use<SoundControlSystem>();
 	}
 
 	void on_start() override
@@ -246,20 +192,21 @@ struct PyramidPlunder : public Game
 				if(c == 'b')
 				{
 					spawn()
+					.with<Scale>(geometry::Vec2{1.0f, 1.0f})
 					.with<Sprite>(ecs::no_entity, 5)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
 					.with<Visibility>(true)
-					.with<Position>(geometry::Vec2{ i*96, j*96})
+					.with<Position>(geometry::Vec2{ i*96 + 25, j*96 + 25})
 					.with<Movement>(2000.0f, 50.0f, 32, 32)
 					.done();
 				}
 				if(c == 'p')
 				{
 					spawn()
-					.with<Sprite>(ecs::no_entity, 4)
+					.with<Sprite>(ecs::no_entity, -1)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_3"))
 					.with<Visibility>(true)
-					.with<Position>(geometry::Vec2{ i*96, j*96})
+					.with<Position>(geometry::Vec2{ i*96, j*96 })
 					.done();
 				}
 				if(c == 'a')
@@ -269,13 +216,28 @@ struct PyramidPlunder : public Game
 					.with<Sprite>(ecs::no_entity, 6)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
 					.with<Visibility>(true)
-					.with<Position>(geometry::Vec2{ i*96, j*96})
+					.with<Position>(geometry::Vec2{ i*96, j*96 + 25})
 					.with<Movement>(3000.0f, 50.0f, 16, 16)
-					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
+					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT)
 					.done();
 				}
-        	}
+				if (c == 'd')
+				{
+					spawn()
+					.with<Sprite>(ecs::no_entity, 8)
+					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/door"))
+					.with<Visibility>(true)
+					.with<Position>(geometry::Vec2{ i * 96 + 1, j * 96 + 1 })
+					.done();
+				}
+        		}
 		}
+
+		spawn()
+		.with<SoundManager>("music/tomb_raiders.wav")
+		.with<Visibility>(true)
+		.with<KeyBinding>(KeyCode::KEY_S)
+		.done();
 	}
 };
 
