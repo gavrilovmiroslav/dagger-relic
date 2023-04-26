@@ -32,15 +32,17 @@ Bool PickupSystem::on_start()
 void PickupSystem::process_signal(PickupTimeoutSignal& signal)
 {
 	spawn()
-		.with<Pickup>("fastball" , 32.0f, 10)
+		.with<Pickup>("fastball" , 24.0f, 6)
 		.with<Sprite>(ecs::no_entity)
-		.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
+		.with<SpriteAnimation>(Spritesheet::get_by_name("test/FastballTome"))
+		.with<Scale>(geometry::Vec2{0.8f, 0.8f})
 		.with<Position>(geometry::Vec2{ rand() % 600, rand() % 570 })
 		.with<Visibility>(true);
 	spawn()
-		.with<Pickup>("curseball" , 32.0f, 3)
+		.with<Pickup>("curseball" , 24.0f, 3)
 		.with<Sprite>(ecs::no_entity)
-		.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
+		.with<SpriteAnimation>(Spritesheet::get_by_name("test/CurseballTome"))
+		.with<Scale>(geometry::Vec2{0.8f, 0.8f})
 		.with<Position>(geometry::Vec2{ rand() % 600, rand() % 570 })
 		.with<Visibility>(true);
 }
