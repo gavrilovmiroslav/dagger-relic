@@ -21,6 +21,7 @@ struct FallingHero
 		engine.use<BackgroundSystem>();
 		engine.use<PlatformSystem>();
 		engine.use<ItemSystem>();
+		engine.use<MonsterSystem>();
 	}
 	void on_start() override
 	{
@@ -47,6 +48,16 @@ struct FallingHero
 			    .with<Visibility>(true)
 			    .with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S)
 			    .done();
+		auto monster = spawn()
+			.with<Monster>(0.0f)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("monster/idle"))
+			.with<Position>(geometry::Vec2{SCREEN_WIDTH - 300 , SCREEN_HEIGHT * NUMBER_OF_BACKGROUND - 164})
+			.with<Scale>(geometry::Vec2{3, 3})
+			.with<Visibility>(true)
+			.with<Flip>(Horizontal)
+			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S)
+			.done();
 		for (int i = 0; i < NUMBER_OF_BACKGROUND; i++)
 			spawn()
 			    .with<Background>(0.0f)
@@ -66,6 +77,7 @@ struct FallingHero
 				.with<Visibility>(true)
 				.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D, KeyCode::KEY_SPACE)
 				.done();
+	
 
 		for (int i = 0; i < rows; ++i)
 		{

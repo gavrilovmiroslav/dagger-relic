@@ -45,3 +45,7 @@ struct KeyBindings
 	KeyCode right;
 	KeyCode attack;
 };
+struct Monster
+{
+	F32 verticalVelocity;
+};
