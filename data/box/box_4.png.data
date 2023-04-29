@@ -1,0 +1,7 @@
+texture: box/box_4
+dimensions: 1, 1
+sprites: 1
+
+clip: 0, 0, 22, 22
+pivot: -2, -1
+scale: 1, 1

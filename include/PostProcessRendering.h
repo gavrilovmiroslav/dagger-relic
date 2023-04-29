@@ -23,6 +23,11 @@ struct PostProcessText
 	geometry::Vec2 position;
 };
 
+struct PostProcessRectangle
+{
+	I32 x, y, w, h;
+};
+
 struct PostProcessTest
 {
 	U32 magic = 0; /* Define test number. */
@@ -56,6 +61,14 @@ class PostProcessTextRenderingModule
 class PostProcessTestRenderingModule
 	: public ecs::System
 	, public AccessStorage<PostProcessTest>
+	, public SignalProcessor<core::PostProcessRenderSignal>
+{
+	void process_signal(core::PostProcessRenderSignal& signal) override;
+};
+
+class PostProcessRectangleRenderingModule
+	: public ecs::System
+	, public AccessStorage<PostProcessRectangle>
 	, public SignalProcessor<core::PostProcessRenderSignal>
 {
 	void process_signal(core::PostProcessRenderSignal& signal) override;
