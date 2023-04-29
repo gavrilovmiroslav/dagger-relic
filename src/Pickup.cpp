@@ -25,18 +25,20 @@ void PickupSystem::on_tick()
 
 Bool PickupSystem::on_start()
 {
+	auto& generator = MutAccessUnique<Generator>::access_unique();
 	std::vector<I32> x_coordinates = {100, 200, 300, 400, 500, 600, 700};
 	std::vector<I32> y_coordinates = {100, 200, 300, 400, 500, 600, 700};
 
 	MutAccessUnique<PickupTimer>::access_unique().start();
-	MutAccessUnique<Generator>::access_unique().initialize_deques(x_coordinates, y_coordinates);
+	generator.initialize_deques(x_coordinates, y_coordinates);
 	return true;
 }
 
 void PickupSystem::process_signal(PickupTimeoutSignal& signal)
 {
-	I32 x = MutAccessUnique<Generator>::access_unique().next_x();
-	I32 y = MutAccessUnique<Generator>::access_unique().next_y();
+	auto& generator = MutAccessUnique<Generator>::access_unique();
+	I32 x = generator.next_x();
+	I32 y = generator.next_y();
 	spawn()
 		.with<Pickup>("curseball" , 24.0f, 3)
 		.with<Sprite>(ecs::no_entity)
