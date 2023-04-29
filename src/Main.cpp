@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Prelude.h"
 #include "Random.h"
+#include "TextRender.h"
 
 using namespace core;
 
@@ -213,6 +214,7 @@ struct PyramidPlunder : public Game
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
 		engine.use<ClickControlSystem>();
+		engine.use<TextRenderControlSystem>();
 	}
 
 	void on_start() override
@@ -220,62 +222,22 @@ struct PyramidPlunder : public Game
 		level_manager = LevelManager();
 		level_manager.load_level("Levels/level1.txt");
 
-		for(U32 i = 0; i < TILE_ROWS; i++)
-		{
-        		for(U32 j = 0; j < TILE_COLS; j++)
-			{
-				Char c = level_manager.level_map[j][i];
-				if(c == 'x')
-				{
-					spawn()
-					.with<Sprite>(ecs::no_entity, 6)
-					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/wall"))
-					.with<Visibility>(true)
-					.with<Position>(geometry::Vec2{ i*96 + 25, j*96 + 25})
-					.done();
-				}
-				if(c == 'o' || c == 'a' || c == 'b')
-				{
-					spawn()
-					.with<Sprite>(ecs::no_entity, 2)
-					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/sand"))
-					.with<Visibility>(true)
-					.with<Position>(geometry::Vec2{ i*96 +25, j*96+25})
-					.done();
-				}
-				if(c == 'b')
-				{
-					spawn()
-					.with<Sprite>(ecs::no_entity, 5)
-					.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
-					.with<Visibility>(true)
-					.with<Position>(geometry::Vec2{ i*96, j*96})
-					.with<Movement>(2000.0f, 50.0f, 32, 32)
-					.done();
-				}
-				if(c == 'p')
-				{
-					spawn()
-					.with<Sprite>(ecs::no_entity, 4)
-					.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_3"))
-					.with<Visibility>(true)
-					.with<Position>(geometry::Vec2{ i*96, j*96})
-					.done();
-				}
-				if(c == 'a')
-				{
-					spawn()
-					.with<Player>(SpecialBlindfold::HumanEyes)
-					.with<Sprite>(ecs::no_entity, 6)
-					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
-					.with<Visibility>(true)
-					.with<Position>(geometry::Vec2{ i*96, j*96})
-					.with<Movement>(3000.0f, 50.0f, 16, 16)
-					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
-					.done();
-				}
-        	}
-		}
+		TextRender::init();
+
+		spawn()
+		.with<TextRender>("test text", 32)
+		.with<Position>(geometry::Vec2{ 100, 100 })
+		.done();
+
+		spawn()
+		.with<TextRender>("test text2", 64)
+		.with<Position>(geometry::Vec2{ 300, 300 })
+		.done();
+	}
+
+	void on_end() override
+	{
+		TextRender::deinit();
 	}
 };
 
