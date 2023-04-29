@@ -155,6 +155,7 @@ struct PyramidPlunder : public Game
 	PyramidPlunder()
 	{
 		auto& engine = Engine::get_instance();
+		engine.use<BlindfoldChangingSystem>();
 		engine.use<ClickControlSystem>();
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
@@ -174,10 +175,11 @@ struct PyramidPlunder : public Game
 				if(c == 'x')
 				{
 					spawn()
+					.with<Wall>(false)
 					.with<Sprite>(ecs::no_entity, 6)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/wall"))
 					.with<Visibility>(true)
-					.with<Position>(geometry::Vec2{ i*96 + 25, j*96 + 25})
+					.with<Position>(geometry::Vec2{ i*96 + 24, j*96 + 25})
 					.done();
 				}
 				if(c == 'o' || c == 'a' || c == 'b')
@@ -186,7 +188,7 @@ struct PyramidPlunder : public Game
 					.with<Sprite>(ecs::no_entity, 2)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/sand"))
 					.with<Visibility>(true)
-					.with<Position>(geometry::Vec2{ i*96 +25, j*96+25})
+					.with<Position>(geometry::Vec2{ i*96 + 24, j*96+25})
 					.done();
 				}
 				if(c == 'b')
@@ -196,7 +198,7 @@ struct PyramidPlunder : public Game
 					.with<Sprite>(ecs::no_entity, 5)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
 					.with<Visibility>(true)
-					.with<Position>(geometry::Vec2{ i*96 + 25, j*96 + 25})
+					.with<Position>(geometry::Vec2{ i*96 + 24, j*96 + 25})
 					.with<Movement>(2000.0f, 50.0f, 32, 32)
 					.done();
 				}
@@ -218,16 +220,17 @@ struct PyramidPlunder : public Game
 					.with<Visibility>(true)
 					.with<Position>(geometry::Vec2{ i*96, j*96 + 25})
 					.with<Movement>(3000.0f, 50.0f, 16, 16)
-					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT)
+					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE, KeyCode::KEY_LSHIFT)
 					.done();
 				}
 				if (c == 'd')
 				{
 					spawn()
+					.with<Wall>(true)
 					.with<Sprite>(ecs::no_entity, 8)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/door"))
 					.with<Visibility>(true)
-					.with<Position>(geometry::Vec2{ i * 96 + 1, j * 96 + 1 })
+					.with<Position>(geometry::Vec2{ i * 96 + 24, j * 96 + 25 })
 					.done();
 				}
         		}

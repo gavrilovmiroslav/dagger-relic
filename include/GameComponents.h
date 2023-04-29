@@ -5,18 +5,25 @@
 struct KeyBinding
 {
 	KeyCode left, down, up, right;
+	KeyCode blindfold_change, reversed_change;
 	KeyCode toggle_sound;
 
-	KeyBinding(KeyCode left, KeyCode down, KeyCode up, KeyCode right)
+	KeyBinding(KeyCode left, KeyCode down, KeyCode up, KeyCode right, KeyCode blindfold_change, KeyCode reversed_change)
 		: left(left)
 		, down(down)
 		, up(up)
 		, right(right)
-		{};
+		, blindfold_change(blindfold_change)
+		, reversed_change(reversed_change)
+	{
+
+	};
 
 	KeyBinding(KeyCode toggle)
 		: toggle_sound(toggle)
-		{};
+	{
+
+	};
 };
 
 struct Movement
@@ -40,5 +47,9 @@ struct Movement
 	}
 };
 
-struct Wall {};
+struct Wall
+{
+	Bool is_door = false;
+};
+
 struct Boulder {};
