@@ -4,6 +4,7 @@
 #include "Access.h"
 #include "Timer.h"
 #include "GameSpecificComponents.h"
+#include "Generator.h"
 
 struct PickupTimeoutSignal {};
 
@@ -16,6 +17,8 @@ struct PickupSystem
 	, public AllocateUnique<PickupTimer>
 	, public MutAccessUnique<PickupTimer>
 	, public SignalProcessor<PickupTimeoutSignal>
+	, public AllocateUnique<Generator>
+	, public MutAccessUnique<Generator>
 {
 	using QueryPlayers = MutAccessGroupStorage<Player, Position>;
 	using QueryPickups = MutAccessGroupStorage<Pickup, Position>;

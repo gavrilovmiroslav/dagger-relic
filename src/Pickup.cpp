@@ -11,7 +11,7 @@ void PickupSystem::on_tick()
 			if (abs(player_pos.xy.x - pickup_pos.xy.x) <= pickup.radius &&
 			    abs(player_pos.xy.y - pickup_pos.xy.y) <= pickup.radius)
 			{
-				replace_component<Item>(player_entity, pickup.name, pickup.uses); // Removing this line, in addition to the despawn line will stop the crashing issue.
+				replace_component<Item>(player_entity, pickup.name, pickup.uses);
 				to_remove.push_back(pickup_entity);
 			}
 		}
@@ -25,24 +25,23 @@ void PickupSystem::on_tick()
 
 Bool PickupSystem::on_start()
 {
+	std::vector<I32> x_coordinates = {100, 200, 300, 400, 500, 600, 700};
+	std::vector<I32> y_coordinates = {100, 200, 300, 400, 500, 600, 700};
+
 	MutAccessUnique<PickupTimer>::access_unique().start();
+	MutAccessUnique<Generator>::access_unique().initialize_deques(x_coordinates, y_coordinates);
 	return true;
 }
 
 void PickupSystem::process_signal(PickupTimeoutSignal& signal)
 {
-	spawn()
-		.with<Pickup>("fastball" , 24.0f, 6)
-		.with<Sprite>(ecs::no_entity)
-		.with<SpriteAnimation>(Spritesheet::get_by_name("test/FastballTome"))
-		.with<Scale>(geometry::Vec2{0.8f, 0.8f})
-		.with<Position>(geometry::Vec2{ rand() % 600, rand() % 570 })
-		.with<Visibility>(true);
+	I32 x = MutAccessUnique<Generator>::access_unique().next_x();
+	I32 y = MutAccessUnique<Generator>::access_unique().next_y();
 	spawn()
 		.with<Pickup>("curseball" , 24.0f, 3)
 		.with<Sprite>(ecs::no_entity)
 		.with<SpriteAnimation>(Spritesheet::get_by_name("test/CurseballTome"))
 		.with<Scale>(geometry::Vec2{0.8f, 0.8f})
-		.with<Position>(geometry::Vec2{ rand() % 600, rand() % 570 })
+		.with<Position>(geometry::Vec2{ x, y })
 		.with<Visibility>(true);
 }
