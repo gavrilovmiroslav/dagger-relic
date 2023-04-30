@@ -3,6 +3,7 @@ pong/pad: pong/pad.png.data
 test/WizardIdle: test/WizardIdle.png.data
 test/WizardRun: test/WizardRun.png.data
 test/platform: test/platform.png.data
+test/pixel-platform: test/pixel-platform.png.data
 test/pickup: test/pickup.png.data
 test/Fireball: test/Fireball.png.data
 test/Curseball: test/Curseball.png.data
