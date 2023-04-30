@@ -102,6 +102,15 @@ struct SWMG : public Game {
 			.with<Item>("None", 3)
 			.with<Status>(100)
 			.done();
+
+		auto health_bar_one = spawn()
+			.with<Status>(100)
+			.with<Sprite>(ecs::no_entity, 1)
+			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("test/HealthBar"))
+            .with<Scale>(geometry::Vec2{3.0f,3.0f})
+			.with<Position>(geometry::Vec2{50, 50})
+			.with<Visibility>(true)
+			.done();
 	}
 };
 

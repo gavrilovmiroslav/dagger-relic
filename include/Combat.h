@@ -18,6 +18,7 @@ struct SpellMovementSystem
 	, public MutAccessGroupStorage<Player, Position>
 	, public SignalEmitter<SpellPlatformCollisionSignal>
 	, public SignalEmitter<SpellPlayerCollisionSignal>
+
 {
 	using QuerySpells = MutAccessGroupStorage<Spell, Position, SpriteAnimation, Flip, Move, Clipping>;
 	using QueryPlatforms = MutAccessGroupStorage<Platform, Position>;
@@ -25,6 +26,7 @@ struct SpellMovementSystem
 
 	using PlatformCollisionEmitter = SignalEmitter<SpellPlatformCollisionSignal>;
 	using PlayerCollisionEmitter = SignalEmitter<SpellPlayerCollisionSignal>;
+
 
 	void on_tick() override;
 };
@@ -36,6 +38,9 @@ struct SpellCollisionSystem
 	, public MutAccessComponentById<Duration>
 	, public MutAccessComponentById<Status>
 	, public MutAccessComponentById<Spell>
+	, public SignalEmitter<HealthUpdateSignal>
 {
+	using HealthUpdateEmitter = SignalEmitter<HealthUpdateSignal>;
+
 	virtual void process_signal(SpellPlayerCollisionSignal& signal);
 };

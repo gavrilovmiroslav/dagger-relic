@@ -47,6 +47,13 @@ struct Status
 	I32 health;
 };
 
+struct HealthBar
+{
+	I32 health;
+	I32 dashes;
+
+};
+
 enum Element // Spell element
 {
 	Fire = 0,
@@ -89,6 +96,12 @@ struct SpellPlayerCollisionSignal
 {
 	ecs::Entity player;
 	ecs::Entity spell;
+};
+
+struct HealthUpdateSignal
+{
+	ecs::Entity player;
+	I32 update;
 };
 
 struct KeyBindings
