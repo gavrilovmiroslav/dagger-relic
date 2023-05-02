@@ -13,7 +13,6 @@ struct HealthBarSpriteAnimation
 	AnimationSpeed frame_length{ 1.0f };
 	I32 current_frame{ 0 };
 
-	void change_to(String animation_name);
 };
 
 struct Sprite;
@@ -24,9 +23,11 @@ class HealthBarAnimationSystem
 	, public AccessStorage<Sprite>
 	, public AccessStorage<Spritesheet>
 	, public AccessEntityValidity
-	, public MutAccessGroupStorage<Sprite, HealthBarSpriteAnimation, Visibility>
+	, public MutAccessGroupStorage<Sprite, HealthBarSpriteAnimation, PlayerId>
 	, public SignalProcessor<HealthUpdateSignal>
+	, public SignalProcessor<OnStartSignal>
 {
 	virtual void process_signal(HealthUpdateSignal& signal);
+	virtual void process_signal(OnStartSignal& signal);
 };
 

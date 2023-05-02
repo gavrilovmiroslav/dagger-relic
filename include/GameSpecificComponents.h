@@ -14,6 +14,11 @@ struct Player
 	F32 vertical_velocity;
 };
 
+struct PlayerId
+{
+	ecs::Entity playerId;
+};
+
 struct Platform
 {
 	F32 width;
@@ -102,6 +107,11 @@ struct HealthUpdateSignal
 {
 	ecs::Entity player;
 	I32 update;
+};
+
+struct OnStartSignal
+{
+	I32 start_health;
 };
 
 struct KeyBindings

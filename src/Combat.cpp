@@ -97,7 +97,6 @@ void SpellCollisionSystem::process_signal(SpellPlayerCollisionSignal &signal)
 			{
 				status->health -= spell->damage;
 				HealthUpdateEmitter::emit(HealthUpdateSignal{signal.player, status->health});
-				//std::cout << status->health << std::endl;
 				if (status->health <= 0)
 				{
 					despawn(signal.player);
