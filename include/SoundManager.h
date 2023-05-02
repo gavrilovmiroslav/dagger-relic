@@ -44,6 +44,7 @@ struct SoundControlSystem
 	, public MutAccessGroupStorage<Button, Position, SpriteAnimation>
 {
 	using QueryButtons = MutAccessGroupStorage<Button, Position, SpriteAnimation>;
+	U32 counter = 0;
 
 	void on_tick() override;
 };

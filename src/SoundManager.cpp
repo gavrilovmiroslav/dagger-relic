@@ -18,12 +18,20 @@ void SoundManager::load_audio_from_file(String file_name)
 		return;
 	}
 
-	U32 counter = 0;
+	U32 line_counter = 0;
+	U32 music_counter = 0;
 
 	String audio_key, audio_path;
 	while (file >> audio_key >> audio_path)
 	{
-		if (counter < 1)
+		if (line_counter == 0)
+		{
+			music_counter = atoi(audio_key.c_str());
+			line_counter++;
+			continue;
+		}
+
+		if (line_counter <= music_counter)
 		{
 			if (Mix_OpenAudio(FREQUENCY, MIX_DEFAULT_FORMAT, NUM_OF_CHANNELS, CHUNK_SIZE) == -1)
 			{
@@ -50,7 +58,8 @@ void SoundManager::load_audio_from_file(String file_name)
 				spdlog::error("Failed to load sound effect! {}!", Mix_GetError());
 			}
 		}
-		counter++;
+
+		line_counter++;
 	}
 
 	file.close();
@@ -113,7 +122,6 @@ void SoundManager::play_sound(Sound sound_type) const
 void SoundControlSystem::on_tick()
 {
 	const auto& mouse = MouseState::get();
-	U32 counter = 1;
 	Bool is_playing = true;
 
 	auto&& music_entity = MutAccessStorage<SoundManager>::access_storage().front();
@@ -144,12 +152,11 @@ void SoundControlSystem::on_tick()
 			}
 			else if (button.type == ButtonType::PlayNext)
 			{
-				music.play_music(counter++);
+				music.play_music(++counter);
 			}
 			else if (button.type == ButtonType::PlayPrevious)
 			{
 				music.play_music(--counter);
-
 			}
 		}
 	}
