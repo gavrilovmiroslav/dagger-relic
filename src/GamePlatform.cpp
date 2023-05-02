@@ -1,4 +1,4 @@
-#include "Platform.h"
+#include "GamePlatform.h"
 
 void PlatformSystem::on_tick()
 {

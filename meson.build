@@ -32,7 +32,7 @@ sources = [
     'src/SpriteRendering.cpp',
     'src/Windowing.cpp',
     'src/Main.cpp',
-    'src/Platform.cpp',
+    'src/GamePlatform.cpp',
     'src/Gravity.cpp',
     'src/Pickup.cpp',
     'src/PlayerControls.cpp',

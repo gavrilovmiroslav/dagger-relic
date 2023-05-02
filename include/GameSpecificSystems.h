@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Platform.h"
+#include "GamePlatform.h"
 #include "Gravity.h"
 #include "Pickup.h"
 #include "PlayerControls.h"
