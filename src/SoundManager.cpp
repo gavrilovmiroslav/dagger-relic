@@ -1,61 +1,156 @@
 #include "SoundManager.h"
 
 // Audio is initialized in Windowing.cpp
-SoundManager::SoundManager(String file_name)
+SoundManager::SoundManager()
 {
-	if (Mix_OpenAudio(FREQUENCY, MIX_DEFAULT_FORMAT, NUM_OF_CHANNELS, CHUNK_SIZE) == -1)
+	load_audio_from_file("data/music/music_list.txt");
+	play_music(0u);
+}
+
+void SoundManager::load_audio_from_file(String file_name)
+{
+	IFStream file;
+	file.open(file_name.c_str());
+
+	if (!file)
 	{
-		spdlog::error("Cannot open audio! {}!", Mix_GetError());
-    	}
+		spdlog::error("Failed to open file!");
+		return;
+	}
 
-	m_music = Mix_LoadMUS(file_name.c_str());
-	if (!m_music)
-    	{
-        	spdlog::error("Failed to load file that contains audio! {}!", Mix_GetError());
-    	}
+	U32 counter = 0;
 
-	play_sound();
+	String audio_key, audio_path;
+	while (file >> audio_key >> audio_path)
+	{
+		if (counter < 1)
+		{
+			if (Mix_OpenAudio(FREQUENCY, MIX_DEFAULT_FORMAT, NUM_OF_CHANNELS, CHUNK_SIZE) == -1)
+			{
+				spdlog::error("Cannot open audio! {}!", Mix_GetError());
+    			}
+
+			m_music.push_back(Mix_LoadMUS(audio_path.c_str()));
+			if (!m_music.back())
+			{
+				spdlog::error("Cannot load audio! {}", Mix_GetError());
+			}
+		}
+		else
+		{
+			if (Mix_OpenAudio(FREQUENCY, MIX_DEFAULT_FORMAT, NUM_OF_CHANNELS, CHUNK_SIZE) == -1)
+			{
+				spdlog::error("Cannot open sound effect! {}!", Mix_GetError());
+			}
+
+			m_sound_effects[audio_key] = Mix_LoadWAV(audio_path.c_str());
+
+			if (!m_sound_effects[audio_key])
+			{
+				spdlog::error("Failed to load sound effect! {}!", Mix_GetError());
+			}
+		}
+		counter++;
+	}
+
+	file.close();
 }
 
 SoundManager::~SoundManager()
 {
-	Mix_FreeMusic(m_music);
+	for (auto& music : m_music)
+	{
+		Mix_FreeMusic(music);
+	}
+
+	for (auto& entry : m_sound_effects)
+	{
+		Mix_FreeChunk(entry.second);
+	}
+
     	Mix_Quit();
 }
 
-void SoundManager::play_sound() const
+void SoundManager::play_music(U32 music_index) const
 {
-	if (m_music)
+	if (music_index >= 0 && music_index < m_music.size())
 	{
-		// -1 => looped play
-		Mix_PlayMusic(m_music, -1);
-		Mix_VolumeMusic(INITIAL_VOLUME);
+		if (m_music[music_index])
+		{
+			// -1 => looped play
+			Mix_PlayMusic(m_music[music_index], -1);
+			Mix_VolumeMusic(INITIAL_VOLUME);
+		}
 	}
 }
 
-void SoundManager::toggle_sound() const
+Bool SoundManager::toggle_music() const
 {
 	if (Mix_PausedMusic() == 1)
 	{
-		spdlog::info("MUSIC PAUSED");
 		Mix_ResumeMusic();
+		return true;
 	}
 	else if (Mix_PausedMusic() == 0)
 	{
-		spdlog::info("MUSIC PLAYING...");
 		Mix_PauseMusic();
+		return false;
+	}
+}
+
+void SoundManager::play_sound(Sound sound_type) const
+{
+	switch (sound_type)
+	{
+		case Sound::ButtonClick:
+		{
+			Mix_VolumeChunk(m_sound_effects.at("button_click"), AUDIO_VOLUME);
+			Mix_PlayChannel(-1, m_sound_effects.at("button_click"), 0);
+		}
 	}
 }
 
 void SoundControlSystem::on_tick()
 {
-	const auto& keys = KeyState::get();
-	for (auto&& [music_entity, music, key_binding] : access_storage().each())
+	const auto& mouse = MouseState::get();
+	U32 counter = 1;
+	Bool is_playing = true;
+
+	auto&& music_entity = MutAccessStorage<SoundManager>::access_storage().front();
+	auto& music = MutAccessComponentById<SoundManager>::get(music_entity);
+
+	for (auto&& [button_entity, button, position, sprite_animation] : QueryButtons::access_storage().each())
 	{
-		if (keys.is_pressed(key_binding.toggle_sound))
+		I32 position_x = mouse.get_mouse_position().x;
+		I32 position_y = mouse.get_mouse_position().y;
+
+		Bool valid_position_x = position_x >= position.xy.x && position_x <= position.xy.x + BUTTON_SIZE;
+		Bool valid_position_y = position_y >= position.xy.y && position_y <= position.xy.y + BUTTON_SIZE;
+
+		if (valid_position_x && valid_position_y && mouse.get_mouse_button_left() == MouseEventState::DownNow)
 		{
-			spdlog::info("PRESSED");
-			music.toggle_sound();
+			music.play_sound(Sound::ButtonClick);
+			if (button.type == ButtonType::PauseMusic)
+			{
+				is_playing = music.toggle_music();
+				if (is_playing)
+				{
+					sprite_animation.change_to("pyramidplunder/audio_active");
+				}
+				else
+				{
+					sprite_animation.change_to("pyramidplunder/audio_not_active");
+				}
+			}
+			else if (button.type == ButtonType::PlayNext)
+			{
+				music.play_music(counter++);
+			}
+			else if (button.type == ButtonType::PlayPrevious)
+			{
+				music.play_music(--counter);
+
+			}
 		}
 	}
 }

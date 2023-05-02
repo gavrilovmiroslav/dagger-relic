@@ -4,30 +4,46 @@
 #include "Prelude.h"
 #include "SDL_mixer.h"
 
+#define AUDIO_VOLUME 30
+#define BUTTON_SIZE 20
 #define CHUNK_SIZE 1024
 #define DELTA_VOLUME 3
 #define FREQUENCY 48000
 #define INITIAL_VOLUME 100
 #define NUM_OF_CHANNELS 2
 
+enum class Sound
+{
+	ButtonClick,
+	PushPlateActivated
+};
+
 class SoundManager
 {
 public:
-	SoundManager(String file_name);
+	SoundManager();
 
-	void play_sound() const;
-	void toggle_sound() const;
+	void play_music(U32 music_index) const;
+	void play_sound(Sound sound) const;
+	Bool toggle_music() const;
 
 	~SoundManager();
 
 private:
-	RawPtr<Mix_Music> m_music;
+	DynamicArray<RawPtr<Mix_Music>> m_music;
+	Map<String, RawPtr<Mix_Chunk>> m_sound_effects;
+
+	void load_audio_from_file(String file_name);
 };
 
+// TODO: Fix to work with button signals instead
 struct SoundControlSystem
 	: public ecs::System
-	, public MutAccessGroupStorage<SoundManager, KeyBinding>
-
+	, public MutAccessStorage<SoundManager>
+	, public MutAccessComponentById<SoundManager>
+	, public MutAccessGroupStorage<Button, Position, SpriteAnimation>
 {
+	using QueryButtons = MutAccessGroupStorage<Button, Position, SpriteAnimation>;
+
 	void on_tick() override;
 };
