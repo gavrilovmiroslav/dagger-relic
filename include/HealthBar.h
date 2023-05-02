@@ -19,12 +19,12 @@ struct HealthBarSpriteAnimation
 struct Sprite;
 struct Spritesheet;
 
-class HealthBarAnimation
+class HealthBarAnimationSystem
 	: public ecs::System
 	, public AccessStorage<Sprite>
 	, public AccessStorage<Spritesheet>
 	, public AccessEntityValidity
-	, public MutAccessGroupStorage<Sprite, HealthBarSpriteAnimation>
+	, public MutAccessGroupStorage<Sprite, HealthBarSpriteAnimation, Visibility>
 	, public SignalProcessor<HealthUpdateSignal>
 {
 	virtual void process_signal(HealthUpdateSignal& signal);

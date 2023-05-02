@@ -18,6 +18,7 @@ struct SWMG : public Game {
 		engine.use<SpellMovementSystem>();
 		engine.use<SpellCollisionSystem>();
 		engine.use<ProjectileSpawnSystem>();
+		engine.use<HealthBarAnimationSystem>();
 	}
 
 	void on_start() override
@@ -106,11 +107,22 @@ struct SWMG : public Game {
 		auto health_bar_one = spawn()
 			.with<Status>(100)
 			.with<Sprite>(ecs::no_entity, 1)
-			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("test/HealthBar"))
+			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("test/HealthBar"), 1.0f, 0)
             .with<Scale>(geometry::Vec2{3.0f,3.0f})
 			.with<Position>(geometry::Vec2{50, 50})
 			.with<Visibility>(true)
 			.done();
+
+		auto health_bar_two = spawn()
+			.with<Status>(100)
+			.with<Sprite>(ecs::no_entity, 1)
+			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("test/HealthBar"), 1.0f, 0)
+            .with<Scale>(geometry::Vec2{3.0f,3.0f})
+			.with<Position>(geometry::Vec2{700, 50})
+			.with<Visibility>(true)
+			.done();
+
+
 	}
 };
 
