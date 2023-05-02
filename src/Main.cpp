@@ -189,7 +189,7 @@ struct PyramidPlunder : public Game
 					.with<Position>(geometry::Vec2{ i*96 + 24, j*96 + 25})
 					.done();
 				}
-				if(c == 'o' || c == 'a' || c == 'b')
+				if(c == 'o' || c == 'a' || c == 'b' || c == 'x' || c == 'd')
 				{
 					spawn()
 					.with<Sprite>(ecs::no_entity, 2)
@@ -201,6 +201,7 @@ struct PyramidPlunder : public Game
 				if(c == 'b')
 				{
 					spawn()
+					.with<Box>()
 					.with<Scale>(geometry::Vec2{1.0f, 1.0f})
 					.with<Sprite>(ecs::no_entity, 5)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))

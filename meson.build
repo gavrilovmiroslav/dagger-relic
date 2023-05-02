@@ -30,6 +30,7 @@ sources = [
     'src/FPSCalculator.cpp',
     'src/LevelManager.cpp',
     'src/Loaders.cpp',
+    'src/Player.cpp',
     'src/PostProcessRendering.cpp',
     'src/Rendering.cpp',
     'src/SoundManager.cpp',

@@ -28,9 +28,11 @@ void SpriteRenderingModule::process_signal(RenderSignal& signal)
 
 	for (const auto&& [ entity, sprite ] : AccessGroupStorage<Sprite>::access_storage().each())
 	{
+		const auto& visibility = show_storage.contains(entity) ? show_storage.get<Visibility>(entity) : Visibility{ false };
+
 		if (sprite.texture == (ecs::Entity)0 || sprite.texture == ecs::no_entity)
 			continue;
-		if (!show_storage.contains(entity))
+		if (!show_storage.contains(entity) || !visibility.state)
 			continue;
 
 		const auto& pos = position_storage.contains(entity) ? position_storage.get<Position>(entity) : Position{ geometry::Vec2{ 0, 0 } };

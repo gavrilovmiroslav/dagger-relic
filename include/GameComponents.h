@@ -49,3 +49,5 @@ struct Button
 {
 	ButtonType type;
 };
+
+struct Trap {};
