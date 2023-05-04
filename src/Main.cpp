@@ -77,7 +77,6 @@ struct FallingHero
 				.with<Visibility>(true)
 				.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D, KeyCode::KEY_SPACE)
 				.done();
-	
 
 		for (int i = 0; i < rows; ++i)
 		{

@@ -10,9 +10,6 @@ void MonsterSystem::on_tick()
 		for (auto &&[monster_entity, monster, bindings, monster_pos, sprite] : QueryMonster::access_storage().each())
 		{
 			sprite.depth = -10;
-
-			std::cout << monster_pos.xy.x << "     " << monster_pos.xy.y << std::endl;
-			
 			if (keys.is_down(bindings.up))
 			{
 				monster.verticalVelocity = 200;
