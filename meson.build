@@ -35,7 +35,8 @@ sources = [
     'src/PlayerControls.cpp',
     'src/Platform.cpp',
     'src/Background.cpp',
-    'src/Item.cpp'
+    'src/Item.cpp',
+    'src/Monster.cpp'
 ]
 
 executable('dagger',

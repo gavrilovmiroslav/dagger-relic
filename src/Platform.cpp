@@ -10,6 +10,7 @@ void PlatformSystem::on_tick()
 		for (auto &&[platform_entity, platform, bindings, platform_pos, sprite] : QueryPlatform::access_storage().each())
 		{
 			sprite.depth = -50;
+
 			if (keys.is_down(bindings.up))
 			{
 				platform.verticalVelocity = 200;

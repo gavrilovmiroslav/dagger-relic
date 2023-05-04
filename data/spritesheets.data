@@ -4,6 +4,8 @@ fallingHero/attack: fallingHero/attack.png.data
 fallingHero/runningLeft: fallingHero/runningLeft.png.data
 fallingHero/leftHeroStanding: fallingHero/leftHeroStanding.png.data
 fallingHero/attackLeft: fallingHero/attackLeft.png.data
+fallingHero/falling: fallingHero/falling.png.data
+monster/idle: monster/idle.png.data
 background/bg47: background/bg47.png.data
 platform/platformPack: platform/platformPack.png.data
 coin/goldCoin: coin/goldCoin.png.data
