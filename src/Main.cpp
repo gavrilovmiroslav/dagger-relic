@@ -202,9 +202,8 @@ struct PyramidPlunder : public Game
 				{
 					spawn()
 					.with<Box>()
-					.with<Scale>(geometry::Vec2{1.0f, 1.0f})
 					.with<Sprite>(ecs::no_entity, 5)
-					.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_1"))
+					.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_4"))
 					.with<Visibility>(true)
 					.with<Position>(geometry::Vec2{ i*96 + 24, j*96 + 25})
 					.with<Movement>(2000.0f, 50.0f, 32, 32)
@@ -244,13 +243,9 @@ struct PyramidPlunder : public Game
         		}
 		}
 
-		spawn()
-		.with<SoundManager>()
-		.done();
-
 		auto pause_button = spawn()
 			.with<Button>(ButtonType::PauseMusic)
-			.with<Sprite>(ecs::no_entity, 0)
+			.with<Sprite>(ecs::no_entity, 8)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/audio_active"))
 			.with<Position>(geometry::Vec2{ 880.0f, 910.0f })
 			.with<Visibility>(true)
@@ -258,7 +253,7 @@ struct PyramidPlunder : public Game
 
 		auto play_next = spawn()
 			.with<Button>(ButtonType::PlayNext)
-			.with<Sprite>(ecs::no_entity)
+			.with<Sprite>(ecs::no_entity, 8)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/play_next"))
 			.with<Position>(geometry::Vec2{ 925.0f, 910.0f })
 			.with<Visibility>(true)
@@ -266,7 +261,7 @@ struct PyramidPlunder : public Game
 
 		auto play_previous = spawn()
 			.with<Button>(ButtonType::PlayPrevious)
-			.with<Sprite>(ecs::no_entity)
+			.with<Sprite>(ecs::no_entity, 8)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/play_previous"))
 			.with<Position>(geometry::Vec2{ 835.0f, 910.0f })
 			.with<Visibility>(true)

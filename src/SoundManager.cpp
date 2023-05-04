@@ -124,8 +124,7 @@ void SoundControlSystem::on_tick()
 	const auto& mouse = MouseState::get();
 	Bool is_playing = true;
 
-	auto&& music_entity = MutAccessStorage<SoundManager>::access_storage().front();
-	auto& music = MutAccessComponentById<SoundManager>::get(music_entity);
+	auto&& music = MutAccessUnique<SoundManager>::access_unique();
 
 	for (auto&& [button_entity, button, position, sprite_animation] : QueryButtons::access_storage().each())
 	{
@@ -152,11 +151,11 @@ void SoundControlSystem::on_tick()
 			}
 			else if (button.type == ButtonType::PlayNext)
 			{
-				music.play_music(++counter);
+				music.play_music(++current_song);
 			}
 			else if (button.type == ButtonType::PlayPrevious)
 			{
-				music.play_music(--counter);
+				music.play_music(--current_song);
 			}
 		}
 	}

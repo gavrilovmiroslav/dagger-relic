@@ -36,15 +36,14 @@ private:
 	void load_audio_from_file(String file_name);
 };
 
-// TODO: Fix to work with button signals instead
 struct SoundControlSystem
 	: public ecs::System
-	, public MutAccessStorage<SoundManager>
-	, public MutAccessComponentById<SoundManager>
+	, public AllocateUnique<SoundManager>
+	, public MutAccessUnique<SoundManager>
 	, public MutAccessGroupStorage<Button, Position, SpriteAnimation>
 {
 	using QueryButtons = MutAccessGroupStorage<Button, Position, SpriteAnimation>;
-	U32 counter = 0;
+	U32 current_song = 0;
 
 	void on_tick() override;
 };
