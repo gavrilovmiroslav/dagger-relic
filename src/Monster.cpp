@@ -5,6 +5,7 @@ void MonsterSystem::on_tick()
 {
 	const auto &keys = KeyState::get();
 	auto &ourGlobal = MutAccessUnique<OurGlobalVar>::access_unique();
+
 	for (auto &&[player_entity, player, player_pos] : QueryPlayer::access_storage().each())
 	{
 		for (auto &&[monster_entity, monster, bindings, monster_pos, sprite] : QueryMonster::access_storage().each())
