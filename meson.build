@@ -33,6 +33,7 @@ sources = [
     'src/Rendering.cpp',
     'src/SpriteRendering.cpp',
     'src/Windowing.cpp',
+    'src/PlayerFSM.cpp',
     'src/Main.cpp'
 ]
 

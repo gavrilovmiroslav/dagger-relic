@@ -1,39 +1,10 @@
 #pragma once
 
-#include "Algebra.h"
 #include "LevelManager.h"
 #include "Player.h"
-#include "Prelude.h"
-#include "Random.h"
+#include "MovementControlSystem.h"
 
 using namespace core;
-
-struct Movement
-{
-	geometry::Vec2 velocity;
-	geometry::Vec2 velocity_max;
-	geometry::Vec2 force;
-	F32            move_force;
-	F32            collision_box_width;
-	F32            collision_box_height;
-
-	Movement(F32 move_force, F32 velocity_max, F32 collision_w, F32 collision_h)
-		: velocity(0.0f, 0.0f)
-		, move_force(move_force)
-		, velocity_max(velocity_max)
-		, force(0.0f, 0.0f)
-		, collision_box_width(collision_w)
-		, collision_box_height(collision_h)
-	{
-
-	}
-};
-
-struct KeyBinding
-{
-	KeyCode left, down, up, right;
-	KeyCode blindfold_change;
-};
 
 struct MovementSystem
 	: public ecs::System
@@ -128,51 +99,6 @@ struct ClickControlSystem
 	}
 };
 
-struct MovementControlSystem
-	: public ecs::System
-	, public MutAccessGroupStorage<KeyBinding, Movement, SpriteAnimation>
-{
-	void on_tick() override
-	{
-		const auto& key = KeyState::get();
-
-		for (auto&& [entity, key_binding, movement, sprite] : access_storage().each())
-		{
-			if (key.is_down(key_binding.up))
-			{
-				movement.force.y = -movement.move_force;
-			}
-			else if (key.is_down(key_binding.down))
-			{
-				movement.force.y =  movement.move_force;
-			}
-			else
-			{
-				movement.force.y -= fsignf(movement.force.y)*movement.move_force;
-			}
-
-			if (key.is_down(key_binding.left))
-			{
-				replace_component<Flip>(entity, Horizontal);
-				sprite.change_to("pyramidplunder/archaeologist_running");
-				movement.force.x = -movement.move_force;
-			}
-			else if (key.is_down(key_binding.right))
-			{
-				replace_component<Flip>(entity, None);
-				sprite.change_to("pyramidplunder/archaeologist_running");
-				movement.force.x =  movement.move_force;
-			}
-			else
-			{
-				movement.force.x -= fsignf(movement.force.x)*movement.move_force;
-			}
-
-			spdlog::info("force: {} {}", movement.force.x, movement.force.y);
-		}
-	}
-};
-
 // TODO: move to separate file after refactoring Main.cpp and add signals to other components
 struct BlindfoldChangingSystem
 	: public ecs::System
@@ -264,7 +190,7 @@ struct PyramidPlunder : public Game
 				}
 				if(c == 'a')
 				{
-					spawn()
+					auto player = spawn()
 					.with<Player>(SpecialBlindfold::HumanEyes)
 					.with<Sprite>(ecs::no_entity, 6)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
@@ -273,6 +199,8 @@ struct PyramidPlunder : public Game
 					.with<Movement>(3000.0f, 50.0f, 16, 16)
 					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
 					.done();
+
+					add_component<PlayerMovement>(player, PlayerMovement{PlayerFSM(player), 0.0f});
 				}
         	}
 		}

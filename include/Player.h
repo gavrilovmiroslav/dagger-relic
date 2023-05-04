@@ -21,6 +21,8 @@ struct Player
 	Bool is_pushing;
 	SpecialBlindfold current_blindfold;
 	Map<SpecialBlindfold, U32> available_blindfolds;
+	//PlayerFSM p_fsm;
+	//F32 vertical_velocity;
 
 	Player(SpecialBlindfold blindfold)
 		: is_pushing(false)

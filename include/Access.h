@@ -88,12 +88,29 @@ struct AccessComponentById : public AccessTrait
 	}
 };
 
-template<typename T>
+/*template<typename T>
 struct MutAccessComponentById : public AccessTrait
 {
 	T& get(ecs::Entity e) const
 	{
 		return core::Engine::get_instance().registry.get<T>(e);
+	}
+};*/
+
+template<typename T>
+struct MutAccessComponentById : public AccessTrait
+{
+	T* get(ecs::Entity e) const
+	{
+		auto& registry = core::Engine::get_instance().registry;
+		if (registry.valid(e))
+		{
+			return &registry.get<T>(e);
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 };
 
