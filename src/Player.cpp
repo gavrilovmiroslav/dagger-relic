@@ -26,13 +26,13 @@ void BlindfoldChangingSystem::on_tick()
 
 	for (auto&& [player_entity, player, key_binding] : QueryPlayer::access_storage().each())
 	{
-		if (keys.is_pressed(key_binding.blindfold_change))
-		{
-			counter++;
-		}
-		else if (keys.is_down(key_binding.reversed_change) && keys.is_pressed(key_binding.blindfold_change))
+		if (keys.is_down(key_binding.reversed_change) && keys.is_pressed(key_binding.blindfold_change))
 		{
 			counter--;
+		}
+		else if (keys.is_pressed(key_binding.blindfold_change))
+		{
+			counter++;
 		}
 
 		new_blindfold = blindfolds[(counter + 3) % 3];
