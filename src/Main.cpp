@@ -50,12 +50,12 @@ struct FallingHero
 			    .with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S)
 			    .done();
 		TimeRender::init();
-		spawn()
-		.with<TimeRender>("00:00:00", 32, "time")
-		.with<Sprite>(ecs::no_entity)
-		.with<Visibility>(true)
-		.with<Position>(geometry::Vec2{ 700, 10 })
-		.done();
+		auto time = spawn()
+			.with<TimeRender>("00:00:00", 32)
+			.with<Sprite>(ecs::no_entity)
+			.with<Visibility>(true)
+			.with<Position>(geometry::Vec2{ 700, 10 })
+			.done();
 
 		auto monster = spawn()
 			.with<Monster>(0.0f)

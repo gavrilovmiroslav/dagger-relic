@@ -1,8 +1,8 @@
 #include "TimeRender.h"
 #include <iostream>
 
-TimeRender::TimeRender(String text, U32 font_size, String type)
-    : text(text), font_size(font_size), type(type)
+TimeRender::TimeRender(String text, U32 font_size)
+    : text(text), font_size(font_size)
 {
 	font = TTF_OpenFont("data/fonts/digital-7.ttf", font_size);
 	if (!font)
@@ -36,16 +36,15 @@ void TimeRenderControlSystem::on_tick()
 		{
 			continue;
 		}
-		if(time_render.type == "time"){
+
 		auto end = std::chrono::high_resolution_clock::now(); // get current time
        		elapsed_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 		int minutes = elapsed_time_ms / (1000 * 60);
        	 	int seconds = (elapsed_time_ms / 1000) % 60;
         	int milliseconds = elapsed_time_ms % 1000;
 		String time = "" + std::to_string(minutes) + ":" +  std::to_string(seconds) + ":" +  std::to_string(milliseconds);
-
 		time_render.text = time;
-		}
+
 		auto &state = MutAccessUnique<WindowingState>::access_unique();
 		SDL_Surface *text_surf = TTF_RenderText_Solid(time_render.font, time_render.text.c_str(), time_render.text_color);
 		SDL_Texture *texture = SDL_CreateTextureFromSurface(state.renderer, text_surf);
