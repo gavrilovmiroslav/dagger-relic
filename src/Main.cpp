@@ -31,7 +31,7 @@ struct SWMG : public Game {
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
-            .with<Scale>(geometry::Vec2{0.25f,0.1f})
+            		.with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 400, 550 })
 			.with<Visibility>(true);
 
@@ -39,7 +39,7 @@ struct SWMG : public Game {
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
-            .with<Scale>(geometry::Vec2{0.25f,0.1f})
+            		.with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 200, 450 })
 			.with<Visibility>(true);
 
@@ -47,7 +47,7 @@ struct SWMG : public Game {
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
-            .with<Scale>(geometry::Vec2{0.25f,0.1f})
+            		.with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 300, 500 })
 			.with<Visibility>(true);
 
@@ -55,7 +55,7 @@ struct SWMG : public Game {
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
-            .with<Scale>(geometry::Vec2{0.25f,0.1f})
+            		.with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 450, 450 })
 			.with<Visibility>(true);
 
@@ -63,7 +63,7 @@ struct SWMG : public Game {
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
-            .with<Scale>(geometry::Vec2{0.25f,0.1f})
+            		.with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 600, 400 })
 			.with<Visibility>(true);
 
