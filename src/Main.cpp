@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdlib.h>
+#include <time.h>
+
 #include "Prelude.h"
 
 #include "GameSpecificComponents.h"
@@ -18,19 +21,11 @@ struct SWMG : public Game {
 		engine.use<SpellMovementSystem>();
 		engine.use<SpellCollisionSystem>();
 		engine.use<ProjectileSpawnSystem>();
+
 	}
 
 	void on_start() override
 	{
-		for (int i = 0; i < 10; i++)
-		{
-			spawn()
-				.with<Pickup>("curseball" , 32.0f, 5)
-				.with<Sprite>(ecs::no_entity)
-				.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
-				.with<Position>(geometry::Vec2{ rand() % 600, rand() % 570 })
-				.with<Visibility>(true);
-		}
 
 		auto platform1 = spawn()
 			.with<Platform>(130.0f, 21.0f)
@@ -107,6 +102,7 @@ struct SWMG : public Game {
 
 int main(int argc, char* argv[])
 {
+	srand(time(NULL));
 	auto& engine = Engine::get_instance();
 	std::string filePath = "dagger.ini";
 	engine.configure(filePath.data(), argc, argv);

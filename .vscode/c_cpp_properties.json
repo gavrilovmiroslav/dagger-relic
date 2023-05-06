@@ -3,7 +3,10 @@
         {
             "name": "CppConfig",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/usr/include/c++/11",
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/subprojects/entt-3.11.0/single_include"
             ],
             "defines": [],
             "macFrameworkPath": [

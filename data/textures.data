@@ -7,3 +7,6 @@ test/pixel-platform test/pixel-platform.png
 test/pickup test/pickup.png
 test/Fireball test/Fireball.png
 test/Curseball test/Curseball.png
+test/Fastball test/Fastball.png
+test/CurseballTome test/CurseballTome.png
+test/FastballTome test/FastballTome.png
