@@ -3,6 +3,7 @@ pong/ball pong/ball.png
 test/WizardIdle test/WizardIdle.png
 test/WizardRun test/WizardRun.png
 test/platform test/platform.png
+test/pixel-platform test/pixel-platform.png
 test/pickup test/pickup.png
 test/Fireball test/Fireball.png
 test/Curseball test/Curseball.png
