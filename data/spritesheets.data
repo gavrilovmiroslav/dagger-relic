@@ -10,3 +10,4 @@ test/Curseball: test/Curseball.png.data
 test/Fastball: test/Fastball.png.data
 test/CurseballTome: test/CurseballTome.png.data
 test/FastballTome: test/FastballTome.png.data
+test/HealthPotion: test/HealthPotion.png.data
