@@ -45,7 +45,8 @@ struct PurgatoryPals : public Game
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
 			.with<Position>(geometry::Vec2{ 400, 500 })
-			.with<Visibility>(true);
+			.with<Visibility>(true)
+			.done();
 			
 	}
 };
