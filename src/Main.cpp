@@ -19,10 +19,10 @@ struct PurgatoryPals : public Game
 		auto rogue = spawn()
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Rogue/idle"))
-			.with<Position>(geometry::Vec2{600, 300})
-			.with<Gravity>(geometry::Vec2{0, 0.03})
+			.with<Position>(geometry::Vec2{500, 300})
+			.with<Gravity>(geometry::Vec2{0, 0.02})
 			.with<Visibility>(true)
-			.with<Player>(geometry::Vec2{ 0, 0 }, false)
+			.with<Player>(geometry::Vec2{ 0, 0 }, false, 300.0f)
 			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT)
 			.with<Animation>("Rogue/jump", "Rogue/walk", "Rogue/idle")
 			.with<Flip>(None)
@@ -34,7 +34,7 @@ struct PurgatoryPals : public Game
 			.with<Position>(geometry::Vec2{200, 300})
 			.with<Gravity>(geometry::Vec2{0, 0.03})
 			.with<Visibility>(true)
-			.with<Player>(geometry::Vec2{ 0, 0 }, true)
+			.with<Player>(geometry::Vec2{ 0, 0 }, false, 300.0f)
 			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_A, KeyCode::KEY_D)
 			.with<Animation>("Knight/jump", "Knight/walk", "Knight/idle")
 			.with<Flip>(None)
@@ -48,6 +48,13 @@ struct PurgatoryPals : public Game
 			.with<Visibility>(true)
 			.done();
 			
+		auto platform2 = spawn()
+			.with<Platform>(128.0f, 4.0f)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
+			.with<Position>(geometry::Vec2{128, 580 })
+			.with<Visibility>(true)
+			.done();
 	}
 };
 

@@ -17,6 +17,7 @@ struct Platform {
 struct Player {
     geometry::Vec2 speed;
 	bool isGrounded;
+	F32 visina;
 };
 
 struct KeyBindings {
