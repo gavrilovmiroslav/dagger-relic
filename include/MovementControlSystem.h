@@ -50,14 +50,12 @@ struct MovementControlSystem
 		{
 			if (key.is_down(key_binding.up))
 			{
-				//Staviti walk
-				player.p_fsm.trigger(PlayerTransition::STAND);
+				player.p_fsm.trigger(PlayerTransition::WHIP);
 				movement.force.y = -movement.move_force;
 			}
 			else if (key.is_down(key_binding.down))
 			{
-				//Staviti walk
-				player.p_fsm.trigger(PlayerTransition::STAND);
+				player.p_fsm.trigger(PlayerTransition::WHIP);
 				movement.force.y =  movement.move_force;
 			}
 			else
@@ -78,6 +76,10 @@ struct MovementControlSystem
 				movement.force.x =  movement.move_force;
 			}
 			else if ((player.p_fsm.currentState == PlayerState::RUNNING) && !key.is_down(key_binding.left) && !key.is_down(key_binding.right))
+        		{
+            			player.p_fsm.trigger(PlayerTransition::STAND);
+        		}
+			else if ((player.p_fsm.currentState == PlayerState::WHIPPING) && !key.is_down(key_binding.up) && !key.is_down(key_binding.down))
         		{
             			player.p_fsm.trigger(PlayerTransition::STAND);
         		}

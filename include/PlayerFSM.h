@@ -9,13 +9,15 @@
 enum PlayerTransition
 {
     STAND,
-    RUN
+    RUN,
+    WHIP
 };
 
 enum PlayerState
 {
     STANDING,
-    RUNNING
+    RUNNING,
+    WHIPPING
 };
 
 class PlayerFSM

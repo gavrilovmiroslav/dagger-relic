@@ -1,11 +1,12 @@
 #include "PlayerFSM.h"
 
-// just for debugging purposes
 #include <iostream>
+
 std::string stateName(PlayerState state) {
     switch(state) {
         case RUNNING: return "RUNNING"; break;
         case STANDING: return "STANDING"; break;
+        case WHIPPING: return "WHIPPING"; break;
     }
 }
 
@@ -18,11 +19,14 @@ PlayerFSM::PlayerFSM(entt::entity entity)
 
     add_transition_to_new_state(PlayerTransition::STAND, PlayerState::STANDING);
     add_transition_to_new_state(PlayerTransition::RUN, PlayerState::RUNNING);
+    add_transition_to_new_state(PlayerTransition::WHIP, PlayerState::WHIPPING);
 
     add_valid_transitions_from_state( PlayerState::STANDING,
-        containers::Set<PlayerTransition> { PlayerTransition::RUN });
+        containers::Set<PlayerTransition> { PlayerTransition::RUN, PlayerTransition::WHIP });
     add_valid_transitions_from_state( PlayerState::RUNNING,
-        containers::Set<PlayerTransition> { PlayerTransition::STAND });
+        containers::Set<PlayerTransition> { PlayerTransition::STAND, PlayerTransition::WHIP });
+    add_valid_transitions_from_state( PlayerState::WHIPPING,
+        containers::Set<PlayerTransition> { PlayerTransition::STAND, PlayerTransition::RUN });
 }
 
 void PlayerFSM::on_exit(PlayerState fromState)
@@ -48,6 +52,12 @@ void PlayerFSM::on_enter(PlayerState toState)
             std::cout << "changed animation to RUN" << std::endl;
             break;
         }
+	case PlayerState::WHIPPING:
+	{
+	    sprite->change_to("pyramidplunder/archaeologist_whipping");
+            std::cout << "changed animation to WHIP" << std::endl;
+            break;
+	}
         default:
             break;
     }
