@@ -21,6 +21,9 @@ struct Platform
 	F32 height;
 };
 
+struct Background
+{};
+
 struct Pickup
 {
 	String name;

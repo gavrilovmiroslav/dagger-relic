@@ -97,6 +97,14 @@ struct SWMG : public Game {
 			.with<Item>("None", 3)
 			.with<Status>(100)
 			.done();
+
+		auto background = spawn()
+			.with<Platform>()
+			.with<Sprite>(ecs::no_entity, -100)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/Background"))
+			.with<Visibility>(true)
+			.with<Position>(geometry::Vec2{ SCREEN_WIDTH/2, SCREEN_HEIGHT/2})
+			.done();
 	}
 };
 
