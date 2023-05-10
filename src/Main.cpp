@@ -7,7 +7,10 @@
 
 using namespace core;
 
-struct SWMG : public Game {
+struct SWMG 
+	: public Game
+	, public MutAccessComponentById<SpriteAnimation>
+{
 	SWMG()
 	{
 		auto& engine = Engine::get_instance();
@@ -74,9 +77,9 @@ struct SWMG : public Game {
 			.with<Position>(geometry::Vec2{ SCREEN_WIDTH / 2, SCREEN_HEIGHT })
 			.with<Visibility>(true);
 
-		auto player_one = spawn()
+		auto player_one_entity = spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/Wizard1/WizardIdle"))
 			.with<Position>(geometry::Vec2{ 50, 600 - 32})
 			.with<Visibility>(true)
 			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D, KeyCode::KEY_F, KeyCode::KEY_G)
@@ -84,11 +87,12 @@ struct SWMG : public Game {
 			.with<Item>("None", 3)
 			.with<Status>(100)
 			.done();
-		add_component<Player>(player_one, Player{PlayerFSM(player_one), 0.0f});
+		auto player_one_component = Player { PlayerFSM(player_one_entity, MutAccessComponentById<SpriteAnimation>::get(player_one_entity), PlayerColor::PURPLE), 0.0f };
+		add_component<Player>(player_one_entity, player_one_component);
 
-		auto player_two = spawn()
+		auto player_two_entity = spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("test/WizardIdle"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/Wizard2/WizardIdle"))
 			.with<Position>(geometry::Vec2{ 750, 600 - 32})
 			.with<Visibility>(true)
 			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT, KeyCode::KEY_K, KeyCode::KEY_L)
@@ -96,7 +100,8 @@ struct SWMG : public Game {
 			.with<Item>("None", 3)
 			.with<Status>(100)
 			.done();
-		add_component<Player>(player_two, Player{PlayerFSM(player_two), 0.0f});
+		auto player_two_component = Player { PlayerFSM(player_two_entity, MutAccessComponentById<SpriteAnimation>::get(player_two_entity), PlayerColor::GREEN), 0.0f };
+		add_component<Player>(player_two_entity, player_two_component);
 	}
 };
 

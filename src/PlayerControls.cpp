@@ -8,7 +8,7 @@ void PlayerControlsSystem::on_tick()
     {
         if (keys.is_pressed(bindings.up) && player.fsm.currentState != PlayerState::AIRBORNE) // keys.is_down() causes a bug where player can levitate trough platforms 
         {
-           player.vertical_velocity = -JUMP_MOD;
+            player.vertical_velocity = -JUMP_MOD;
             player.fsm.trigger(PlayerTransition::JUMP);
         }
         if (keys.is_pressed(bindings.down) && player.fsm.currentState != PlayerState::AIRBORNE) 

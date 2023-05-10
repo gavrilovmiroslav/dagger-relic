@@ -11,12 +11,13 @@ std::string stateName(PlayerState state) {
     }
 }
 
-PlayerFSM::PlayerFSM(entt::entity entity)
+PlayerFSM::PlayerFSM(entt::entity entity, SpriteAnimation* animation, PlayerColor color = PlayerColor::PURPLE)
     : id(entity)
+    , sprite(animation)
+    , color(color)
 {
     currentState = PlayerState::AIRBORNE;
-
-    sprite = MutAccessComponentById<SpriteAnimation>::get(id);
+    animationPath = (color == PlayerColor::PURPLE) ? "test/Wizard1/" : "test/Wizard2/";
 
     add_transition_to_new_state(PlayerTransition::STOP, PlayerState::IDLE);
     add_transition_to_new_state(PlayerTransition::WALK, PlayerState::WALKING);
@@ -47,14 +48,19 @@ void PlayerFSM::on_enter(PlayerState toState)
     {
         case PlayerState::WALKING:
         {
-            sprite->change_to("test/WizardRun");
+            sprite->change_to(animationPath + "WizardRun");
             //std::cout << "changed animation to RUN" << std::endl;
             break;
         }
         case PlayerState::IDLE:
         {
-            sprite->change_to("test/WizardIdle");
+            sprite->change_to(animationPath + "WizardIdle");
             //std::cout << "changed animation to IDLE" << std::endl;
+            break;
+        }
+        case PlayerState::AIRBORNE:
+        {
+            sprite->change_to(animationPath + "WizardAirborne");
             break;
         }
         default:
