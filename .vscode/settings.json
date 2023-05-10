@@ -20,5 +20,5 @@
     },
     "mesonbuild.configureOnOpen": false,
     "C_Cpp.default.compileCommands": "builddir/vscode_compile_commands.json",
-    "C_Cpp.errorSquiggles": "enabled"
+    "C_Cpp.errorSquiggles": "disabled"
 }

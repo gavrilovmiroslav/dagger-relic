@@ -20,6 +20,11 @@ struct Player {
 	F32 visina;
 };
 
+struct Box {
+	geometry::Vec2 speed;
+	bool isGrounded;
+};
+
 struct KeyBindings {
 	KeyCode jump;
 	KeyCode left;

@@ -4,6 +4,7 @@
 #include "Components.h"
 #include "PlayerControlsSystem.h"
 #include "Platforms.h"
+#include "BoxMovingSystem.h"
 
 struct PurgatoryPals : public Game
 {
@@ -12,6 +13,7 @@ struct PurgatoryPals : public Game
 		auto& engine = Engine::get_instance();
 		engine.use<PlayerControlsSystem>();
 		engine.use<PlatformSystem>();
+		engine.use<BoxMovingSystem>();
 	}
 
 	void on_start() override
@@ -49,11 +51,21 @@ struct PurgatoryPals : public Game
 			.done();
 			
 		auto platform2 = spawn()
-			.with<Platform>(128.0f, 4.0f)
+			.with<Platform>(1380.0f, 4.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
-			.with<Position>(geometry::Vec2{128, 580 })
+			.with<Position>(geometry::Vec2{128, 600})
 			.with<Visibility>(true)
+			.done();
+
+		auto box = spawn()
+
+			.with<Position>(geometry::Vec2{400, 300})
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("box/box"))
+			.with<Visibility>(true)
+			.with<Box>(geometry::Vec2{0.0f, 0.0f}, false)
+			.with<Gravity>(geometry::Vec2{0.0f, 0.03f})
 			.done();
 	}
 };

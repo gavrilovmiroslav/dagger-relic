@@ -33,7 +33,8 @@ sources = [
     'src/Windowing.cpp',
     'src/Main.cpp',
     'src/PlayerControlsSystem.cpp',
-    'src/Platforms.cpp'
+    'src/Platforms.cpp',
+    'src/BoxMovingSystem.cpp'
 ]
 
 executable('dagger',
