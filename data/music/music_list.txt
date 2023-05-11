@@ -1,0 +1,5 @@
+3 -
+tomb_raiders data/music/tomb_raiders.wav
+golden_age data/music/golden_age.wav
+king_tut data/music/king_tut.wav
+button_click data/music/button_click.wav

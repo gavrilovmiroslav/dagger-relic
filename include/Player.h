@@ -1,7 +1,10 @@
 #pragma once
 
+#include "GameComponents.h"
 #include "Prelude.h"
 #include "Shuffle.h"
+
+#define NUM_OF_BLINDFOLDS 3
 
 enum class SpecialBlindfold
 {
@@ -17,25 +20,34 @@ struct Constraints
 };
 
 struct Player
+	: public AllocateUnique<Constraints>
+	, public AccessUnique<Constraints>
 {
-	Bool is_pushing;
 	SpecialBlindfold current_blindfold;
 	Map<SpecialBlindfold, U32> available_blindfolds;
 
-	Player(SpecialBlindfold blindfold)
-		: is_pushing(false)
-		, current_blindfold(blindfold)
-	{
-		DynamicArray<SpecialBlindfold> blindfolds = {};
+	Player(SpecialBlindfold blindfold);
+};
 
-		Constraints constraint;
-		blindfolds.insert(blindfolds.begin(), constraint.max_number_of_blindfolds, SpecialBlindfold::FoxEyes);
-		blindfolds.insert(blindfolds.begin(), constraint.max_number_of_blindfolds, SpecialBlindfold::ScorpionEyes);
+// code still sucks, but works fine for now... (SPACE to go on next blindfold, LSHIFT + SPACE to return to previous)
+struct BlindfoldChangingSystem
+	: public ecs::System
+	, public AccessComponentById<Visibility>
+	, public MutAccessGroupStorage<Box, Visibility>
+	, public MutAccessGroupStorage<Player, KeyBinding>
+	, public MutAccessGroupStorage<Trap, Visibility>
+	, public MutAccessGroupStorage<Wall, Visibility>
+{
+	using QueryPlayer = MutAccessGroupStorage<Player, KeyBinding>;
+	using QueryWalls = MutAccessGroupStorage<Wall, Visibility>;
+	using QueryTraps = MutAccessGroupStorage<Trap, Visibility>;
+	using QueryBoxes = MutAccessGroupStorage<Box, Visibility>;
 
-		randomize(blindfolds);
-		for (U32 i = 0; i < constraint.number_of_blindfolds; ++i)
-		{
-			available_blindfolds[blindfolds[i]]++;
-		}
-	}
+	// Bool traps_visible = AccessComponentById<Visibility>::get(QueryTraps::access_storage().front()).state;
+
+	U32 counter = 0;
+	StaticArray<SpecialBlindfold, 3> blindfolds = { SpecialBlindfold::HumanEyes, SpecialBlindfold::FoxEyes, SpecialBlindfold::ScorpionEyes };
+	SpecialBlindfold new_blindfold;
+
+	void on_tick() override;
 };

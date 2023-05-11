@@ -8,6 +8,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
+#include <fstream>
 #include <initializer_list>
 #include <memory>
 #include <mutex>
@@ -47,7 +48,7 @@ using F64 = std::double_t;
 
 using tid = std::uint32_t;
 
-namespace geometry 
+namespace geometry
 {
 	using Vec2 = glm::vec2;
 	using Vec3 = glm::vec3;
@@ -152,6 +153,8 @@ using String = std::string;
 
 template<typename T>
 using Function = std::function<T>;
+
+using IFStream = std::ifstream;
 
 namespace memory
 {
