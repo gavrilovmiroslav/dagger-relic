@@ -7,6 +7,7 @@
 #include "Prelude.h"
 #include "Random.h"
 #include "SoundManager.h"
+#include "TextRender.h"
 
 using namespace core;
 
@@ -188,10 +189,12 @@ struct PyramidPlunder : public Game
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
 		engine.use<SoundControlSystem>();
+		engine.use<TextRenderControlSystem>();
 	}
 
 	void on_start() override
 	{
+		TextRender::init();
 		level_manager = LevelManager();
 		level_manager.load_level("Levels/level1.txt");
 
@@ -243,7 +246,7 @@ struct PyramidPlunder : public Game
 				{
 					spawn()
 					.with<Player>(SpecialBlindfold::HumanEyes)
-					.with<Sprite>(ecs::no_entity, 6)
+					.with<Sprite>(ecs::no_entity, 10)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
 					.with<Visibility>(true)
 					.with<Position>(geometry::Vec2{ i*96, j*96 + 25})
@@ -287,6 +290,11 @@ struct PyramidPlunder : public Game
 			.with<Position>(geometry::Vec2{ 835.0f, 910.0f })
 			.with<Visibility>(true)
 			.done();
+	}
+
+	void on_end() override
+	{
+		TextRender::deinit();
 	}
 };
 

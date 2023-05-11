@@ -35,6 +35,7 @@ sources = [
     'src/Rendering.cpp',
     'src/SoundManager.cpp',
     'src/SpriteRendering.cpp',
+    'src/TextRender.cpp',
     'src/Windowing.cpp',
     'src/Main.cpp'
 ]

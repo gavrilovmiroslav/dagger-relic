@@ -24,6 +24,7 @@ void AnimationModule::process_signal(core::PostRenderSignal&)
 	{
 		auto& sprite = storage.get<Sprite>(entity);
 		auto& anim = storage.get<SpriteAnimation>(entity);
+		I32 d = sprite.depth;
 
 		I32 d = sprite.depth;
 
