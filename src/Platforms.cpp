@@ -1,5 +1,5 @@
 #include "Platforms.h"
-//#include <iostream>
+#include <iostream>
 
 void PlatformSystem::on_tick()
 {
@@ -30,8 +30,8 @@ void PlatformSystem::on_tick()
 		bool on_platform=false;
 		for (auto &&[platform_entity, platform, platform_pos] : QueryPlatforms::access_storage().each())
 		{
-			if (box_pos.xy.x <= platform_pos.xy.x + platform.width / 2  &&
-			    box_pos.xy.x >= platform_pos.xy.x - platform.width / 2  &&
+			if (box_pos.xy.x - 13 <= platform_pos.xy.x + platform.width / 2  &&
+			    box_pos.xy.x + 13 >= platform_pos.xy.x - platform.width / 2  &&
 			    box_pos.xy.y + 30 >= platform_pos.xy.y - 1 &&
 			    box_pos.xy.y + 30 <= platform_pos.xy.y + 1 &&
 				box.speed.y>=0.0f
@@ -58,10 +58,10 @@ void PlatformSystem::on_tick()
 				box.speed.x = player.speed.x;
 				in_contact = true;
 			}
-
 		}
 
 		if(!in_contact)
 			box.speed.x = 0.0f;
 	}
+
 }

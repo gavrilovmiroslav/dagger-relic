@@ -11,11 +11,18 @@ void BoxMovingSystem::on_tick() {
 			
 			pos.xy += box.speed * SPEED_MOD * Time::delta_time();
 
-			if(pos.xy.y>570){
+			if(pos.xy.y>570)
+			{
 				pos.xy.y=570;
 				box.isGrounded=true;
 				box.speed.y=0.0f;
-			}	
+			}
+
+			if(pos.xy.x <= 15.0f)
+				pos.xy.x = 15.0f;
+
+			if(pos.xy.x >= 785.0f)
+				pos.xy.x = 785.0f;	
 
 			//cout<<"Visina roga "<<pos.xy.y<<endl;
 		}

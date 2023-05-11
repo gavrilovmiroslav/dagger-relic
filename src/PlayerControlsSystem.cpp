@@ -46,13 +46,25 @@ void PlayerControlsSystem::on_tick() {
 			if(player.isGrounded)
 				pos.xy.y=player.visina;
 
-			if(pos.xy.y>618){
+			if(pos.xy.y>618)
+			{
 				pos.xy.y=610;
 				player.visina=610;
 				player.isGrounded=true;
 				player.speed.y=0.0f;
-			}	
+			}
 
-			//cout<<"Visina roga "<<pos.xy.y<<endl;
+			if(pos.xy.y <= 60.0f)
+			{
+				pos.xy.y = 60.0f;
+				player.speed.y = 0.0f;
+			}
+
+			if(pos.xy.x <= 60.0f)
+				pos.xy.x = 60.0f;
+
+			if(pos.xy.x >= 840.0f)
+				pos.xy.x = 840.0f;	
+
 		}
 }

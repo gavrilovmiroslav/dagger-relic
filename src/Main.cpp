@@ -46,9 +46,33 @@ struct PurgatoryPals : public Game
 			.with<Platform>(128.0f, 4.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
-			.with<Position>(geometry::Vec2{ 400, 500 })
+			.with<Position>(geometry::Vec2{ 550, 400 })
 			.with<Visibility>(true)
 			.done();
+
+		auto platform5 = spawn()
+			.with<Platform>(128.0f, 4.0f)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
+			.with<Position>(geometry::Vec2{ 250, 400 })
+			.with<Visibility>(true)
+			.done();	
+
+		auto platform3 = spawn()
+			.with<Platform>(128.0f, 4.0f)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
+			.with<Position>(geometry::Vec2{ 50, 100 })
+			.with<Visibility>(true)
+			.done();
+
+		auto platform4 = spawn()
+			.with<Platform>(128.0f, 4.0f)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
+			.with<Position>(geometry::Vec2{ 750, 100 })
+			.with<Visibility>(true)
+			.done();	
 			
 		auto platform2 = spawn()
 			.with<Platform>(1380.0f, 4.0f)
@@ -60,7 +84,7 @@ struct PurgatoryPals : public Game
 
 		auto box = spawn()
 
-			.with<Position>(geometry::Vec2{400, 300})
+			.with<Position>(geometry::Vec2{250, 368})
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("box/box"))
 			.with<Visibility>(true)
