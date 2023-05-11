@@ -3,9 +3,9 @@
 
 struct PushPlate
 {
+	U32 tid = 0;		          /* Unique ID of this PushPlate.   */
 	Bool active = false;	      /* If being pressed by something. */
 	Bool active_previous = false; /* Previous state of 'active'.    */
-	U32 tid = 0;		      /* Unique ID of this PushPlate.   */
 };
 
 struct PushPlateSignal

@@ -6,6 +6,9 @@
 #include "Prelude.h"
 #include "Random.h"
 #include "PushPlate.h"
+#include "TextRender.h"
+#include "Scene.h"
+#include "Box.h"
 
 using namespace core;
 
@@ -133,6 +136,68 @@ struct MovementSystem
 	}
 };
 
+struct PushPlateBoxSystem
+	: public ecs::System
+	, public MutAccessGroupStorage<Position, PushPlate>
+	, public MutAccessGroupStorage<Position, Movement, Box>
+{
+	void on_tick() override
+	{
+		/* For each PushPlate, check if it's colliding with a Box. */
+		for (auto&& [entity, pushplate_pos, pushplate] : MutAccessGroupStorage<Position, PushPlate>::access_storage().each())
+		{
+			BOOL collide = FALSE;
+
+			for (auto&& [entity, box_pos, box_movement, box] : MutAccessGroupStorage<Position, Movement, Box>::access_storage().each())
+			{
+				F32 dx, dy;
+				F32 collision_width  = box_movement.collision_box_width  + 48;
+				F32 collision_height = box_movement.collision_box_height + 48;
+
+				/* Pivot has to be adjusted (to center of push plate). */
+				dx = (box_pos.xy.x+24) - pushplate_pos.xy.x;
+				dy = (box_pos.xy.y+24) - pushplate_pos.xy.y;
+
+				if (fabsf(dx) < collision_width / 2.0f && fabsf(dy) < collision_height / 2.0f)
+				{
+					collide = TRUE;
+					break;
+				}
+			}
+
+			if (collide)
+			{
+				if (!pushplate.active)
+				{
+					pushplate.active = TRUE;
+					scene.pushplate_activenow++;
+					spdlog::info("[o] Pushplate ACTIVE count is {} (new activated)", scene.pushplate_activenow);
+					if (scene.pushplate_activenow >= scene.pushplatecount)
+					{
+						spdlog::info("All pushplates active!");
+						/*
+						 * !!! ----------------- !!!
+						 * !!!                   !!!
+						 * !!! END OF LEVEL HERE !!!
+						 * !!!                   !!!
+						 * !!! ----------------- !!!
+						 */
+					}
+				}
+			}
+			else
+			{
+				if (pushplate.active)
+				{
+					spdlog::info("[o] Pushplate ACTIVE count is {} (one deactivated)", scene.pushplate_activenow);
+					pushplate.active = FALSE;
+					scene.pushplate_activenow--;
+				}
+			}
+		}
+	}
+};
+
 struct ClickControlSystem
 	: public ecs::System
 {
@@ -201,8 +266,6 @@ struct MovementControlSystem
 			{
 				movement.force.x -= fsignf(movement.force.x)*movement.move_force;
 			}
-
-			spdlog::info("force: {} {}", movement.force.x, movement.force.y);
 		}
 	}
 };
@@ -248,10 +311,13 @@ struct PyramidPlunder : public Game
 		engine.use<MovementControlSystem>();
 		engine.use<ClickControlSystem>();
 		engine.use<DebugRectangleSystem>();
+		engine.use<TextRenderControlSystem>();
+		engine.use<PushPlateBoxSystem>();
 	}
 
 	void on_start() override
 	{
+		TextRender::init();
 		level_manager = LevelManager();
 		level_manager.load_level("Levels/level1.txt");
 		
@@ -263,6 +329,7 @@ struct PyramidPlunder : public Game
 		.with<Position>(geometry::Vec2{0, 0})
 		.done();
 
+		scene.Reset();
 		for(U32 i = 0; i < TILE_ROWS; i++)
 		{
         		for(U32 j = 0; j < TILE_COLS; j++)
@@ -296,23 +363,26 @@ struct PyramidPlunder : public Game
 					.with<Position>(geometry::Vec2{ i*96, j*96})
 					.with<Movement>(2000.0f, 50.0f, 28, 56)
 					.with<PostProcessRectangle>(0, 0, 28, 56)
+					.with<Box>(scene.boxcount)
 					.done();
+					scene.boxcount++;
 				}
 				if(c == 'p')
 				{
 					spawn()
-					.with<PushPlate>()
+					.with<PushPlate>(scene.pushplatecount)
 					.with<Sprite>(ecs::no_entity, 4)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_4"))
 					.with<Visibility>(true)
 					.with<Position>(geometry::Vec2{ i*96, j*96})
 					.done();
+					scene.pushplatecount++;
 				}
 				if(c == 'a')
 				{
 					spawn()
 					.with<Player>(SpecialBlindfold::HumanEyes)
-					.with<Sprite>(ecs::no_entity, 6)
+					.with<Sprite>(ecs::no_entity, 10)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
 					.with<PostProcessRectangle>(0, 0, 14, 22)
 					.with<Visibility>(true)
@@ -321,13 +391,37 @@ struct PyramidPlunder : public Game
 					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
 					.done();
 				}
-        	}
+        		}
 		}
+	}
+
+	void on_end() override
+	{
+		TextRender::deinit();
 	}
 };
 
+#ifdef _WIN32
+#include <Windows.h>
+void PlatformMain(void)
+{
+	FILE *fp;
+
+	AllocConsole();
+	freopen_s(&fp, "CONOUT$", "w", stdout);
+	freopen_s(&fp, "CONOUT$", "w", stderr);
+	freopen_s(&fp, "CONIN$", "r", stdin);
+}
+#else
+void PlatformMain(void)
+{
+}
+#endif
+
 int main(int argc, char* argv[])
 {
+	PlatformMain();
+	
 	auto& engine = Engine::get_instance();
 	std::string filePath = "dagger.ini";
 	engine.configure(filePath.data(), argc, argv);
