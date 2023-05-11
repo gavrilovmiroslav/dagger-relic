@@ -6,7 +6,7 @@ Player::Player(SpecialBlindfold blindfold)
 
 	DynamicArray<SpecialBlindfold> blindfolds = {};
 
-	Constraints constraint;
+	auto&& constraint = AccessUnique<Constraints>::access_unique();
 	blindfolds.insert(blindfolds.begin(), constraint.max_number_of_blindfolds, SpecialBlindfold::FoxEyes);
 	blindfolds.insert(blindfolds.begin(), constraint.max_number_of_blindfolds, SpecialBlindfold::ScorpionEyes);
 
@@ -35,70 +35,66 @@ void BlindfoldChangingSystem::on_tick()
 			counter++;
 		}
 
-		new_blindfold = blindfolds[(counter + 3) % 3];
+		new_blindfold = blindfolds[(counter + NUM_OF_BLINDFOLDS) % NUM_OF_BLINDFOLDS];
 
-		if (new_blindfold != SpecialBlindfold::HumanEyes && player.available_blindfolds[new_blindfold] != 0)
-		{
-			player.current_blindfold = new_blindfold;
-		}
-		else
-		{
-			player.current_blindfold = SpecialBlindfold::HumanEyes;
-		}
+		player.current_blindfold = player.available_blindfolds[new_blindfold] != 0 ? new_blindfold : SpecialBlindfold::HumanEyes;
 
-		if (player.current_blindfold == SpecialBlindfold::HumanEyes)
+		switch (player.current_blindfold)
 		{
-			if (!walls_visible)
+			case SpecialBlindfold::HumanEyes:
 			{
-				for (auto&& [wall_entity, wall, visibility] : QueryWalls::access_storage().each())
+				if (!walls_visible)
 				{
-					visibility.state = true;
+					for (auto&& [wall_entity, wall, visibility] : QueryWalls::access_storage().each())
+					{
+						visibility.state = true;
+					}
 				}
-			}
 
-			if (boxes_visible)
-			{
-				for (auto&& [box_entity, visibility] : QueryBoxes::access_storage().each())
+				if (boxes_visible)
 				{
-					visibility.state = false;
+					for (auto&& [box_entity, visibility] : QueryBoxes::access_storage().each())
+					{
+						visibility.state = false;
+					}
 				}
-			}
-		}
-		else if (player.current_blindfold == SpecialBlindfold::FoxEyes)
-		{
-			if (walls_visible)
+			} break;
+			case SpecialBlindfold::FoxEyes:
 			{
-				for (auto&& [wall_entity, wall, visibility] : QueryWalls::access_storage().each())
+				if (walls_visible)
 				{
-					visibility.state = false;
+					for (auto&& [wall_entity, wall, visibility] : QueryWalls::access_storage().each())
+					{
+						visibility.state = false;
+					}
 				}
-			}
 
-			if (!boxes_visible)
-			{
-				for (auto&& [box_entity, visibility] : QueryBoxes::access_storage().each())
+				if (!boxes_visible)
 				{
-					visibility.state = true;
+					for (auto&& [box_entity, visibility] : QueryBoxes::access_storage().each())
+					{
+						visibility.state = true;
+					}
 				}
-			}
-		}
-		else if (player.current_blindfold == SpecialBlindfold::ScorpionEyes)
-		{
-			if (!walls_visible)
+			} break;
+			case SpecialBlindfold::ScorpionEyes:
 			{
-				for (auto&& [wall_entity, wall, visibility] : QueryWalls::access_storage().each())
+				if (!walls_visible)
 				{
-					visibility.state = true;
+					for (auto&& [wall_entity, wall, visibility] : QueryWalls::access_storage().each())
+					{
+						visibility.state = true;
+					}
 				}
-			}
 
-			if (!boxes_visible)
-			{
-				for (auto&& [box_entity, visibility] : QueryBoxes::access_storage().each())
+				if (!boxes_visible)
 				{
-					visibility.state = true;
+					for (auto&& [box_entity, visibility] : QueryBoxes::access_storage().each())
+					{
+						visibility.state = true;
+					}
 				}
-			}
+			} break;
 		}
 	}
 }

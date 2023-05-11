@@ -4,6 +4,8 @@
 #include "Prelude.h"
 #include "Shuffle.h"
 
+#define NUM_OF_BLINDFOLDS 3
+
 enum class SpecialBlindfold
 {
 	HumanEyes,
@@ -18,6 +20,8 @@ struct Constraints
 };
 
 struct Player
+	: public AllocateUnique<Constraints>
+	, public AccessUnique<Constraints>
 {
 	SpecialBlindfold current_blindfold;
 	Map<SpecialBlindfold, U32> available_blindfolds;
