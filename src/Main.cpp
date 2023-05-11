@@ -2,114 +2,59 @@
 
 #include "Prelude.h"
 #include "Random.h"
-
+#include <string>
+#include <cmath>
 using namespace core;
 
-struct PadCollisionSignal
-{
-	ecs::Entity ball;
-	ecs::Entity pad;
-};
-
-struct Player {};
-
-struct Ball
-{
-	geometry::Vec2 speed;
-};
-
-struct KeyBindings
+struct KeyBindings 
 {
 	KeyCode up;
 	KeyCode down;
+	KeyCode left;
+	KeyCode right;
+};
+struct Healthbar
+{
+    int value;
 };
 
-struct PhysicsSystem
-	: public ecs::System
-	, public AccessGroupStorage<Player, Position>
-	, public AccessGroupStorage<Ball, Position>
-	, public SignalEmitter<PadCollisionSignal>
-{
-	using QueryPlayers = AccessGroupStorage<Player, Position>;
-	using QueryBalls = AccessGroupStorage<Ball, Position>;
+struct Cursor {};
 
-	Bool intersects(const geometry::Vec2& pad_center, const geometry::Vec2& ball_center, float ball_radius)
-	{
-		static constexpr const int pad_width = 11;
-		static constexpr const int pad_height = 32;
-
-		const geometry::Vec2 circle_distance{
-			abs(ball_center.x - pad_center.x),
-			abs(ball_center.y - pad_center.y)
-		};
-
-		if (circle_distance.x > (pad_width + ball_radius)) { return false; }
-		if (circle_distance.y > (pad_height + ball_radius)) { return false; }
-
-		if (circle_distance.x <= pad_width) { return true; }
-		if (circle_distance.y <= pad_height) { return true; }
-
-		const auto dx = circle_distance.x - pad_width;
-		const auto dy = circle_distance.y - pad_height;
-		const auto corner_distance = dx * dx + dy * dy;
-
-		return corner_distance <= ball_radius * ball_radius;
-	}
-
-	void on_tick() override
-	{
-		for (auto&& [ball_entity, ball, pos] : QueryBalls::access_storage().each())
-		{
-			for (auto&& [player_entity, pad] : QueryPlayers::access_storage().each())
-			{
-				if (intersects(pad.xy, pos.xy, 16))
-				{
-					emit(PadCollisionSignal{ ball_entity, player_entity });
-				}
-			}
-		}
-	}
+struct Monster{
+	String name;
+	int health;
 };
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
-#define BALL_RADIUS 16
-#define SPEED_MOD 200.0f
 
-struct BallMovementSystem
-	: public ecs::System
-	, public MutAccessGroupStorage<Ball, Position>
-	, public MutAccessComponentById<Ball>
-	, public SignalProcessor<PadCollisionSignal>
-{
-	virtual void process_signal(PadCollisionSignal& signal)
-	{
-		auto& ball = MutAccessComponentById<Ball>::get(signal.ball);
-		ball.speed.x *= -1;
-		ball.speed.y = get_random(-0.8f, 0.8f);
-	}
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 720
 
-	void on_tick() override
-	{
-		for (auto&& [entity, ball, pos] : access_storage().each())
-		{
-			if (pos.xy.y >= SCREEN_HEIGHT - BALL_RADIUS || pos.xy.y <= BALL_RADIUS)
-			{
-				ball.speed.y *= -1;
-			}
+#define CURSOR_STEP 65
 
-			pos.xy += ball.speed * SPEED_MOD * Time::delta_time();
-		}
-	}
+#define MENUBG_PIVOT_X SCREEN_WIDTH/2
+#define MENUBG_PIVOT_Y SCREEN_HEIGHT
+
+#define MENUBG_WIDTH SCREEN_WIDTH
+#define MENUBG_HEIGHT 245
+
+#define MENUBG_X MENUBG_PIVOT_X-MENUBG_WIDTH/2
+#define MENUBG_Y MENUBG_PIVOT_Y-MENUBG_HEIGHT
+
+#define ATTACK_X 1
+#define ATTACK_Y 1
+struct OptionIndexSignal{
+    int i;
 };
 
 struct PlayerControlsSystem
 	: public ecs::System
-	, public MutAccessGroupStorage<Player, KeyBindings, Position>
+	, public MutAccessGroupStorage<Cursor, KeyBindings, Position>
+    , public SignalEmitter<OptionIndexSignal>
 {
-	void on_tick() override
+	int idx=1;
+    void on_tick() override
 	{
-		const auto& keys = KeyState::get();
+		const auto& keys = KeyState::get(); 
 
 		if (keys.is_pressed(KEY_ESCAPE))
 		{
@@ -118,55 +63,259 @@ struct PlayerControlsSystem
 
 		for (auto&& [entity, bindings, pos] : access_storage().each())
 		{
-			if (keys.is_down(bindings.up))
+			
+			if (keys.is_pressed(bindings.up)) 
 			{
-				pos.xy.y -= SPEED_MOD * Time::delta_time();
+				if(pos.xy.y-CURSOR_STEP>=MENUBG_Y+50){
+                    pos.xy.y -= CURSOR_STEP;
+                    idx-=1;
+                }
+					 
 			}
-			else if (keys.is_down(bindings.down))
+			else if (keys.is_pressed(bindings.down)) 
 			{
-				pos.xy.y += SPEED_MOD * Time::delta_time();
+				if(pos.xy.y+CURSOR_STEP<=MENUBG_PIVOT_Y-50){
+                    pos.xy.y += CURSOR_STEP;
+                    idx+=1;
+                }
+					  
 			}
+			else if(keys.is_pressed(bindings.left)){
+				if(pos.xy.x-320>0){
+                    pos.xy.x-=320;
+                    idx-=3;
+                }
+					
+			}
+			else if(keys.is_pressed(bindings.right)){
+				if(pos.xy.x+320<SCREEN_WIDTH/2){
+                    pos.xy.x+=320;
+                    idx+=3;
+                }		
+			}
+            else if(keys.is_pressed(KEY_SPACE)){
+                    emit(OptionIndexSignal{idx});
+            }
 		}
 	}
 };
+struct AttackSignal
+	{
+		int id;
+	};
+struct BlockSignal{};
 
+struct ChoosingOptionSystem
+    : public ecs::System
+	, public SignalProcessor<OptionIndexSignal>
+    , public SignalEmitter<AttackSignal>
+	, public SignalEmitter<BlockSignal>
+{
+    virtual void process_signal(OptionIndexSignal& signal){
+        switch (signal.i)
+        {
+        case 1:
+            SignalEmitter<AttackSignal>::emit(AttackSignal{1});
+            break;
+        case 2:
+            SignalEmitter<BlockSignal>::emit(BlockSignal{});
+			break;
+        case 3:
+            break;
+		case 4:
+			SignalEmitter<AttackSignal>::emit(AttackSignal{2});
+			break;
+		case 5:
+			break;
+		case 6:
+			SignalEmitter<AttackSignal>::emit(AttackSignal{3});
+			break;
+		}
+    }
+};
+struct AttackSystem
+    : public ecs::System
+    , public SignalProcessor<AttackSignal>
+    , public MutAccessGroupStorage<Healthbar,SpriteAnimation>
+{
+    int monster_health=100;
+	int jane_health=100;
+	String health_sprites[10];
+
+	AttackSystem()
+	{
+		String base_string="nexus/healthbar_";
+
+		for(int i=0;i<10;i++)
+		{
+			health_sprites[i]=base_string+std::to_string(i);
+		}
+	}
+
+	virtual void process_signal(AttackSignal& signal)
+	{
+        int harm=get_harm(signal.id);
+
+		for (auto &&[healthbar_entity, healthbar,sprite] : MutAccessGroupStorage::access_storage().each())
+		{
+			monster_health=std::max(0,monster_health-10);
+			sprite.change_to(get_sprite(monster_health));
+		}
+    }
+
+	String get_sprite(int health)
+	{
+		return health_sprites[health/10];
+	}
+	int get_harm(int id)
+	{
+		//TODO: verovatnoca
+		if(id==1)
+		{
+			return 4; 
+		}
+		else if(id==2)
+		{
+			return 8;
+		}
+		else
+			return 6;
+	}
+};
+struct MonsterMovement
+	: public ecs::System
+	, public MutAccessGroupStorage<Monster, Position>
+{
+	int num=0;
+	float velocity=1;
+	bool up=true;
+	
+	void on_tick() override
+	{
+		
+		for (auto&& [entity,monster,pos] : access_storage().each())
+		{
+			if(up){
+				num++;
+				pos.xy.y+=velocity*Time::delta_time()*22.0f;
+				if(num==350){
+					up=false;
+					num=0;
+				}
+			}
+			else{
+				num++;
+				pos.xy.y-=velocity*Time::delta_time()*22.0f;
+				if(num==350){
+					up=true;
+					num=0;
+				}
+			}
+			
+		}
+	}
+};
 struct Pong : public Game
 {
 	Pong()
 	{
+		
 		auto& engine = Engine::get_instance();
+		engine.use<MonsterMovement>();
 		engine.use<PlayerControlsSystem>();
-		engine.use<BallMovementSystem>();
-		engine.use<PhysicsSystem>();
+        engine.use<ChoosingOptionSystem>();
+		engine.use<AttackSystem>();
 	}
 
 	void on_start() override
 	{
-		auto pad_left = spawn()
-			.with<Player>()
+	
+	 
+        auto button_attack = spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
-			.with<Position>(geometry::Vec2{ 50, 300 })
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/attack"))
+			.with<Position>(geometry::Vec2{ MENUBG_X+175, MENUBG_Y+55 })
 			.with<Visibility>(true)
-			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S)
+			.done();
+        auto button_block = spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/block"))
+			.with<Position>(geometry::Vec2{ MENUBG_X+175, MENUBG_Y+55+65})
+			.with<Visibility>(true)
+			.done(); 
+        auto button_items = spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/items"))
+			.with<Position>(geometry::Vec2{ MENUBG_X+175, MENUBG_Y+55+65+65})
+			.with<Visibility>(true)
+			.done();  
+        auto sword = spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/sword"))
+			.with<Position>(geometry::Vec2{ MENUBG_X+450, MENUBG_Y+55})
+			.with<Visibility>(true)
+			.done();  
+		auto shield = spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/shield"))
+			.with<Position>(geometry::Vec2{ MENUBG_X+450, MENUBG_Y+55 + 65})
+			.with<Visibility>(true)
+			.done();
+		auto knife = spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/knife"))
+			.with<Position>(geometry::Vec2{ MENUBG_X+450, MENUBG_Y+55 + 65 + 65})
+			.with<Visibility>(true)
+			.done();       
+		auto menubg = spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/menubg"))
+			.with<Position>(geometry::Vec2{ MENUBG_PIVOT_X, MENUBG_PIVOT_Y })
+			.with<Visibility>(true)
 			.done();
 
-		auto pad_right = spawn()
-			.with<Player>()
+		auto menucursor = spawn()
+			.with<Cursor>()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/pad"))
-			.with<Position>(geometry::Vec2{ 750, 300 })
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/menucursor"))
+			.with<Position>(geometry::Vec2{ MENUBG_X+50, MENUBG_Y+55 })
 			.with<Visibility>(true)
-			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN)
+			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S,KeyCode::KEY_A,KeyCode::KEY_D)
 			.done();
-
-		auto ball = spawn()
+		
+		auto health = spawn()
+            .with<Healthbar>(100)
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("pong/ball"))
-			.with<Position>(geometry::Vec2{ 300, 100 })
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/health"))
+			.with<Position>(geometry::Vec2{ SCREEN_WIDTH-300, 80 })
 			.with<Visibility>(true)
-			.with<Ball>(geometry::Vec2{ 1, 0 })
 			.done();
+		health = spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/health"))
+			.with<Position>(geometry::Vec2{ 300, 80 })
+			.with<Visibility>(true)
+			.done();
+		auto monster = spawn()
+			.with<Monster>("Gluttony",100)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/monster"))
+			.with<Position>(geometry::Vec2{SCREEN_WIDTH-200,SCREEN_HEIGHT-260})
+			.with<Visibility>(true)
+			.done();	
+		auto jane = spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/jane"))
+			.with<Position>(geometry::Vec2{200,SCREEN_HEIGHT-260})
+			.with<Visibility>(true)
+			.done();
+		// auto background=spawn()
+		// 	.with<Sprite>(ecs::no_entity)
+		// 	.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/background"))
+		// 	.with<Position>(geometry::Vec2{ MENUBG_X+SCREEN_WIDTH/2, MENUBG_Y})
+		// 	.with<Visibility>(true)
+		// 	.done();
+		
 	}
 };
 
