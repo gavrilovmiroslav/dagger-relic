@@ -269,7 +269,7 @@ struct PyramidPlunder : public Game
 				{
 					spawn()
 					.with<Player>(SpecialBlindfold::HumanEyes)
-					.with<Sprite>(ecs::no_entity, 6)
+					.with<Sprite>(ecs::no_entity, 10)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
 					.with<Visibility>(true)
 					.with<Position>(geometry::Vec2{ i*96, j*96})
