@@ -26,8 +26,6 @@ void AnimationModule::process_signal(core::PostRenderSignal&)
 		auto& anim = storage.get<SpriteAnimation>(entity);
 		I32 d = sprite.depth;
 
-		I32 d = sprite.depth;
-
 		const auto sheet = sheets.get<Spritesheet>(anim.spritesheet);
 		auto current_sprite = sheet.sprites[anim.current_frame];
 		sprite = sprites.get<Sprite>(current_sprite);
