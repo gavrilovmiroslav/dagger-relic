@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Prelude.h"
 #include "Random.h"
+#include "TextRender.h"
 
 using namespace core;
 
@@ -213,10 +214,12 @@ struct PyramidPlunder : public Game
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
 		engine.use<ClickControlSystem>();
+		engine.use<TextRenderControlSystem>();
 	}
 
 	void on_start() override
 	{
+		TextRender::init();
 		level_manager = LevelManager();
 		level_manager.load_level("Levels/level1.txt");
 
@@ -274,8 +277,13 @@ struct PyramidPlunder : public Game
 					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
 					.done();
 				}
-        	}
+        		}
 		}
+	}
+
+	void on_end() override
+	{
+		TextRender::deinit();
 	}
 };
 

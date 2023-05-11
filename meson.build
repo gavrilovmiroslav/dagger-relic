@@ -12,7 +12,8 @@ deps = [
     dependency('sdl2', default_options : [ 'test=false' ]),
     dependency('sdl2_image'),
     dependency('sdl2_net'),
-    dependency('sdl2_mixer')
+    dependency('sdl2_mixer'),
+    dependency('sdl2_ttf')
 ]
 
 includes = [
@@ -32,6 +33,7 @@ sources = [
     'src/PostProcessRendering.cpp',
     'src/Rendering.cpp',
     'src/SpriteRendering.cpp',
+    'src/TextRender.cpp',
     'src/Windowing.cpp',
     'src/Main.cpp'
 ]
