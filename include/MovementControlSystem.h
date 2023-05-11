@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Algebra.h"
-#include "PlayerFSM.h"
-#include "Random.h"
 #include "Prelude.h"
+#include "Random.h"
+#include "Algebra.h"
+#include "GameComponents.h"
+#include "PlayerFSM.h"
 
 struct PlayerMovement
 {
@@ -32,64 +33,57 @@ struct Movement
 	}
 };
 
-struct KeyBinding
-{
-	KeyCode left, down, up, right;
-	KeyCode blindfold_change;
-};
-
 struct MovementControlSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<PlayerMovement, KeyBinding, Movement, SpriteAnimation>
 {
 	void on_tick()
 	{
-		const auto& key = KeyState::get();
+	const auto& key = KeyState::get();
 
-		for (auto&& [entity, player, key_binding, movement, sprite] : access_storage().each())
+	for (auto&& [entity, player, key_binding, movement, sprite] : access_storage().each())
+	{
+		if (key.is_down(key_binding.up))
 		{
-			if (key.is_down(key_binding.up))
-			{
-				player.p_fsm.trigger(PlayerTransition::WHIP);
-				movement.force.y = -movement.move_force;
-			}
-			else if (key.is_down(key_binding.down))
-			{
-				player.p_fsm.trigger(PlayerTransition::WHIP);
-				movement.force.y =  movement.move_force;
-			}
-			else
-			{
-				movement.force.y -= fsignf(movement.force.y)*movement.move_force;
-			}
-
-			if (key.is_down(key_binding.left))
-			{
-				player.p_fsm.trigger(PlayerTransition::RUN);
-				replace_component<Flip>(entity, Horizontal);
-				movement.force.x = -movement.move_force;
-			}
-			else if (key.is_down(key_binding.right))
-			{
-				player.p_fsm.trigger(PlayerTransition::RUN);
-				replace_component<Flip>(entity, None);
-				movement.force.x =  movement.move_force;
-			}
-			else if ((player.p_fsm.currentState == PlayerState::RUNNING) && !key.is_down(key_binding.left) && !key.is_down(key_binding.right))
-        		{
-            			player.p_fsm.trigger(PlayerTransition::STAND);
-        		}
-			else if ((player.p_fsm.currentState == PlayerState::WHIPPING) && !key.is_down(key_binding.up) && !key.is_down(key_binding.down))
-        		{
-            			player.p_fsm.trigger(PlayerTransition::STAND);
-        		}
-			else
-			{
-				movement.force.x -= fsignf(movement.force.x)*movement.move_force;
-			}
-
-
-			spdlog::info("force: {} {}", movement.force.x, movement.force.y);
+			player.p_fsm.trigger(PlayerTransition::WHIP);
+			movement.force.y = -movement.move_force;
 		}
+		else if (key.is_down(key_binding.down))
+		{
+			player.p_fsm.trigger(PlayerTransition::WHIP);
+			movement.force.y =  movement.move_force;
+		}
+		else
+		{
+			movement.force.y -= fsignf(movement.force.y)*movement.move_force;
+		}
+		if (key.is_down(key_binding.left))
+		{
+			player.p_fsm.trigger(PlayerTransition::RUN);
+			replace_component<Flip>(entity, Horizontal);
+			movement.force.x = -movement.move_force;
+		}
+		else if (key.is_down(key_binding.right))
+		{
+			player.p_fsm.trigger(PlayerTransition::RUN);
+			replace_component<Flip>(entity, None);
+			movement.force.x =  movement.move_force;
+		}
+		else if ((player.p_fsm.currentState == PlayerState::RUNNING) && !key.is_down(key_binding.left) && !key.is_down(key_binding.right))
+        	{
+        		player.p_fsm.trigger(PlayerTransition::STAND);
+        	}
+		else if ((player.p_fsm.currentState == PlayerState::WHIPPING) && !key.is_down(key_binding.up) && !key.is_down(key_binding.down))
+        	{
+        		player.p_fsm.trigger(PlayerTransition::STAND);
+		}
+		else
+		{
+			movement.force.x -= fsignf(movement.force.x)*movement.move_force;
+		}
+
+
+		//spdlog::info("force: {} {}", movement.force.x, movement.force.y);
+	}
 	}
 };

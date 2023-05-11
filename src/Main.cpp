@@ -2,7 +2,9 @@
 
 #include "LevelManager.h"
 #include "Player.h"
+#include "GameComponents.h"
 #include "MovementControlSystem.h"
+#include "MenuControlSystem.h"
 
 using namespace core;
 
@@ -84,7 +86,7 @@ struct MovementSystem
 	}
 };
 
-struct ClickControlSystem
+/*struct ClickControlSystem
 	: public ecs::System
 {
 	void on_tick() override
@@ -97,7 +99,7 @@ struct ClickControlSystem
 		}
 
 	}
-};
+};*/
 
 // TODO: move to separate file after refactoring Main.cpp and add signals to other components
 struct BlindfoldChangingSystem
@@ -138,7 +140,8 @@ struct PyramidPlunder : public Game
 		engine.use<BlindfoldChangingSystem>();
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
-		engine.use<ClickControlSystem>();
+		engine.use<MenuControlSystem>();
+		//engine.use<ClickControlSystem>();
 	}
 
 	void on_start() override
