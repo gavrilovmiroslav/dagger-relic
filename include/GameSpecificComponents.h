@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Prelude.h"
+#include "Timer.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -24,6 +25,9 @@ struct Platform
 	F32 width;
 	F32 height;
 };
+
+struct Background
+{};
 
 struct Pickup
 {
@@ -113,6 +117,9 @@ struct OnStartSignal
 {
 	I32 start_health;
 };
+
+struct PickupSpawnSignal
+{};
 
 struct KeyBindings
 {

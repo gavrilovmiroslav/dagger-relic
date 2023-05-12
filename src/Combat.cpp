@@ -44,6 +44,22 @@ void ProjectileSpawnSystem::on_tick()
 					.with<Duration>(Disappear)
 					.with<Clipping>(Pass);
 			}
+			else if (item.name == "fastball")
+			{
+				spawn()
+					.with<Spell>(600.0f, pos.xy.x + direction * 20.0f, 1200.0f, 12.5f, 10)
+					.with<Sprite>(ecs::no_entity)
+					.with<SpriteAnimation>(Spritesheet::get_by_name("test/Fastball"))
+					.with<Position>(geometry::Vec2{pos.xy.x + direction * 20.0f, pos.xy.y})
+					.with<Visibility>(true)
+					.with<Flip>(flip)
+					.with<Scale>(geometry::Vec2{0.05f, 0.05f})
+					.with<Element>(Wind)
+					.with<Shape>(Ray)
+					.with<Move>(Line)
+					.with<Duration>(Disappear)
+					.with<Clipping>(Pass);
+			}
 		}
 	}
 }

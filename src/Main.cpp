@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdlib.h>
+#include <time.h>
+
 #include "Prelude.h"
 
 #include "GameSpecificComponents.h"
@@ -24,21 +27,12 @@ struct SWMG : public Game
 
 	void on_start() override
 	{
-		for (int i = 0; i < 10; i++)
-		{
-			spawn()
-				.with<Pickup>("curseball" , 32.0f, 5)
-				.with<Sprite>(ecs::no_entity)
-				.with<SpriteAnimation>(Spritesheet::get_by_name("test/pickup"))
-				.with<Position>(geometry::Vec2{ rand() % 600, rand() % 570 })
-				.with<Visibility>(true);
-		}
 
 		auto platform1 = spawn()
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
-            .with<Scale>(geometry::Vec2{0.25f,0.1f})
+            		.with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 400, 550 })
 			.with<Visibility>(true);
 
@@ -46,7 +40,7 @@ struct SWMG : public Game
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
-            .with<Scale>(geometry::Vec2{0.25f,0.1f})
+            		.with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 200, 450 })
 			.with<Visibility>(true);
 
@@ -54,7 +48,7 @@ struct SWMG : public Game
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
-            .with<Scale>(geometry::Vec2{0.25f,0.1f})
+            		.with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 300, 500 })
 			.with<Visibility>(true);
 
@@ -62,7 +56,7 @@ struct SWMG : public Game
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
-            .with<Scale>(geometry::Vec2{0.25f,0.1f})
+            		.with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 450, 450 })
 			.with<Visibility>(true);
 
@@ -70,7 +64,7 @@ struct SWMG : public Game
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
-            .with<Scale>(geometry::Vec2{0.25f,0.1f})
+            		.with<Scale>(geometry::Vec2{0.25f,0.1f})
 			.with<Position>(geometry::Vec2{ 600, 400 })
 			.with<Visibility>(true);
 
@@ -127,11 +121,19 @@ struct SWMG : public Game
 
 		SignalEmitter<OnStartSignal>::emit(OnStartSignal{100});
 
+		auto background = spawn()
+			.with<Platform>()
+			.with<Sprite>(ecs::no_entity, -100)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/Background"))
+			.with<Visibility>(true)
+			.with<Position>(geometry::Vec2{ SCREEN_WIDTH/2, SCREEN_HEIGHT/2})
+			.done();
 	}
 };
 
 int main(int argc, char* argv[])
 {
+	srand(time(NULL));
 	auto& engine = Engine::get_instance();
 	std::string filePath = "dagger.ini";
 	engine.configure(filePath.data(), argc, argv);
