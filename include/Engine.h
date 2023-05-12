@@ -25,7 +25,6 @@ namespace core
 
 	class Engine
 	{
-
 	public:
 		static Engine& get_instance()
 		{
@@ -44,7 +43,7 @@ namespace core
 		Engine() = default;
 
 		bool should_quit = false;
-		
+
 		Config configuration;
 		containers::DynamicArray<memory::SharedPtr<ecs::LifecycleTrait>> lifetimes;
 
@@ -118,10 +117,10 @@ namespace core
 				Logger::critical("Lifecycle {} not registered, but accessed through `Engine::get`.", typeid(S).name());
 			}
 			return ptr;
-		}		
+		}
 
 		inline void frame()
-		{			
+		{
 			static high_resolution_clock::time_point start_time;
 			static high_resolution_clock::time_point end_time;
 			static duration<F32> frame_duration;
@@ -161,7 +160,6 @@ namespace core
 		}
 	};
 }
-
 
 struct Time
 {

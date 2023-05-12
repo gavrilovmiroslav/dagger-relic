@@ -15,7 +15,7 @@ class FPSCalculatorModule
 {
 public:
 	virtual void process_signal(core::FrameDurationSignal&) override = 0;
-	inline void submit_diagnostics() 
+	inline void submit_diagnostics()
 	{
 		SignalEmitter<DiagnosticsSignal>::emit(DiagnosticsSignal{ DiagType::DIAG_TYPE_FPS, fps });
 	}
