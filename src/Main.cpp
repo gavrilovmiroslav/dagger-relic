@@ -10,7 +10,8 @@
 
 using namespace core;
 
-struct SWMG : public Game {
+struct SWMG : public Game
+	, public SignalEmitter<OnStartSignal> {
 	SWMG()
 	{
 		auto& engine = Engine::get_instance();
@@ -21,7 +22,7 @@ struct SWMG : public Game {
 		engine.use<SpellMovementSystem>();
 		engine.use<SpellCollisionSystem>();
 		engine.use<ProjectileSpawnSystem>();
-
+		engine.use<HealthBarAnimationSystem>();
 	}
 
 	void on_start() override
@@ -97,6 +98,28 @@ struct SWMG : public Game {
 			.with<Item>("None", 3)
 			.with<Status>(100)
 			.done();
+
+		auto health_bar_one = spawn()
+			.with<Status>(100)
+			.with<PlayerId>(player_one)
+			.with<Sprite>(ecs::no_entity, 1)
+			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("test/HealthBar"), 1.0f, 0)
+            .with<Scale>(geometry::Vec2{3.0f,3.0f})
+			.with<Position>(geometry::Vec2{50, 50})
+			.with<Visibility>(true)
+			.done();
+
+		auto health_bar_two = spawn()
+			.with<Status>(100)
+			.with<PlayerId>(player_two)
+			.with<Sprite>(ecs::no_entity, 1)
+			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("test/HealthBar"), 1.0f, 0)
+            .with<Scale>(geometry::Vec2{3.0f,3.0f})
+			.with<Position>(geometry::Vec2{700, 50})
+			.with<Visibility>(true)
+			.done();
+
+		SignalEmitter<OnStartSignal>::emit(OnStartSignal{100});
 
 		auto background = spawn()
 			.with<Platform>()

@@ -112,6 +112,7 @@ void SpellCollisionSystem::process_signal(SpellPlayerCollisionSignal &signal)
 			if (auto *status = MutAccessComponentById<Status>::get(signal.player))
 			{
 				status->health -= spell->damage;
+				HealthUpdateEmitter::emit(HealthUpdateSignal{signal.player, status->health});
 				if (status->health <= 0)
 				{
 					despawn(signal.player);
