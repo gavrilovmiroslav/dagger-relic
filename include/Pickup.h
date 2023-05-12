@@ -20,10 +20,13 @@ struct PickupSystem
 	, public AllocateUnique<Generator>
 	, public MutAccessUnique<Generator>
 	, public SignalEmitter<HealthUpdateSignal>
+    , public MutAccessComponentById<Item>
+    , public MutAccessComponentById<Visibility>
 {
 	using QueryPlayers = MutAccessGroupStorage<Player, Position, Status>;
 	using QueryPickups = MutAccessGroupStorage<Pickup, Position>;
 	using HealthUpdateEmitter = SignalEmitter<HealthUpdateSignal>;
+	using ItemGetter = MutAccessComponentById<Item>;
 
 	Bool on_start() override;
 

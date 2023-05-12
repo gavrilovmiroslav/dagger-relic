@@ -1,9 +1,9 @@
 #include "Combat.h"
-#include <iostream>
 
 void ProjectileSpawnSystem::on_tick()
 {
 	const auto &keys = KeyState::get();
+
 
 	for (auto &&[player_entity, player, bindings, pos, sprite, flip, item] : access_storage().each())
 	{
@@ -63,6 +63,7 @@ void ProjectileSpawnSystem::on_tick()
 		}
 	}
 }
+
 
 void SpellMovementSystem::on_tick()
 {

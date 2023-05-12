@@ -1,0 +1,19 @@
+texture: test/Wizard2/WizardAirborne
+dimensions: 1, 1
+sprites: 4
+
+clip: 0, 0, 32, 32
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 32, 0, 32, 32
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 64, 0, 32, 32
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 96, 0, 32, 32
+pivot: 0.5, 0.5
+scale: 1, 1

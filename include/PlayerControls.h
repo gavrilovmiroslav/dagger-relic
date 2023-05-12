@@ -6,7 +6,7 @@
 
 struct PlayerControlsSystem 
 	: public ecs::System
-	, public MutAccessGroupStorage<Player, KeyBindings, Position, SpriteAnimation, Flip>
+	, public MutAccessGroupStorage<Player, KeyBindings, Position, Flip>
 {
 	void on_tick() override;
 };

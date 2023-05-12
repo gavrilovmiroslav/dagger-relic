@@ -38,7 +38,8 @@ sources = [
     'src/PlayerControls.cpp',
     'src/Combat.cpp',
     'src/HealthBar.cpp',
-    'src/Generator.cpp'
+    'src/Generator.cpp',
+    'src/PlayerFSM.cpp'
 ]
 
 executable('dagger',

@@ -1,7 +1,11 @@
 pong/ball: pong/ball.png.data
 pong/pad: pong/pad.png.data
-test/WizardIdle: test/WizardIdle.png.data
-test/WizardRun: test/WizardRun.png.data
+test/Wizard1/WizardIdle: test/Wizard1/WizardIdle.png.data
+test/Wizard1/WizardRun: test/Wizard1/WizardRun.png.data
+test/Wizard1/WizardAirborne: test/Wizard1/WizardAirborne.png.data
+test/Wizard2/WizardIdle: test/Wizard2/WizardIdle.png.data
+test/Wizard2/WizardRun: test/Wizard2/WizardRun.png.data
+test/Wizard2/WizardAirborne: test/Wizard2/WizardAirborne.png.data
 test/platform: test/platform.png.data
 test/pixel-platform: test/pixel-platform.png.data
 test/pickup: test/pickup.png.data
