@@ -1,3 +1,95 @@
+#include <SDL.h>
+#include <SDL_ttf.h>
+#include <iostream>
+#include "include/window.h"
+#include "MainMenu.h"
+#include "EngineButton.h"
+
+using namespace std;
+
+
+/*int main(int argc, char *argv[]){
+
+    bool quit = false;
+    bool showNewWindow = false;
+
+    SDL_Event event;
+
+    EngineWindow appWindow;
+    EngineWindow newWindow;
+    appWindow.createWindow("Pyramid plunder", 800, 600);
+
+    EngineMenu engineMenu(appWindow.renderer, appWindow.mainWindow);
+
+    //init the splash screen
+    engineMenu.initSplashScreen("Press Enter to start", "liberation.ttf", "data/pyramids2.bmp");
+
+    EngineButton playButton(appWindow.renderer, "data/play1.bmp", 325, 200, 150, 40);
+    playButton.setCallback([&](){
+        showNewWindow = true;
+    });
+    EngineButton optionsButton(appWindow.renderer, "data/options1.bmp", 325, 300, 150, 40);
+    optionsButton.setCallback([&](){
+        showNewWindow = true;
+    });
+    EngineButton exitButton(appWindow.renderer, "data/exit1.bmp", 325, 400, 150, 40);
+    exitButton.setCallback([&](){
+        showNewWindow = true;
+    });
+
+
+    while (!quit){
+
+        SDL_PollEvent(&event);
+        if(event.type==SDL_WINDOWEVENT && event.window.event==SDL_WINDOWEVENT_CLOSE){
+            quit = true;
+        }
+
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        playButton.isClicked(mouseX, mouseY);
+
+        SDL_RenderClear(appWindow.renderer);
+
+        engineMenu.displaySplashScreen();
+        playButton.display();
+        optionsButton.display();
+        exitButton.display();
+        
+
+        //clear the render
+        //SDL_RenderClear(appWindow.renderer);
+
+        //render the splash screen
+        //engineMenu.displaySplashScreen();
+
+        //render the new texture
+        SDL_RenderPresent(appWindow.renderer);
+        SDL_Delay(20);
+
+        if (showNewWindow) {
+            newWindow.createWindow("Pyramid plunder", 800, 600);
+            showNewWindow = false;
+        }
+
+        // Destroy the new window when the event loop ends
+        showNewWindow = false;
+    }
+    
+
+    playButton.setCallback(nullptr);
+    optionsButton.setCallback(nullptr);
+    exitButton.setCallback(nullptr);
+    
+    engineMenu.quitSplashScreen();
+
+    appWindow.destroyWindow();
+    newWindow.destroyWindow();
+
+    return 0;
+
+}*/
+
 #pragma once
 
 #include "Algebra.h"
@@ -217,8 +309,9 @@ struct PyramidPlunder : public Game
 
 	void on_start() override
 	{
+       
 		level_manager = LevelManager();
-		level_manager.load_level("Levels/level1.txt");
+		level_manager.load_level("Levels/level2.txt");
 
 		for(U32 i = 0; i < TILE_ROWS; i++)
 		{
@@ -276,7 +369,8 @@ struct PyramidPlunder : public Game
 				}
         	}
 		}
-	}
+    }
+
 };
 
 int main(int argc, char* argv[])
