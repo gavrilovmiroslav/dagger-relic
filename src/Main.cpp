@@ -32,7 +32,7 @@ struct Brawl : public Game
 	void on_start() override
 	{
 		spawn()
-			.with<Player>()
+			.with<Player>(100.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Moose/Moose1_Idle"))
 			.with<Position>(geometry::Vec2{400, 300})
@@ -50,7 +50,7 @@ struct Brawl : public Game
 				.with<Position>(geometry::Vec2{ 760 - 30*i, 60*i })
 				.with<Visibility>(true)
 				.with<AnimationSpeedController>(1.0f)
-				.with<Enemy>(geometry::Vec2{ 1, 0 })
+				.with<Enemy>(geometry::Vec2{ 1, 0 }, 100.0f)
 				.done();
 		}
 

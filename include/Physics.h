@@ -10,11 +10,11 @@ struct PlayerCollisionSignal
 struct PhysicsSystem
 	: public ecs::System,
 	  public AccessGroupStorage<Player, Position>
-	, public AccessGroupStorage<Enemy, Position>
+	, public MutAccessGroupStorage<Enemy, Position>
 	, public SignalEmitter<PlayerCollisionSignal>
 {
 	using QueryPlayers = AccessGroupStorage<Player, Position>;
-	using QueryEnemies = AccessGroupStorage<Enemy, Position>;
+	using QueryEnemies = MutAccessGroupStorage<Enemy, Position>;
 
 	Bool intersects(const geometry::Vec2& player_center, const geometry::Vec2& enemy_center, float enemy_radius)
 	{
@@ -44,11 +44,12 @@ struct PhysicsSystem
 	{
 		for (auto&& [enemy_entity, enemy, pos] : QueryEnemies::access_storage().each())
 		{
-			for (auto&& [player_entity, player] : QueryPlayers::access_storage().each())
+			for (auto&& [player_entity, player, player_pos] : QueryPlayers::access_storage().each())
 			{
-				if (intersects(player.xy, pos.xy, 16))
+				if (intersects(player_pos.xy, pos.xy, 16))
 				{
 					emit(PlayerCollisionSignal{ enemy_entity, player_entity});
+					
 				}
 			}
 		}
