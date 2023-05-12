@@ -54,12 +54,7 @@ void HealthBarAnimationSystem::process_signal(HealthUpdateSignal& signal)
 		const auto sheet = sheets.get<Spritesheet>(anim.spritesheet);
 		auto current_sprite = sheet.sprites[anim.current_frame];
 		sprite = sprites.get<Sprite>(current_sprite);
-
-
-
-
 	}
-
 }
 
 

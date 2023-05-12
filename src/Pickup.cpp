@@ -14,6 +14,7 @@ void PickupSystem::on_tick()
 				if (pickup.name == "healthpotion")
 				{
 					status.health = std::min(100, status.health + 30);
+					HealthUpdateEmitter::emit(HealthUpdateSignal{player_entity, status.health});
 				}
 				else {
 					replace_component<Item>(player_entity, pickup.name, pickup.uses);

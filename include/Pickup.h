@@ -19,9 +19,11 @@ struct PickupSystem
 	, public SignalProcessor<PickupTimeoutSignal>
 	, public AllocateUnique<Generator>
 	, public MutAccessUnique<Generator>
+	, public SignalEmitter<HealthUpdateSignal>
 {
 	using QueryPlayers = MutAccessGroupStorage<Player, Position, Status>;
 	using QueryPickups = MutAccessGroupStorage<Pickup, Position>;
+	using HealthUpdateEmitter = SignalEmitter<HealthUpdateSignal>;
 
 	Bool on_start() override;
 
