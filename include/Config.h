@@ -344,7 +344,8 @@ namespace mINI
 			fileReadStream.seekg(0, std::ios::end);
 			const std::size_t fileSize = static_cast<std::size_t>(fileReadStream.tellg());
 			fileReadStream.seekg(0, std::ios::beg);
-			if (fileSize >= 3) {
+			if (fileSize >= 3)
+			{
 				const char header[3] = {
 					static_cast<char>(fileReadStream.get()),
 					static_cast<char>(fileReadStream.get()),
@@ -354,9 +355,10 @@ namespace mINI
 					header[0] == static_cast<char>(0xEF) &&
 					header[1] == static_cast<char>(0xBB) &&
 					header[2] == static_cast<char>(0xBF)
-					);
+				);
 			}
-			else {
+			else
+			{
 				isBOM = false;
 			}
 			std::string fileContents;
@@ -712,7 +714,8 @@ namespace mINI
 			std::ofstream fileWriteStream(filename, std::ios::out | std::ios::binary);
 			if (fileWriteStream.is_open())
 			{
-				if (fileIsBOM) {
+				if (fileIsBOM)
+				{
 					const char utf8_BOM[3] = {
 						static_cast<char>(0xEF),
 						static_cast<char>(0xBB),
