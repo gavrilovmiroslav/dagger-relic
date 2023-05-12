@@ -1,4 +1,6 @@
 #include "Pickup.h"
+#include "Access.h"
+
 
 void PickupSystem::on_tick()
 {
@@ -9,8 +11,13 @@ void PickupSystem::on_tick()
             if (abs(player_pos.xy.x - pickup_pos.xy.x) <= pickup.radius &&
              	abs(player_pos.xy.y - pickup_pos.xy.y) <= pickup.radius)
             {
-                replace_component<Item>(player_entity, pickup.name, pickup.uses); // Removing this line, in addition to the despawn line will stop the crashing issue.                
-                despawn(pickup_entity);
+
+                Item* current_item = ItemGetter::get(player_entity);
+                current_item->name = pickup.name;
+                current_item->uses = pickup.uses;
+                
+                remove_component<Visibility>(pickup_entity);
+                remove_component<Pickup>(pickup_entity); 
             }
         }
     }
