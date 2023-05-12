@@ -1,26 +1,24 @@
-//#include <iostream>
 #include "PlayerControlsSystem.h"
 
-//using namespace std;
 void PlayerControlsSystem::on_tick() {
     for (auto&& [entity, player, pos, gravity, bindings, sprite, animation, flip] : access_storage().each())
 		{
 			const auto &keys = KeyState::get();
 			if(keys.is_pressed(bindings.jump) && player.isGrounded){
-				player.speed={0, -15.5};
+				player.speed={0, -12.5};
 				sprite.change_to(animation.jump);
 				player.isGrounded = false;
 			}
 			player.speed+=gravity.acceleration;
 
 			if(keys.is_down(bindings.left)){
-				player.speed.x = -0.50f;
+				player.speed.x = -0.70f;
 				sprite.change_to(animation.walk);
 				replace_component<Flip>(entity, Horizontal);
 			}
 
 			if(keys.is_down(bindings.right)){
-				player.speed.x = 0.50f;
+				player.speed.x = 0.70f;
 				sprite.change_to(animation.walk);
 				replace_component<Flip>(entity, None);
 			}

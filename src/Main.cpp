@@ -62,7 +62,7 @@ struct PurgatoryPals : public Game
 			.with<Platform>(128.0f, 4.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
-			.with<Position>(geometry::Vec2{ 50, 100 })
+			.with<Position>(geometry::Vec2{ 100, 150 })
 			.with<Visibility>(true)
 			.done();
 
@@ -70,7 +70,7 @@ struct PurgatoryPals : public Game
 			.with<Platform>(128.0f, 4.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
-			.with<Position>(geometry::Vec2{ 750, 100 })
+			.with<Position>(geometry::Vec2{ 700, 150 })
 			.with<Visibility>(true)
 			.done();	
 			
@@ -82,14 +82,16 @@ struct PurgatoryPals : public Game
 			.with<Visibility>(true)
 			.done();
 
+			
+
 		auto box = spawn()
 
-			.with<Position>(geometry::Vec2{250, 368})
+			.with<Position>(geometry::Vec2{250, 268})
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("box/box"))
 			.with<Visibility>(true)
 			.with<Box>(geometry::Vec2{0.0f, 0.0f}, false)
-			.with<Gravity>(geometry::Vec2{0.0f, 0.03f})
+			.with<Gravity>(geometry::Vec2{0.0f, 0.01f})
 			.done();
 	}
 };

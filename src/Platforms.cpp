@@ -1,5 +1,5 @@
 #include "Platforms.h"
-#include <iostream>
+
 
 void PlatformSystem::on_tick()
 {
@@ -18,6 +18,38 @@ void PlatformSystem::on_tick()
 				player.visina=player_pos.xy.y;
 				player.speed.y=0.0f;
 				on_platform=true;
+				
+				if(platform_entity==(ecs::Entity)88 && !is_spawned1){
+					is_spawned1=true;
+					auto platform6 = spawn()
+					.with<Platform>(128.0f, 4.0f)
+					.with<Sprite>(ecs::no_entity)
+					.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
+					.with<Position>(geometry::Vec2{250, 500})
+					.with<Visibility>(true)
+					.done();
+				}
+				if(platform_entity==(ecs::Entity)95 && player_entity==(ecs::Entity)86 && !rougue_on_platform){
+					rougue_on_platform=true;
+					auto platform7 = spawn()
+					.with<Platform>(128.0f, 4.0f)
+					.with<Sprite>(ecs::no_entity)
+					.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
+					.with<Position>(geometry::Vec2{550, 200})
+					.with<Visibility>(true)
+					.done();
+				}
+				if(platform_entity==(ecs::Entity)95 && player_entity==(ecs::Entity)87 && !knight_on_platform){
+					knight_on_platform=true;
+					auto platform7 = spawn()
+					.with<Platform>(128.0f, 4.0f)
+					.with<Sprite>(ecs::no_entity)
+					.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
+					.with<Position>(geometry::Vec2{250, 200})
+					.with<Visibility>(true)
+					.done();
+				}
+			
 				break;
 			}
 		}
@@ -37,6 +69,16 @@ void PlatformSystem::on_tick()
 				box.speed.y>=0.0f
 			    )
 			{
+				if(platform_entity==(ecs::Entity)92 && !box_on_flor){
+					box_on_flor=true;
+					auto platform6 = spawn()
+					.with<Platform>(128.0f, 4.0f)
+					.with<Sprite>(ecs::no_entity)
+					.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
+					.with<Position>(geometry::Vec2{400, 300})
+					.with<Visibility>(true)
+					.done();
+				}
 				box.speed.y=0.0f;
 				on_platform=true;
 				break;
