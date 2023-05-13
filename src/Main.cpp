@@ -141,7 +141,7 @@ struct MovementSystem
 
 struct PushPlateBoxSystem
 	: public ecs::System
-	, public MutAccessGroupStorage<Position, PushPlate>
+	, public MutAccessGroupStorage<Position, PushPlate, SpriteAnimation>
 	, public MutAccessGroupStorage<Position, Movement, Box>
 {
 	void on_tick() override;
@@ -263,21 +263,36 @@ struct PyramidPlunder : public Game
 		engine.use<DebugRectangleSystem>();
 		engine.use<TextRenderControlSystem>();
 		engine.use<PushPlateBoxSystem>();
-		scene.registry = &engine.registry;
 	}
 
-	void StartLevel(const U8 id)
+	void remove_components(DynamicArray<ecs::Entity>& entities)
+	{
+		for (auto entity : entities)
+		{
+			remove_component<Position>(entity);
+			remove_component<Visibility>(entity);
+			remove_component<Sprite>(entity);
+			remove_component<SpriteAnimation>(entity);
+			remove_component<Movement>(entity);
+			remove_component<Box>(entity);
+			remove_component<PostProcessRectangle>(entity);
+			remove_component<Player>(entity);
+		};
+		entities.clear();
+	}
+
+	void start_level(const U8 id)
 	{
 		level_manager = LevelManager();
+		remove_components(scene.entity);
+		scene.Reset();
 
 		switch(id)
 		{
-		default:
-		case 0: level_manager.load_level("Levels/level1.txt"); break;
-		case 1: level_manager.load_level("Levels/level2.txt"); break;
+			case 0: level_manager.load_level("Levels/level1.txt"); break;
+			case 1: level_manager.load_level("Levels/level2.txt"); break;
 		}
-		
-		scene.Reset();
+
 		for(U32 i = 0; i < TILE_ROWS; i++)
 		{
 			for(U32 j = 0; j < TILE_COLS; j++)
@@ -353,9 +368,9 @@ struct PyramidPlunder : public Game
 	void on_start() override
 	{
 		TextRender::init();
-		
+
 		level = 0;
-		StartLevel(level);
+		start_level(level);
 
 		/*
 		spawn()
@@ -378,9 +393,9 @@ struct PyramidPlunder : public Game
 void PushPlateBoxSystem::on_tick()
 {
 	/* For each PushPlate, check if it's colliding with a Box. */
-	for (auto&& [entity, pushplate_pos, pushplate] : MutAccessGroupStorage<Position, PushPlate>::access_storage().each())
+	for (auto&& [entity, pushplate_pos, pushplate, sprite] : MutAccessGroupStorage<Position, PushPlate, SpriteAnimation>::access_storage().each())
 	{
-		BOOL collide = FALSE;
+		Bool collide = false;
 
 		for (auto&& [entity, box_pos, box_movement, box] : MutAccessGroupStorage<Position, Movement, Box>::access_storage().each())
 		{
@@ -394,7 +409,7 @@ void PushPlateBoxSystem::on_tick()
 
 			if (fabsf(dx) < collision_width / 2.0f && fabsf(dy) < collision_height / 2.0f)
 			{
-				collide = TRUE;
+				collide = true;
 				break;
 			}
 		}
@@ -403,21 +418,15 @@ void PushPlateBoxSystem::on_tick()
 		{
 			if (!pushplate.active)
 			{
-				pushplate.active = TRUE;
+				pushplate.active = true;
 				scene.pushplate_activenow++;
+				sprite.change_to("pushplate/pushplate_5");
 				spdlog::info("[o] Pushplate ACTIVE count is {} (new activated)", scene.pushplate_activenow);
 				if (scene.pushplate_activenow >= scene.pushplatecount)
 				{
 					spdlog::info("All pushplates active!");
-					/*
-						* !!! ----------------- !!!
-						* !!!                   !!!
-						* !!! END OF LEVEL HERE !!!
-						* !!!                   !!!
-						* !!! ----------------- !!!
-						*/
 					game->level++;
-					game->StartLevel(game->level);
+					game->start_level(game->level);
 				}
 			}
 		}
@@ -426,8 +435,9 @@ void PushPlateBoxSystem::on_tick()
 			if (pushplate.active)
 			{
 				spdlog::info("[o] Pushplate ACTIVE count is {} (one deactivated)", scene.pushplate_activenow);
-				pushplate.active = FALSE;
+				pushplate.active = false;
 				scene.pushplate_activenow--;
+				sprite.change_to("pushplate/pushplate_4");
 			}
 		}
 	}
@@ -453,7 +463,7 @@ void PlatformMain(void)
 int main(int argc, char* argv[])
 {
 	PlatformMain();
-	
+
 	auto& engine = Engine::get_instance();
 	std::string filePath = "dagger.ini";
 	engine.configure(filePath.data(), argc, argv);
