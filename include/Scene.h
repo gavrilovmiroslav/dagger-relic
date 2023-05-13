@@ -8,6 +8,9 @@ struct Scene
     U8 pushplatecount;
     U8 pushplate_activenow;
 
+    std::vector<ecs::Entity> entity;
+    ecs::Registry            *registry;
+
     void Reset(void);
 };
 

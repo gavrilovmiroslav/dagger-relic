@@ -12,6 +12,9 @@
 
 using namespace core;
 
+struct PyramidPlunder;
+static PyramidPlunder *game;
+
 struct Movement
 {
 	geometry::Vec2 velocity;
@@ -141,61 +144,7 @@ struct PushPlateBoxSystem
 	, public MutAccessGroupStorage<Position, PushPlate>
 	, public MutAccessGroupStorage<Position, Movement, Box>
 {
-	void on_tick() override
-	{
-		/* For each PushPlate, check if it's colliding with a Box. */
-		for (auto&& [entity, pushplate_pos, pushplate] : MutAccessGroupStorage<Position, PushPlate>::access_storage().each())
-		{
-			BOOL collide = FALSE;
-
-			for (auto&& [entity, box_pos, box_movement, box] : MutAccessGroupStorage<Position, Movement, Box>::access_storage().each())
-			{
-				F32 dx, dy;
-				F32 collision_width  = box_movement.collision_box_width  + 48;
-				F32 collision_height = box_movement.collision_box_height + 48;
-
-				/* Pivot has to be adjusted (to center of push plate). */
-				dx = (box_pos.xy.x+24) - pushplate_pos.xy.x;
-				dy = (box_pos.xy.y+24) - pushplate_pos.xy.y;
-
-				if (fabsf(dx) < collision_width / 2.0f && fabsf(dy) < collision_height / 2.0f)
-				{
-					collide = TRUE;
-					break;
-				}
-			}
-
-			if (collide)
-			{
-				if (!pushplate.active)
-				{
-					pushplate.active = TRUE;
-					scene.pushplate_activenow++;
-					spdlog::info("[o] Pushplate ACTIVE count is {} (new activated)", scene.pushplate_activenow);
-					if (scene.pushplate_activenow >= scene.pushplatecount)
-					{
-						spdlog::info("All pushplates active!");
-						/*
-						 * !!! ----------------- !!!
-						 * !!!                   !!!
-						 * !!! END OF LEVEL HERE !!!
-						 * !!!                   !!!
-						 * !!! ----------------- !!!
-						 */
-					}
-				}
-			}
-			else
-			{
-				if (pushplate.active)
-				{
-					spdlog::info("[o] Pushplate ACTIVE count is {} (one deactivated)", scene.pushplate_activenow);
-					pushplate.active = FALSE;
-					scene.pushplate_activenow--;
-				}
-			}
-		}
-	}
+	void on_tick() override;
 };
 
 struct ClickControlSystem
@@ -302,6 +251,7 @@ struct BlindfoldChangingSystem
 struct PyramidPlunder : public Game
 {
 	LevelManager level_manager;
+	U8           level;
 
 	PyramidPlunder()
 	{
@@ -313,50 +263,52 @@ struct PyramidPlunder : public Game
 		engine.use<DebugRectangleSystem>();
 		engine.use<TextRenderControlSystem>();
 		engine.use<PushPlateBoxSystem>();
+		scene.registry = &engine.registry;
 	}
 
-	void on_start() override
+	void StartLevel(const U8 id)
 	{
-		TextRender::init();
 		level_manager = LevelManager();
-		level_manager.load_level("Levels/level1.txt");
-		
-		spawn()
-		.with<PushPlateCounter>()
-		.with<Sprite>(ecs::no_entity, (int) (~0u))
-		.with<SpriteAnimation>(Spritesheet::get_by_name("tool/ppress"))
-		.with<Visibility>(true)
-		.with<Position>(geometry::Vec2{0, 0})
-		.done();
 
+		switch(id)
+		{
+		default:
+		case 0: level_manager.load_level("Levels/level1.txt"); break;
+		case 1: level_manager.load_level("Levels/level2.txt"); break;
+		}
+		
 		scene.Reset();
 		for(U32 i = 0; i < TILE_ROWS; i++)
 		{
-        		for(U32 j = 0; j < TILE_COLS; j++)
+			for(U32 j = 0; j < TILE_COLS; j++)
 			{
-				Char c = level_manager.level_map[j][i];
+				ecs::Entity en = ecs::no_entity;
+				Char        c  = level_manager.level_map[j][i];
+
 				if(c == 'x')
 				{
-					spawn()
+					en = spawn()
 					.with<Sprite>(ecs::no_entity, 0)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/wall"))
 					.with<Visibility>(true)
 					.with<Movement>(0.0f, 0.0f, 96, 96)
 					.with<Position>(geometry::Vec2{ i*96, j*96})
 					.done();
+					scene.entity.push_back(en);
 				}
 				if(c == 'o' || c == 'a' || c == 'b' || c == 'p')
 				{
-					spawn()
+					en = spawn()
 					.with<Sprite>(ecs::no_entity, 2)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/sand"))
 					.with<Visibility>(true)
 					.with<Position>(geometry::Vec2{ i*96, j*96})
 					.done();
+					scene.entity.push_back(en);
 				}
 				if(c == 'b')
 				{
-					spawn()
+					en = spawn()
 					.with<Sprite>(ecs::no_entity, 5)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("box/box_4"))
 					.with<Visibility>(true)
@@ -365,22 +317,24 @@ struct PyramidPlunder : public Game
 					.with<PostProcessRectangle>(0, 0, 28, 56)
 					.with<Box>(scene.boxcount)
 					.done();
+					scene.entity.push_back(en);
 					scene.boxcount++;
 				}
 				if(c == 'p')
 				{
-					spawn()
+					en = spawn()
 					.with<PushPlate>(scene.pushplatecount)
 					.with<Sprite>(ecs::no_entity, 4)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_4"))
 					.with<Visibility>(true)
 					.with<Position>(geometry::Vec2{ i*96, j*96})
 					.done();
+					scene.entity.push_back(en);
 					scene.pushplatecount++;
 				}
 				if(c == 'a')
 				{
-					spawn()
+					en = spawn()
 					.with<Player>(SpecialBlindfold::HumanEyes)
 					.with<Sprite>(ecs::no_entity, 10)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
@@ -390,9 +344,28 @@ struct PyramidPlunder : public Game
 					.with<Movement>(3000.0f, 100.0f, 14, 12)
 					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
 					.done();
+					scene.entity.push_back(en);
 				}
-        		}
+			}
 		}
+	}
+
+	void on_start() override
+	{
+		TextRender::init();
+		
+		level = 0;
+		StartLevel(level);
+
+		/*
+		spawn()
+		.with<PushPlateCounter>()
+		.with<Sprite>(ecs::no_entity, (int) (~0u))
+		.with<SpriteAnimation>(Spritesheet::get_by_name("tool/ppress"))
+		.with<Visibility>(true)
+		.with<Position>(geometry::Vec2{0, 0})
+		.done();
+		*/
 	}
 
 	void on_end() override
@@ -400,6 +373,65 @@ struct PyramidPlunder : public Game
 		TextRender::deinit();
 	}
 };
+
+
+void PushPlateBoxSystem::on_tick()
+{
+	/* For each PushPlate, check if it's colliding with a Box. */
+	for (auto&& [entity, pushplate_pos, pushplate] : MutAccessGroupStorage<Position, PushPlate>::access_storage().each())
+	{
+		BOOL collide = FALSE;
+
+		for (auto&& [entity, box_pos, box_movement, box] : MutAccessGroupStorage<Position, Movement, Box>::access_storage().each())
+		{
+			F32 dx, dy;
+			F32 collision_width  = box_movement.collision_box_width  + 48;
+			F32 collision_height = box_movement.collision_box_height + 48;
+
+			/* Pivot has to be adjusted (to center of push plate). */
+			dx = (box_pos.xy.x+24) - pushplate_pos.xy.x;
+			dy = (box_pos.xy.y+24) - pushplate_pos.xy.y;
+
+			if (fabsf(dx) < collision_width / 2.0f && fabsf(dy) < collision_height / 2.0f)
+			{
+				collide = TRUE;
+				break;
+			}
+		}
+
+		if (collide)
+		{
+			if (!pushplate.active)
+			{
+				pushplate.active = TRUE;
+				scene.pushplate_activenow++;
+				spdlog::info("[o] Pushplate ACTIVE count is {} (new activated)", scene.pushplate_activenow);
+				if (scene.pushplate_activenow >= scene.pushplatecount)
+				{
+					spdlog::info("All pushplates active!");
+					/*
+						* !!! ----------------- !!!
+						* !!!                   !!!
+						* !!! END OF LEVEL HERE !!!
+						* !!!                   !!!
+						* !!! ----------------- !!!
+						*/
+					game->level++;
+					game->StartLevel(game->level);
+				}
+			}
+		}
+		else
+		{
+			if (pushplate.active)
+			{
+				spdlog::info("[o] Pushplate ACTIVE count is {} (one deactivated)", scene.pushplate_activenow);
+				pushplate.active = FALSE;
+				scene.pushplate_activenow--;
+			}
+		}
+	}
+}
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -429,7 +461,7 @@ int main(int argc, char* argv[])
 	engine.setup<Default2D>();
 	engine.setup<PostProcess2D>();
 
-	PyramidPlunder game;
+	game = new PyramidPlunder();
 	engine.run();
 
 	return 0;
