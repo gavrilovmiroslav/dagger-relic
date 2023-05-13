@@ -1,5 +1,6 @@
 #pragma once
 #include "Prelude.h"
+#include "PlayerFSM.h"
 
 struct PlayerControlsSystem
 	: public ecs::System,
@@ -14,6 +15,7 @@ struct PlayerControlsSystem
 	bool animation_is_finished = false;
 	bool attacking = false; 
 	ecs::Entity ent = ecs::no_entity;
+	PlayerFSM pfsm();
 
 	virtual void process_signal(AnimationIsFinishedSignal& signal)
 	{
@@ -25,7 +27,6 @@ struct PlayerControlsSystem
 	{
 		auto &enemy_ent = signal.enemy;
 		auto &enemy = MutAccessComponentById<Enemy>::get(enemy_ent);
-		
 		if(attacking)
 		{
 			std::cout << "enemy " << (int)enemy_ent << " before " << enemy.health <<std::endl;
