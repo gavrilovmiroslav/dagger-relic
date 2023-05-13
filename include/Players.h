@@ -15,7 +15,7 @@ struct PlayerControlsSystem
 	bool animation_is_finished = false;
 	bool attacking = false; 
 	ecs::Entity ent = ecs::no_entity;
-	PlayerFSM pfsm();
+	PlayerFSM pfsm;
 
 	virtual void process_signal(AnimationIsFinishedSignal& signal)
 	{
@@ -57,6 +57,7 @@ struct PlayerControlsSystem
 				if (keys.is_down(bindings.up))
 				{
 					attacking = false; 
+					pfsm.trigger(PlayerTransition::Walk, sprite);
 					sprite.change_to("Moose/Moose1_run");
 					pos.xy.y -= SPEED_MOD * Time::delta_time();
 
