@@ -1,2 +1,9 @@
 pong/ball: pong/ball.png.data
 pong/pad: pong/pad.png.data
+Moose/Moose1_Idle: Moose/Moose1_Idle.png.data
+Moose/Moose1_run: Moose/Moose1_run.png.data
+Moose/Moose1_attack_all_effects: Moose/Moose1_attack_all_effects.png.data
+Golem/Golem1_idle: Golem/Golem1_idle.png.data
+Skeleton/Skeleton_Idle: Skeleton/Skeleton_Idle.png.data
+Skeleton/Skeleton_attack: Skeleton/Skeleton_attack.png.data
+background/background: bcg.png.data
