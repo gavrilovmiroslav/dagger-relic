@@ -95,17 +95,9 @@ struct PlayerControlsSystem
 
         if (doing_damage)
         {
-            // TODO: use the damage resolving system here instead
             spawn().
                 with<Damage>(player_entity_cache, enemy_ent, 30)
                 .done();
-            // Logger::critical("SEMANTIC ERROR: We should not reach for Enemy here. Create an entity with a Damage(our entity, enemy entity, damage count) component and make a separate system check for all damage...");
-            // Logger::info("Enemy {} health: {} -> {}", (int)enemy_ent, enemy.health, enemy.health - 30);
-            // enemy.health -= 30;
-            // if(enemy.health <= 0.0f)
-            // {
-            //     despawn(enemy_ent);
-            // }
         }
     }
 
