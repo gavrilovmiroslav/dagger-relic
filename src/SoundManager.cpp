@@ -118,8 +118,8 @@ void SoundManager::play_sound(Sound sound_type) const
 		} break;
 		case Sound::PushPlateActivated:
 		{
-			Mix_VolumeChunk(m_sound_effects.at("push_plate"), AUDIO_VOLUME);
-			Mix_PlayChannel(-1, m_sound_effects.at("push_plate"), 0);
+			Mix_VolumeChunk(m_sound_effects.at("metalshut"), AUDIO_VOLUME);
+			Mix_PlayChannel(-1, m_sound_effects.at("metalshut"), 0);
 		} break;
 	}
 }

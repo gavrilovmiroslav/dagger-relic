@@ -29,6 +29,17 @@ struct PostProcessRectangle
 };
 
 #define POSTPROCESS_TEST_VIGNETTE 1u
+#define POSTPROCESS_TEST_FADE     2u
+#define POSTPROCESS_TEST_LIGHTMAP 3u
+
+extern U32 postprocess_fade_timer;
+
+struct Lightmap_Block
+{
+	U32 x, y, w, h;
+};
+void Lightmap_Calculate(std::vector<Lightmap_Block> &block);
+
 struct PostProcessTest
 {
 	U32 magic = 0; /* Define test number. */

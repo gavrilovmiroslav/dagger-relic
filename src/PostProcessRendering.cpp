@@ -146,8 +146,94 @@ void PostProcessTextRenderingModule::process_signal(core::PostProcessRenderSigna
 	}
 }
 
+U32        postprocess_fade_timer = 0;
+static U32 buffer_vignette[960*960];
+static U8  buffer_lightmap[960*960];
+
+/*
+ * Lightmap buffer at start is white, filled with black colour (rectangles) for each Lightmap_Block.
+ */
+void Lightmap_Calculate(std::vector<Lightmap_Block> &block)
+{
+	U32 i, j;
+	const U32 bluramount = 10;
+
+	for (i = 0; i < 960*960; i++)
+	{
+		buffer_lightmap[i] = 0x9f;
+	}
+
+	for (i = 0; i < block.size(); i++)
+	{
+		U32 x, y;
+
+		for (x = block[i].x; x < block[i].x + block[i].w; x++)
+		{
+			for (y = block[i].y; y < block[i].y + block[i].h; y++)
+			{
+				buffer_lightmap[x + y * 960] = 0x1f;
+			}
+		}
+	}
+
+	/* Blur lightmap buffer... */
+	for (j = bluramount; j < 960-bluramount; j++)
+	{
+		for (i = bluramount; i < 960-bluramount; i++)
+		{
+			U32 x, y;
+			U32 c = 0;
+			U32 k = 0;
+
+			for (x = i-bluramount; x <= i+bluramount; x++)
+			{
+				for (y = j-bluramount; y <= j+bluramount; y++)
+				{
+					if (x >= 0 && x < 960 && y >= 0 && y < 960)
+					{
+						c += buffer_lightmap[x + y * 960];
+						k++;
+					}
+				}
+			}
+
+			if (k > 0)
+			{
+				buffer_lightmap[i + j * 960] = (U8) (c / k);
+			}
+		}
+	}
+}
+
+/*
+ * TODO: This is slow because the engine is not designed for this... Maybe use SIMD?
+ */
 void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSignal& signal)
 {
+	static Bool buffercreate = true;
+
+	if (buffercreate)
+	{
+		U32 x, y;
+
+		buffercreate = false;
+
+		for (y = 0; y < signal.h; y++)
+		{
+			for (x = 0; x < signal.w; x++)
+			{
+				F32 dx = x-(signal.w/2.0f);
+				F32 dy = y-(signal.h/2.0f);
+				F32 d  = sqrtf(dx*dx+dy*dy);
+				F32 v  = d/signal.w;
+				U32 a  = (U32) (v*255);
+				U32 c  = 0;
+
+				buffer_vignette[y * signal.w + x] = (a << 0) | (c << 16) | (c << 8) | (c << 24);
+			}
+		}
+	}
+
 	for (const auto&& [ entity, test ] : AccessStorage<PostProcessTest>::access_storage().each())
 	{
 		U32 x, y;
@@ -165,7 +251,7 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
             }
         }
         break;
-        case 1:
+        case 999:
         for (y = 0; y < signal.h; y++)
         {
             for (x = 0; x < signal.w; x++)
@@ -173,6 +259,64 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
                 signal.pixels[y * signal.w + x] = (x << 16) | (x << 8) | (x);
             }
         }
+		case POSTPROCESS_TEST_VIGNETTE:
+		for (y = 0; y < signal.h; y++)
+		{
+			for (x = 0; x < signal.w; x++)
+			{
+				signal.pixels[y * signal.w + x] = buffer_vignette[y * signal.w + x];
+			}
+		}
+		break;
+		case POSTPROCESS_TEST_FADE:
+		if (postprocess_fade_timer > 0)
+		{
+			postprocess_fade_timer--;
+			
+			for (y = 0; y < signal.h; y++)
+			{
+				for (x = 0; x < signal.w; x++)
+				{
+					U32 c = signal.pixels[y * signal.w + x];
+					U32 a = (c >> 0)  & 0xff;
+					U32 r = (c >> 16) & 0xff;
+					U32 g = (c >> 8)  & 0xff;
+					U32 b = (c >> 24) & 0xff;
+
+					if (a > 0)
+					{
+						a--;
+					}
+					signal.pixels[y * signal.w + x] = (a << 0) | (r << 16) | (g << 8) | (b << 24);
+				}
+			}
+		}
+		break;
+		case POSTPROCESS_TEST_LIGHTMAP:
+		for (y = 0; y < signal.h; y++)
+		{
+			for (x = 0; x < signal.w; x++)
+			{
+				U32 c = signal.pixels[y * signal.w + x];
+				U32 r = (c >> 24) & 0xff;
+				U32 g = (c >> 16) & 0xff;
+				U32 b = (c >> 8)  & 0xff;
+				U32 a = (c >> 0)  & 0xff;
+
+				r  = (buffer_lightmap[y * signal.w + x]) & 0xff;
+				g  = (buffer_lightmap[y * signal.w + x]) & 0xff;
+				b  = (buffer_lightmap[y * signal.w + x]) & 0xff;
+				a  = 0x9f;
+
+				if (r > 255) r = 0;
+				if (g > 255) g = 0;
+				if (b > 255) b = 0;
+				if (a > 255) a = 255;
+
+				signal.pixels[y * signal.w + x] = (a << 0) | (r << 16) | (g << 8) | (b << 24);
+			}
+		}
+		break;
         default:
         break;
         }

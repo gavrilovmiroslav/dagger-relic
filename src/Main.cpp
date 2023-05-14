@@ -185,6 +185,8 @@ struct PyramidPlunder : public Game
 
 	void start_level(const U8 id)
 	{
+		std::vector<struct Lightmap_Block> lightmapblock;
+
 		level_manager = LevelManager();
 		remove_components(scene.entity);
 		scene.Reset();
@@ -197,7 +199,7 @@ struct PyramidPlunder : public Game
 
 		for(U32 i = 0; i < TILE_ROWS; i++)
 		{
-        		for(U32 j = 0; j < TILE_COLS; j++)
+			for(U32 j = 0; j < TILE_COLS; j++)
 			{
 				ecs::Entity en = ecs::no_entity;
 				Char c  = level_manager.level_map[j][i];
@@ -212,6 +214,13 @@ struct PyramidPlunder : public Game
 					.with<Position>(geometry::Vec2{ i*96, j*96 })
 					.done();
 					scene.entity.push_back(en);
+					
+					struct Lightmap_Block block;
+					block.x = i*96;
+					block.y = j*96;
+					block.w = 96;
+					block.h = 96;
+					lightmapblock.push_back(block);
 				}
 				if(c == 'o' || c == 'a' || c == 'b' || c == 'x' || c == 'd' || c == 'p' || c == 'r')
 				{
@@ -287,6 +296,13 @@ struct PyramidPlunder : public Game
 					.with<Position>(geometry::Vec2{ i*96, j*96 })
 					.done();
 					scene.entity.push_back(en);
+
+					struct Lightmap_Block block;
+					block.x = i*96;
+					block.y = j*96;
+					block.w = 96;
+					block.h = 96;
+					lightmapblock.push_back(block);
 				}
 				if(c == 'r')
 				{
@@ -301,16 +317,9 @@ struct PyramidPlunder : public Game
 
 					scene.entity.push_back(en);
 				}
-        		}
+			}
 		}
-
-		auto ppfx_vignette = spawn()
-			.with<PostProcessTest>(POSTPROCESS_TEST_VIGNETTE)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/ppfx"))
-			.with<Position>(geometry::Vec2{ 4.0f, 4.0f })
-			.with<Visibility>(true)
-			.done();
-		scene.entity.push_back(ppfx_vignette);
+		Lightmap_Calculate(lightmapblock);
 
 		auto pause_button = spawn()
 			.with<Button>(ButtonType::PauseMusic)
@@ -344,9 +353,39 @@ struct PyramidPlunder : public Game
 	{
 		TextRender::init();
 
+		/*
+		 * Persistent entities.
+		 */
+
+
 		level = 0;
 		start_level(level);
 
+
+		auto ppfx_lightmap = spawn()
+			.with<PostProcessTest>(POSTPROCESS_TEST_LIGHTMAP)
+			.with<Sprite>(ecs::no_entity, 999)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/lightmap"))
+			.with<Position>(geometry::Vec2{ 4.0f, 4.0f+24.0f*3 })
+			.with<Visibility>(true)
+			.done();
+			
+		auto ppfx_vignette = spawn()
+			.with<PostProcessTest>(POSTPROCESS_TEST_VIGNETTE)
+			.with<Sprite>(ecs::no_entity, 999)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/ppfx"))
+			.with<Position>(geometry::Vec2{ 4.0f, 4.0f })
+			.with<Visibility>(true)
+			.done();
+
+		auto ppfx_fade = spawn()
+			.with<PostProcessTest>(POSTPROCESS_TEST_FADE)
+			.with<Sprite>(ecs::no_entity, 999)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/ppfx"))
+			.with<Position>(geometry::Vec2{ 4.0f, 4.0f+24.0f })
+			.with<Visibility>(true)
+			.done();
+		
 		/*
 		spawn()
 		.with<PushPlateCounter>()

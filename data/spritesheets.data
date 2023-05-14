@@ -19,6 +19,8 @@ pyramidplunder/audio_active: pyramidplunder/audio_active.png.data
 pyramidplunder/audio_not_active: pyramidplunder/audio_not_active.png.data
 pyramidplunder/play_next: pyramidplunder/play_next.png.data
 pyramidplunder/play_previous: pyramidplunder/play_previous.png.data
-tool/ppress: tool/ppress.png.data
-tool/ppfx: tool/ppfx.png.data
+tool/ppress: ppress.png.data
+tool/ppfx: ppfx.png.data
+tool/lightmap: lightmap.png.data
+tool/lightmap2: lightmap2.png.data
 pyramidplunder/boulder: pyramidplunder/boulder.png.data
