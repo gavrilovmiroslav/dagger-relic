@@ -8,6 +8,8 @@ box/box_4 box/box_4.png
 pushplate/pushplate_1 pushplate/pushplate_1.png
 pushplate/pushplate_2 pushplate/pushplate_2.png
 pushplate/pushplate_3 pushplate/pushplate_3.png
+pushplate/pushplate_4 pushplate/pushplate_4.png
+pushplate/pushplate_5 pushplate/pushplate_5.png
 pyramidplunder/wall pyramidplunder/wall.png
 pyramidplunder/wall_1 pyramidplunder/wall_1.png
 pyramidplunder/wall_2 pyramidplunder/wall_2.png
@@ -16,3 +18,4 @@ pyramidplunder/audio_active pyramidplunder/audio_active.png
 pyramidplunder/audio_not_active pyramidplunder/audio_not_active.png
 pyramidplunder/play_next pyramidplunder/play_next.png
 pyramidplunder/play_previous pyramidplunder/play_previous.png
+tool/ppress tool/ppress.png

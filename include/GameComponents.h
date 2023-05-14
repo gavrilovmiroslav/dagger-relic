@@ -11,7 +11,12 @@ enum class ButtonType
 
 struct Blindfold {};
 struct Boulder {};
-struct Box {};
+
+struct Box
+{
+	I32 id;
+};
+
 
 struct Button
 {
@@ -23,6 +28,8 @@ struct KeyBinding
 	KeyCode left, down, up, right;
 	KeyCode blindfold_change, reversed_change;
 };
+
+struct PushPlateActivatedSignal {};
 
 struct Trap {};
 

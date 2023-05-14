@@ -41,9 +41,12 @@ struct SoundControlSystem
 	, public AllocateUnique<SoundManager>
 	, public MutAccessUnique<SoundManager>
 	, public MutAccessGroupStorage<Button, Position, SpriteAnimation>
+	, public SignalProcessor<PushPlateActivatedSignal>
 {
 	using QueryButtons = MutAccessGroupStorage<Button, Position, SpriteAnimation>;
 	U32 current_song = 0;
+
+	virtual void process_signal(PushPlateActivatedSignal& signal);
 
 	void on_tick() override;
 };

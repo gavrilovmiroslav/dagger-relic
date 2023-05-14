@@ -6,12 +6,11 @@ Player::Player(SpecialBlindfold blindfold)
 
 	DynamicArray<SpecialBlindfold> blindfolds = {};
 
-	auto&& constraint = AccessUnique<Constraints>::access_unique();
-	blindfolds.insert(blindfolds.begin(), constraint.max_number_of_blindfolds, SpecialBlindfold::FoxEyes);
-	blindfolds.insert(blindfolds.begin(), constraint.max_number_of_blindfolds, SpecialBlindfold::ScorpionEyes);
+	blindfolds.insert(blindfolds.begin(), max_number_of_blindfolds, SpecialBlindfold::FoxEyes);
+	blindfolds.insert(blindfolds.begin(), max_number_of_blindfolds, SpecialBlindfold::ScorpionEyes);
 
 	randomize(blindfolds);
-	for (U32 i = 0; i < constraint.number_of_blindfolds; ++i)
+	for (U32 i = 0; i < number_of_blindfolds; ++i)
 	{
 		available_blindfolds[blindfolds[i]]++;
 	}
@@ -53,7 +52,7 @@ void BlindfoldChangingSystem::on_tick()
 
 				if (boxes_visible)
 				{
-					for (auto&& [box_entity, visibility] : QueryBoxes::access_storage().each())
+					for (auto&& [box_entity, box, visibility] : QueryBoxes::access_storage().each())
 					{
 						visibility.state = false;
 					}
@@ -71,7 +70,7 @@ void BlindfoldChangingSystem::on_tick()
 
 				if (!boxes_visible)
 				{
-					for (auto&& [box_entity, visibility] : QueryBoxes::access_storage().each())
+					for (auto&& [box_entity, box, visibility] : QueryBoxes::access_storage().each())
 					{
 						visibility.state = true;
 					}
@@ -89,7 +88,7 @@ void BlindfoldChangingSystem::on_tick()
 
 				if (!boxes_visible)
 				{
-					for (auto&& [box_entity, visibility] : QueryBoxes::access_storage().each())
+					for (auto&& [box_entity, box, visibility] : QueryBoxes::access_storage().each())
 					{
 						visibility.state = true;
 					}

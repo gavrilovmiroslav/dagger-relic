@@ -13,15 +13,10 @@ enum class SpecialBlindfold
 	ScorpionEyes
 };
 
-struct Constraints
-{
-	U32 number_of_blindfolds = 6;
-	U32 max_number_of_blindfolds = 20;
-};
+#define number_of_blindfolds  6
+#define max_number_of_blindfolds 20
 
 struct Player
-	: public AllocateUnique<Constraints>
-	, public AccessUnique<Constraints>
 {
 	SpecialBlindfold current_blindfold;
 	Map<SpecialBlindfold, U32> available_blindfolds;

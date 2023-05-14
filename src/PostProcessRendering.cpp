@@ -179,6 +179,24 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
 	}
 }
 
+void PostProcessRectangleRenderingModule::process_signal(core::PostProcessRenderSignal& signal)
+{
+	for (const auto&& [ entity, rectangle ] : AccessStorage<PostProcessRectangle>::access_storage().each())
+	{
+		for (I32 y = rectangle.y; y < rectangle.y+rectangle.h; y++)
+		{
+			for (I32 x = rectangle.x; x < rectangle.x+rectangle.w; x++)
+			{
+				/* Terrible thing to do here. */
+				if (x < signal.w && y < signal.h)
+				{
+					signal.pixels[y * signal.w + x] = 0xffffffff;
+				}
+			}
+		}
+	}
+}
+
 /*
  * Character width: 6, height: 11, total characters: 224, first character: ascii 32.
  * Each line defines 2 characters, every character is made from 11 'U8' bitmasks.

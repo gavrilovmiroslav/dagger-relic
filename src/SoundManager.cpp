@@ -116,7 +116,18 @@ void SoundManager::play_sound(Sound sound_type) const
 			Mix_VolumeChunk(m_sound_effects.at("button_click"), AUDIO_VOLUME);
 			Mix_PlayChannel(-1, m_sound_effects.at("button_click"), 0);
 		}
+		case Sound::PushPlateActivated:
+		{
+			Mix_VolumeChunk(m_sound_effects.at("push_plate"), AUDIO_VOLUME);
+			Mix_PlayChannel(-1, m_sound_effects.at("push_plate"), 0);
+		}
 	}
+}
+
+void SoundControlSystem::process_signal(PushPlateActivatedSignal& signal)
+{
+	auto&& music = MutAccessUnique<SoundManager>::access_unique();
+	music.play_sound(Sound::PushPlateActivated);
 }
 
 void SoundControlSystem::on_tick()
