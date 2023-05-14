@@ -22,6 +22,7 @@ void BlindfoldChangingSystem::on_tick()
 
 	Bool walls_visible = AccessComponentById<Visibility>::get(QueryWalls::access_storage().front()).state;
 	Bool boxes_visible = AccessComponentById<Visibility>::get(QueryBoxes::access_storage().front()).state;
+	Bool boulders_visible = AccessComponentById<Visibility>::get(QueryBoulders::access_storage().front()).state;
 
 	for (auto&& [player_entity, player, key_binding] : QueryPlayer::access_storage().each())
 	{
@@ -57,6 +58,14 @@ void BlindfoldChangingSystem::on_tick()
 						visibility.state = false;
 					}
 				}
+
+				if (!boulders_visible)
+				{
+					for (auto&& [boulder_entity, visibility] : QueryBoulders::access_storage().each())
+					{
+						visibility.state = true;
+					}
+				}
 			} break;
 			case SpecialBlindfold::FoxEyes:
 			{
@@ -71,6 +80,14 @@ void BlindfoldChangingSystem::on_tick()
 				if (!boxes_visible)
 				{
 					for (auto&& [box_entity, box, visibility] : QueryBoxes::access_storage().each())
+					{
+						visibility.state = true;
+					}
+				}
+
+				if (!boulders_visible)
+				{
+					for (auto&& [boulder_entity, visibility] : QueryBoulders::access_storage().each())
 					{
 						visibility.state = true;
 					}
@@ -91,6 +108,14 @@ void BlindfoldChangingSystem::on_tick()
 					for (auto&& [box_entity, box, visibility] : QueryBoxes::access_storage().each())
 					{
 						visibility.state = true;
+					}
+				}
+
+				if (boulders_visible)
+				{
+					for (auto&& [boulder_entity, visibility] : QueryBoulders::access_storage().each())
+					{
+						visibility.state = false;
 					}
 				}
 			} break;

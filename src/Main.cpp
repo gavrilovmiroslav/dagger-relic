@@ -289,7 +289,7 @@ struct PyramidPlunder : public Game
 					.done();
 					scene.entity.push_back(en);
 				}
-				if(c == 'o' || c == 'a' || c == 'b' || c == 'x' || c == 'd' || c == 'p')
+				if(c == 'o' || c == 'a' || c == 'b' || c == 'x' || c == 'd' || c == 'p' || c == 'r')
 				{
 					en = spawn()
 					.with<Sprite>(ecs::no_entity, 2)
@@ -320,7 +320,7 @@ struct PyramidPlunder : public Game
 					.with<Sprite>(ecs::no_entity, 3)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_4"))
 					.with<Visibility>(true)
-					.with<Position>(geometry::Vec2{ i*96, j*96 })
+					.with<Position>(geometry::Vec2{ i*96 + 24, j*96 + 24 })
 					.done();
 
 					scene.pushplatecount++;
@@ -334,7 +334,7 @@ struct PyramidPlunder : public Game
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/archaeologist_standing"))
 					.with<Visibility>(true)
 					.with<Position>(geometry::Vec2{ i*96, j*96 })
-					.with<Movement>(3000.0f, 60.0f, 14, 12)
+					.with<Movement>(3000.0f, 80.0f, 14, 12)
 					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE, KeyCode::KEY_LSHIFT)
 					.done();
 					scene.entity.push_back(en);
@@ -348,6 +348,19 @@ struct PyramidPlunder : public Game
 					.with<Visibility>(true)
 					.with<Position>(geometry::Vec2{ i * 96 + 24, j * 96 + 25 })
 					.done();
+					scene.entity.push_back(en);
+				}
+				if(c == 'r')
+				{
+					en = spawn()
+					.with<Boulder>()
+					.with<Sprite>(ecs::no_entity, 5)
+					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/boulder"))
+					.with<Visibility>(true)
+					.with<Position>(geometry::Vec2{ i*96 , j*96 })
+					.with<Movement>(2000.0f, 50.0f, 28, 56)
+					.done();
+
 					scene.entity.push_back(en);
 				}
         		}

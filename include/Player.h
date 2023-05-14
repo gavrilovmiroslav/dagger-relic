@@ -30,12 +30,12 @@ struct BlindfoldChangingSystem
 	, public AccessComponentById<Visibility>
 	, public MutAccessGroupStorage<Box, Visibility>
 	, public MutAccessGroupStorage<Player, KeyBinding>
-	, public MutAccessGroupStorage<Trap, Visibility>
+	, public MutAccessGroupStorage<Boulder, Visibility>
 	, public MutAccessGroupStorage<Wall, Visibility>
 {
 	using QueryPlayer = MutAccessGroupStorage<Player, KeyBinding>;
 	using QueryWalls = MutAccessGroupStorage<Wall, Visibility>;
-	using QueryTraps = MutAccessGroupStorage<Trap, Visibility>;
+	using QueryBoulders = MutAccessGroupStorage<Boulder, Visibility>;
 	using QueryBoxes = MutAccessGroupStorage<Box, Visibility>;
 
 	// Bool traps_visible = AccessComponentById<Visibility>::get(QueryTraps::access_storage().front()).state;

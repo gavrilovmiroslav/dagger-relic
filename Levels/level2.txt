@@ -1,10 +1,10 @@
 xxxxxxxxxx
-xooxxoooox
-xoabooboox
+xooxxooopx
+xoaborboox
 xobxxxooxx
-xooxxxooxx
-xooopoooxx
+xooxpxooxx
+xoooroooxx
 xxoxxxoxxx
-xooopoooxx
+xooopoobxx
 xooopoooxx
 xxxxxxxxxx
