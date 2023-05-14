@@ -8,6 +8,12 @@ struct Scene
     U8 pushplatecount;
     U8 pushplate_activenow;
 
+    Bool dooropen = false;
+    I32  doorx    = 0;
+    I32  doory    = 0;
+
+    ecs::Entity player;
+
     std::vector<ecs::Entity> entity;
 
     void Reset(void);

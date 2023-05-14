@@ -41,97 +41,7 @@ struct MovementSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<Movement, Position>
 {
-	void on_tick() override
-	{
-		for (auto&& [entity, movement, pos] : access_storage().each())
-		{
-			F32 u = 16.0f;                              /* Friction coefficient. */
-			F32 m = 5.0f;                               /* Object mass (kg). */
-			F32 g = 9.807f;                             /* Gravity acceleration. */
-			F32 n = m*g;                                /* Normal force. */
-			F32 fnx = -fsignf(movement.velocity.x)*u*n; /* Friction force. */
-			F32 fny = -fsignf(movement.velocity.y)*u*n;
-			F32 fx  = fnx+movement.force.x;             /* Total force. */
-			F32 fy  = fny+movement.force.y;
-
-			for (auto&& [entity2, movement2, pos2] : access_storage().each())
-			{
-				F32 dx, dy;
-				F32 collision_width = movement.collision_box_width + movement2.collision_box_width;
-				F32 collision_height = movement.collision_box_height + movement2.collision_box_height;
-
-				if (entity <= entity2)
-				{
-					continue;
-				}
-
-				dx = pos2.xy.x - pos.xy.x;
-				dy = pos2.xy.y - pos.xy.y;
-
-				if (fabsf(dx) < collision_width / 2.0f && fabsf(dy) < collision_height / 2.0f)
-				{
-					if (fabsf(dx) > fabsf(dy))
-					{
-						if (movement.velocity_max.x > 0 || movement.velocity_max.y > 0)
-						{
-							if (dx > 0.0f)
-							{
-								pos.xy.x -= collision_width / 2.0f - dx;
-							}
-							else
-							{
-								pos.xy.x += collision_width / 2.0f + dx;
-							}
-						}
-						else
-						{
-							if (dx > 0.0f)
-							{
-								pos2.xy.x += collision_width / 2.0f - dx;
-							}
-							else
-							{
-								pos2.xy.x -= collision_width / 2.0f + dx;
-							}
-						}
-
-					}
-					else
-					{
-						if (movement.velocity_max.x > 0 || movement.velocity_max.y > 0)
-						{
-							if (dy > 0.0f)
-							{
-								pos.xy.y -= collision_height / 2.0f - dy;
-							}
-							else
-							{
-								pos.xy.y += collision_height / 2.0f + dy;
-							}
-						}
-						else
-						{
-							if (dy > 0.0f)
-							{
-								pos2.xy.y += collision_height / 2.0f - dy;
-							}
-							else
-							{
-								pos2.xy.y -= collision_height / 2.0f + dy;
-							}
-						}
-					}
-				}
-
-			}
-
-			pos.xy              += movement.velocity*Time::delta_time();
-			movement.velocity.x += (fx/m)*Time::delta_time();
-			movement.velocity.y += (fy/m)*Time::delta_time();
-			movement.velocity.x = fclampf(movement.velocity.x, -movement.velocity_max.x, movement.velocity_max.x);
-			movement.velocity.y = fclampf(movement.velocity.y, -movement.velocity_max.y, movement.velocity_max.y);
-		}
-	}
+	void on_tick() override;
 };
 
 struct PushPlateBoxSystem
@@ -227,6 +137,7 @@ struct PyramidPlunder : public Game
 {
 	LevelManager level_manager;
 	U8           level;
+    ecs::Entity  door;
 
 	PyramidPlunder()
 	{
@@ -238,6 +149,19 @@ struct PyramidPlunder : public Game
 		engine.use<PushPlateBoxSystem>();
 		engine.use<SoundControlSystem>();
 		engine.use<TextRenderControlSystem>();
+
+		door = ecs::no_entity;
+	}
+
+	void door_open(void)
+	{
+		if (door != ecs::no_entity)
+		{
+			remove_component<SpriteAnimation>(door);
+			remove_component<Movement>(door);
+			add_component<SpriteAnimation>(door, Spritesheet::get_by_name("pyramidplunder/dooropen"));
+			scene.dooropen = true;
+		}
 	}
 
 	void remove_components(DynamicArray<ecs::Entity>& entities)
@@ -338,6 +262,7 @@ struct PyramidPlunder : public Game
 					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE, KeyCode::KEY_LSHIFT)
 					.done();
 					scene.entity.push_back(en);
+					scene.player = en;
 				}
 				if (c == 'd')
 				{
@@ -347,6 +272,19 @@ struct PyramidPlunder : public Game
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/door"))
 					.with<Visibility>(true)
 					.with<Position>(geometry::Vec2{ i * 96 + 24, j * 96 + 25 })
+					.done();
+					scene.entity.push_back(en);
+					door = en;
+					scene.doorx = i*96;
+					scene.doory = j*96;
+
+					en = spawn()
+					.with<Wall>(false)
+					.with<Sprite>(ecs::no_entity, 6)
+					.with<Movement>(0.0f, 0.0f, 96, 96)
+					.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/wall"))
+					.with<Visibility>(true)
+					.with<Position>(geometry::Vec2{ i*96, j*96 })
 					.done();
 					scene.entity.push_back(en);
 				}
@@ -365,6 +303,14 @@ struct PyramidPlunder : public Game
 				}
         		}
 		}
+
+		auto ppfx_vignette = spawn()
+			.with<PostProcessTest>(POSTPROCESS_TEST_VIGNETTE)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/ppfx"))
+			.with<Position>(geometry::Vec2{ 4.0f, 4.0f })
+			.with<Visibility>(true)
+			.done();
+		scene.entity.push_back(ppfx_vignette);
 
 		auto pause_button = spawn()
 			.with<Button>(ButtonType::PauseMusic)
@@ -455,8 +401,9 @@ void PushPlateBoxSystem::on_tick()
 				if (scene.pushplate_activenow >= scene.pushplatecount)
 				{
 					spdlog::info("All pushplates active!");
-					game->level++;
-					game->start_level(game->level);
+					game->door_open();
+					//game->level++;
+					//game->start_level(game->level);
 				}
 			}
 		}
@@ -472,6 +419,111 @@ void PushPlateBoxSystem::on_tick()
 		}
 	}
 };
+
+void MovementSystem::on_tick()
+{
+	for (auto&& [entity, movement, pos] : access_storage().each())
+	{
+		F32 u = 16.0f;                              /* Friction coefficient. */
+		F32 m = 5.0f;                               /* Object mass (kg). */
+		F32 g = 9.807f;                             /* Gravity acceleration. */
+		F32 n = m*g;                                /* Normal force. */
+		F32 fnx = -fsignf(movement.velocity.x)*u*n; /* Friction force. */
+		F32 fny = -fsignf(movement.velocity.y)*u*n;
+		F32 fx  = fnx+movement.force.x;             /* Total force. */
+		F32 fy  = fny+movement.force.y;
+
+		for (auto&& [entity2, movement2, pos2] : access_storage().each())
+		{
+			F32 dx, dy;
+			F32 collision_width = movement.collision_box_width + movement2.collision_box_width;
+			F32 collision_height = movement.collision_box_height + movement2.collision_box_height;
+
+			if (entity <= entity2)
+			{
+				continue;
+			}
+
+			dx = pos2.xy.x - pos.xy.x;
+			dy = pos2.xy.y - pos.xy.y;
+
+			if (fabsf(dx) < collision_width / 2.0f && fabsf(dy) < collision_height / 2.0f)
+			{
+				if (fabsf(dx) > fabsf(dy))
+				{
+					if (movement.velocity_max.x > 0 || movement.velocity_max.y > 0)
+					{
+						if (dx > 0.0f)
+						{
+							pos.xy.x -= collision_width / 2.0f - dx;
+						}
+						else
+						{
+							pos.xy.x += collision_width / 2.0f + dx;
+						}
+					}
+					else
+					{
+						if (dx > 0.0f)
+						{
+							pos2.xy.x += collision_width / 2.0f - dx;
+						}
+						else
+						{
+							pos2.xy.x -= collision_width / 2.0f + dx;
+						}
+					}
+
+				}
+				else
+				{
+					if (movement.velocity_max.x > 0 || movement.velocity_max.y > 0)
+					{
+						if (dy > 0.0f)
+						{
+							pos.xy.y -= collision_height / 2.0f - dy;
+						}
+						else
+						{
+							pos.xy.y += collision_height / 2.0f + dy;
+						}
+					}
+					else
+					{
+						if (dy > 0.0f)
+						{
+							pos2.xy.y += collision_height / 2.0f - dy;
+						}
+						else
+						{
+							pos2.xy.y -= collision_height / 2.0f + dy;
+						}
+					}
+				}
+			}
+
+		}
+
+		pos.xy              += movement.velocity*Time::delta_time();
+		movement.velocity.x += (fx/m)*Time::delta_time();
+		movement.velocity.y += (fy/m)*Time::delta_time();
+		movement.velocity.x = fclampf(movement.velocity.x, -movement.velocity_max.x, movement.velocity_max.x);
+		movement.velocity.y = fclampf(movement.velocity.y, -movement.velocity_max.y, movement.velocity_max.y);
+
+		if (entity == scene.player)
+		{
+			if (scene.dooropen)
+			{
+				if (pos.xy.x > scene.doorx - 96 && pos.xy.x < scene.doorx + 96 &&
+					pos.xy.y > scene.doory - 96 && pos.xy.y < scene.doory + 96)
+				{
+					game->level++;
+					game->start_level(game->level);
+				}
+			}
+		}
+	}
+}
 
 #ifdef _WIN32
 #include <Windows.h>

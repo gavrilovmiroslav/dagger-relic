@@ -28,6 +28,7 @@ struct PostProcessRectangle
 	I32 x, y, w, h;
 };
 
+#define POSTPROCESS_TEST_VIGNETTE 1u
 struct PostProcessTest
 {
 	U32 magic = 0; /* Define test number. */
