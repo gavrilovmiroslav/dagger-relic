@@ -3,143 +3,143 @@
 #include "PlayerFSM.h"
 
 struct PlayerControlsSystem
-	: public ecs::System,
-	  public MutAccessGroupStorage<Player, KeyBindings, SpriteAnimation>,
-	  public MutAccessComponentById<SpriteAnimation>,	  
-	  public MutAccessComponentById<Flip>,
-	  // TODO: remove Enemy from here, the player controls have nothing to do with it
-	  // at best, spawn a Damage entity; at worst, send a signal to it instead
-	  public MutAccessComponentById<Enemy>,
-	  public MutAccessComponentById<Position>,
-	  public MutAccessComponentById<KeyBindings>,
-	  public AccessComponentById<Player>,	  
-	  public SignalProcessor<PlayerCollisionSignal>
+    : public ecs::System,
+      public MutAccessGroupStorage<Player, KeyBindings, SpriteAnimation>,
+      public MutAccessComponentById<SpriteAnimation>,	  
+      public MutAccessComponentById<Flip>,
+      // TODO: remove Enemy from here, the player controls have nothing to do with it
+      // at best, spawn a Damage entity; at worst, send a signal to it instead
+      public MutAccessComponentById<Enemy>,
+      public MutAccessComponentById<Position>,
+      public MutAccessComponentById<KeyBindings>,
+      public AccessComponentById<Player>,	  
+      public SignalProcessor<PlayerCollisionSignal>
 {
-	ecs::Entity player_entity_cache;
-	PlayerFSM fsm;
-	Bool doing_damage = false;
+    ecs::Entity player_entity_cache;
+    PlayerFSM fsm;
+    Bool doing_damage = false;
 
-	PlayerControlsSystem()
-	{
-	    fsm.events_for_action("TryMove").connect<&PlayerControlsSystem::TryMove>(this);
+    PlayerControlsSystem()
+    {
+        fsm.events_for_action("TryMove").connect<&PlayerControlsSystem::TryMove>(this);
         fsm.events_for_action("TryStop").connect<&PlayerControlsSystem::TryStop>(this);
         fsm.events_for_action("TryAttack").connect<&PlayerControlsSystem::TryAttack>(this);	
-		fsm.events_for_action("TryHit").connect<&PlayerControlsSystem::TryHit>(this);
-		fsm.current_state = "Idle";
-	}
-	
+        fsm.events_for_action("TryHit").connect<&PlayerControlsSystem::TryHit>(this);
+        fsm.current_state = "Idle";
+    }
+    
     void TryMove() 
     {
         auto& sprite = MutAccessComponentById<SpriteAnimation>::get(player_entity_cache);
-		sprite.change_to("Moose/Moose1_run");
+        sprite.change_to("Moose/Moose1_run");
 
-		auto& flip = MutAccessComponentById<Flip>::get(player_entity_cache);
-		auto& pos = MutAccessComponentById<Position>::get(player_entity_cache);
-	  	auto& bindings  = MutAccessComponentById<KeyBindings>::get(player_entity_cache);		
+        auto& flip = MutAccessComponentById<Flip>::get(player_entity_cache);
+        auto& pos = MutAccessComponentById<Position>::get(player_entity_cache);
+        auto& bindings  = MutAccessComponentById<KeyBindings>::get(player_entity_cache);		
 
-		geometry::Vec2 xy { 0.0f, 0.0f };
-		F32 speed = 1.0f;
+        geometry::Vec2 xy { 0.0f, 0.0f };
+        F32 speed = 1.0f;
 
-		const auto &keys = KeyState::get();
+        const auto &keys = KeyState::get();
 
-		if (keys.is_down(bindings.up))
-		{
-			xy.y -= speed;
-		} 
-		
-		if (keys.is_down(bindings.down))
-		{
-			xy.y += speed;
-		}
-		
-		if (keys.is_down(bindings.left))
-		{
-			flip = Flip::Horizontal;
-			xy.x -= speed;
-		}
-		
-		if (keys.is_down(bindings.right))
-		{
-			flip = Flip::None;
-			xy.x += speed;
-		}
-		
-		if (glm::length(xy) > 0.0f)
-		{
-			pos.xy += glm::normalize(xy) * SPEED_MOD * Time::delta_time();
-		}
+        if (keys.is_down(bindings.up))
+        {
+            xy.y -= speed;
+        } 
+        
+        if (keys.is_down(bindings.down))
+        {
+            xy.y += speed;
+        }
+        
+        if (keys.is_down(bindings.left))
+        {
+            flip = Flip::Horizontal;
+            xy.x -= speed;
+        }
+        
+        if (keys.is_down(bindings.right))
+        {
+            flip = Flip::None;
+            xy.x += speed;
+        }
+        
+        if (glm::length(xy) > 0.0f)
+        {
+            pos.xy += glm::normalize(xy) * SPEED_MOD * Time::delta_time();
+        }
     }
 
     void TryStop() 
     {
-		auto& sprite = MutAccessComponentById<SpriteAnimation>::get(player_entity_cache);
-		sprite.change_to("Moose/Moose1_Idle");
+        auto& sprite = MutAccessComponentById<SpriteAnimation>::get(player_entity_cache);
+        sprite.change_to("Moose/Moose1_Idle");
     }
 
     void TryAttack() 
     {
-		auto& sprite = MutAccessComponentById<SpriteAnimation>::get(player_entity_cache);
-		sprite.change_to("Moose/Moose1_attack_all_effects");        
+        auto& sprite = MutAccessComponentById<SpriteAnimation>::get(player_entity_cache);
+        sprite.change_to("Moose/Moose1_attack_all_effects");        
     }
 
-	void TryHit()
-	{
-		auto& sprite = MutAccessComponentById<SpriteAnimation>::get(player_entity_cache);
-		doing_damage = (sprite.current_frame >= 10 && sprite.current_frame <= 13);
-	}
+    void TryHit()
+    {
+        auto& sprite = MutAccessComponentById<SpriteAnimation>::get(player_entity_cache);
+        doing_damage = (sprite.current_frame >= 10 && sprite.current_frame <= 13);
+    }
 
-	virtual void process_signal(PlayerCollisionSignal& signal)
-	{
-		auto &enemy_ent = signal.enemy;
-		auto &enemy = MutAccessComponentById<Enemy>::get(enemy_ent);
+    virtual void process_signal(PlayerCollisionSignal& signal)
+    {
+        auto &enemy_ent = signal.enemy;
+        auto &enemy = MutAccessComponentById<Enemy>::get(enemy_ent);
 
-		if (doing_damage)
-		{
-			// TODO: use the damage resolving system here instead
-			Logger::critical("SEMANTIC ERROR: We should not reach for Enemy here. Create an entity with a Damage(our entity, enemy entity, damage count) component and make a separate system check for all damage...");
-			Logger::info("Enemy {} health: {} -> {}", (int)enemy_ent, enemy.health, enemy.health - 30);
-			enemy.health -= 30;
-			if(enemy.health <= 0.0f)
-			{
-				despawn(enemy_ent);
-			}
-		}
-	}
+        if (doing_damage)
+        {
+            // TODO: use the damage resolving system here instead
+            Logger::critical("SEMANTIC ERROR: We should not reach for Enemy here. Create an entity with a Damage(our entity, enemy entity, damage count) component and make a separate system check for all damage...");
+            Logger::info("Enemy {} health: {} -> {}", (int)enemy_ent, enemy.health, enemy.health - 30);
+            enemy.health -= 30;
+            if(enemy.health <= 0.0f)
+            {
+                despawn(enemy_ent);
+            }
+        }
+    }
 
-	void on_tick() override
-	{
-		const auto &keys = KeyState::get();
+    void on_tick() override
+    {
+        const auto &keys = KeyState::get();
 
-		if (keys.is_pressed(KEY_ESCAPE))
-		{
-			Engine::get_instance().quit();
-		}
+        if (keys.is_pressed(KEY_ESCAPE))
+        {
+            Engine::get_instance().quit();
+        }
 
-		for (auto &&[ entity, player, bindings, anim ] : MutAccessGroupStorage<Player, KeyBindings, SpriteAnimation>::access_storage().each())
-		{
-			player_entity_cache = entity;
+        for (auto &&[ entity, player, bindings, anim ] : MutAccessGroupStorage<Player, KeyBindings, SpriteAnimation>::access_storage().each())
+        {
+            player_entity_cache = entity;
 
-			if (anim.is_finished())
-			{
-				fsm.trigger("animDone");
-			}
-			else 
-			{
-				fsm.trigger("checkForHit");
-			}
-			
-			if (keys.is_down(bindings.attack))
-			{
-				fsm.trigger("attack");
-			}
-			else if (keys.is_down(bindings.up) || keys.is_down(bindings.down) || keys.is_down(bindings.left) || keys.is_down(bindings.right))
-			{
-				fsm.trigger("walk");
-			} 
-			else
-			{
-				fsm.trigger("stop");
-			}
-		}
-	}
+            if (anim.is_finished())
+            {
+                fsm.trigger("animDone");
+            }
+            else 
+            {
+                fsm.trigger("checkForHit");
+            }
+            
+            if (keys.is_down(bindings.attack))
+            {
+                fsm.trigger("attack");
+            }
+            else if (keys.is_down(bindings.up) || keys.is_down(bindings.down) || keys.is_down(bindings.left) || keys.is_down(bindings.right))
+            {
+                fsm.trigger("walk");
+            } 
+            else
+            {
+                fsm.trigger("stop");
+            }
+        }
+    }
 };

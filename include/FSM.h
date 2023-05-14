@@ -12,7 +12,8 @@ using State = String;
 using Action = String;
 using Transition = String;
 
-struct FSMReaction {
+struct FSMReaction 
+{
     State from;
     Transition transition;
     Action action;
