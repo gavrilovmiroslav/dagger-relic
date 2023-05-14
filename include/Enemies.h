@@ -52,8 +52,9 @@ struct EnemyMovementSystem
 					}
 				}
 				
-				auto to_player =  normalize(player_position.xy - pos.xy);
-				auto from_nearest_enemy  = normalize(pos.xy - nearest_enemy_pos->xy);
+				// TODO: check length around this...
+				auto to_player = normalize(player_position.xy - pos.xy);
+				auto from_nearest_enemy = normalize(pos.xy - nearest_enemy_pos->xy);
 
 				// auto dist_pl_en = distance(pos.xy,player_position.xy);
 				// if(dist_pl_en < 80.0f){
