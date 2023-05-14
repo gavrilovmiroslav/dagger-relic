@@ -3,121 +3,121 @@ dimensions: 1, 1
 sprites: 30
 
 clip: 0, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 347, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 694, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 1041, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 1388, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 1735, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 2082, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 2429, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 2776, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 3123, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 3470, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 3817, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 4164, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 4511, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 4858, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 5205, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 5552, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 5899, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 6246, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 6593, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 6940, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 7287, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 7634, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 7981, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 8328, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 8675, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 9022, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 9369, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 9716, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1
 
 clip: 10063, 0, 347, 192
-pivot: 0.5, 0.5
+pivot: 0.449, 0.63
 scale: 1, 1

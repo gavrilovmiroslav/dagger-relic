@@ -27,6 +27,7 @@ struct Brawl : public Game
 		engine.use<PlayerControlsSystem>();
 		engine.use<EnemyMovementSystem>();
 		engine.use<PhysicsSystem>();
+		// TODO: make a system to resolve damage and call it here
 	}
 
 	void on_start() override
