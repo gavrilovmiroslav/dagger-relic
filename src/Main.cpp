@@ -55,9 +55,10 @@ struct Brawl : public Game
 		}
 
 		spawn()
-			.with<Sprite>(ecs::no_entity)
+			.with<Sprite>(ecs::no_entity, -10)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("background/background"))
-			.with<Position>(geometry::Vec2{ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 })
+			.with<Position>(geometry::Vec2{ SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 2})
+			.with<AnimationSpeedController>(1.0f)
 			.with<Visibility>(true)
 			.done();
 	}

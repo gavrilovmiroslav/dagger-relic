@@ -24,12 +24,14 @@ void AnimationModule::process_signal(core::PostRenderSignal&)
 	{
 		auto& sprite = storage.get<Sprite>(entity);
 		auto& anim = storage.get<SpriteAnimation>(entity);
+		I32 d = sprite.depth;
 		auto& anim_speed_ctrl = storage.get<AnimationSpeedController>(entity);
 
 		const auto sheet = sheets.get<Spritesheet>(anim.spritesheet);
 		auto current_sprite = sheet.sprites[anim.current_frame];
 		sprite = sprites.get<Sprite>(current_sprite);
-
+		sprite.depth = d;
+		
 		frame_switch_delay[entity] += Time::delta_time() * anim_speed_ctrl.animation_speed;
 		if (frame_switch_delay[entity] >= anim.frame_length)
 		{
