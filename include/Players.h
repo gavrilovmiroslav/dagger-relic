@@ -127,7 +127,7 @@ struct PlayerControlsSystem
 			{
 				fsm.trigger("checkForHit");
 			}
-
+			
 			if (keys.is_down(bindings.attack))
 			{
 				fsm.trigger("attack");
