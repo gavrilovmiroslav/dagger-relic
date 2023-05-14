@@ -184,12 +184,15 @@ struct PyramidPlunder : public Game
 				}
 				if(c == 'p')
 				{
-					spawn()
+					auto push_plate = spawn()
 					.with<Sprite>(ecs::no_entity, 4)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_3"))
 					.with<Visibility>(true)
 					.with<Position>(geometry::Vec2{ i*96, j*96})
+					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE,KeyCode::KEY_A, KeyCode::KEY_B, KeyCode::KEY_ESCAPE)
 					.done();
+
+					add_component<MenuClick>(push_plate, MenuClick{MenuFSM(push_plate)});
 				}
 				if(c == 'a')
 				{
