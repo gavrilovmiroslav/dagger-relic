@@ -4,12 +4,15 @@
 #include "Random.h"
 #include <iostream>
 #include <algorithm>
+#include <random>
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 #define BALL_RADIUS 16
 #define SPEED_MOD 200.0f
 #define ENEMY_SPEED_MOD 150.0f
+#define RANGE_X 801
+#define RANGE_Y 601
 
 #include "Common.h"
 #include "FSM.h"
@@ -32,6 +35,8 @@ struct Brawl : public Game
 		engine.use<TimeRenderControlSystem>();
 	}
 
+	
+	int num;
 	void on_start() override
 	{
 		spawn()
@@ -45,24 +50,53 @@ struct Brawl : public Game
 			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D, KeyCode::KEY_J)
 			.done();
 
-		for (auto i = 0; i < 4 ; ++i)
-		{
-			spawn()
-				.with<Sprite>(ecs::no_entity)
-				.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
-				.with<Position>(geometry::Vec2{ 760 - 30*i, 60*i })
-				.with<Visibility>(true)
-				.with<AnimationSpeedController>(1.0f)
-				.with<Enemy>(geometry::Vec2{ 1, 0 }, 100.0f)
-				.done();
-		}
+
+		num = rand() % RANGE_X;
+		spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
+			.with<Position>(geometry::Vec2{ num, 0 })
+			.with<Visibility>(true)
+			.with<AnimationSpeedController>(1.0f)
+			.with<Enemy>(geometry::Vec2{ 1, 0 }, 100.0f)
+			.done();
+
+		num = rand() % RANGE_X;
+		spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
+			.with<Position>(geometry::Vec2{ num, 600 })
+			.with<Visibility>(true)
+			.with<AnimationSpeedController>(1.0f)
+			.with<Enemy>(geometry::Vec2{ 1, 0 }, 100.0f)
+			.done();
+
+		num = rand() % RANGE_Y;
+		spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
+			.with<Position>(geometry::Vec2{ 0, num })
+			.with<Visibility>(true)
+			.with<AnimationSpeedController>(1.0f)
+			.with<Enemy>(geometry::Vec2{ 1, 0 }, 100.0f)
+			.done();
+
+		num = rand() % RANGE_Y;
+		spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
+			.with<Position>(geometry::Vec2{ 800, num })
+			.with<Visibility>(true)
+			.with<AnimationSpeedController>(1.0f)
+			.with<Enemy>(geometry::Vec2{ 1, 0 }, 100.0f)
+			.done();
 
 		TimeRender::init();
 		auto time = spawn()
 			.with<TimeRender>("00:00:00", 32)
 			.with<Sprite>(ecs::no_entity)
 			.with<Visibility>(true)
-			.with<Position>(geometry::Vec2{ 400, 300 })
+			.with<Position>(geometry::Vec2{ 700, 10 })
 			.done();
 
 		
