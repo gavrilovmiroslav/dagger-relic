@@ -16,6 +16,7 @@
 #include "Physics.h"
 #include "Enemies.h"
 #include "Players.h"
+#include "TimeRender.h"
 
 using namespace core;
 
@@ -28,6 +29,7 @@ struct Brawl : public Game
 		engine.use<EnemyMovementSystem>();
 		engine.use<PhysicsSystem>();
 		// TODO: make a system to resolve damage and call it here
+		engine.use<TimeRenderControlSystem>();
 	}
 
 	void on_start() override
@@ -55,6 +57,15 @@ struct Brawl : public Game
 				.done();
 		}
 
+		TimeRender::init();
+		auto time = spawn()
+			.with<TimeRender>("00:00:00", 32)
+			.with<Sprite>(ecs::no_entity)
+			.with<Visibility>(true)
+			.with<Position>(geometry::Vec2{ 400, 300 })
+			.done();
+
+		
 		spawn()
 			.with<Sprite>(ecs::no_entity, -10)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("background/background"))
@@ -62,6 +73,13 @@ struct Brawl : public Game
 			.with<AnimationSpeedController>(1.0f)
 			.with<Visibility>(true)
 			.done();
+	}
+
+	
+
+	void on_end() override
+	{
+		TimeRender::deinit();
 	}
 };
 
