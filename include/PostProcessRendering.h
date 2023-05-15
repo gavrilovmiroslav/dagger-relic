@@ -34,16 +34,26 @@ struct PostProcessRectangle
 #define POSTPROCESS_TEST_ENVIRONMENT  4u
 #define POSTPROCESS_TEST_DYNAMICLIGHT 5u
 #define POSTPROCESS_TEST_UIFRAME      6u
+#define POSTPROCESS_TEST_TRACK        7u
 
-extern U32 postprocess_fade_timer;
-extern U32 dynamiclight_x;
-extern U32 dynamiclight_y;
+#define DECAL_TEST             0u
+#define DECAL_FOOTPRINT_BIPED1 1u
+#define DECAL_FOOTPRINT_BIPED2 2u
+#define DECAL_BOXGRIND         3u
+
+extern F32  postprocess_fade_timer;
+extern Bool postprocess_fade_force;
+extern U32  dynamiclight_x;
+extern U32  dynamiclight_y;
 
 struct Lightmap_Block
 {
 	U32 x, y, w, h;
 };
+
 void Lightmap_Calculate(std::vector<Lightmap_Block> &block);
+void Decal_Stamp(U32 x, U32 y, U32 what = DECAL_TEST);
+void Decal_Clear(void);
 
 struct PostProcessTest
 {

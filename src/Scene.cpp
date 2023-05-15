@@ -7,8 +7,9 @@ void Scene::Reset(void)
 {
     U32 i;
 
-    U32 boxcount            = 0;
-    U32 boxcount_current    = 0;
-    U32 pushplatecount      = 0;
-    U32 pushplate_activenow = 0;
+    boxcount            = 0;
+    boxcount_current    = 0;
+    pushplatecount      = 0;
+    pushplate_activenow = 0;
+    dooropen            = false;
 }

@@ -160,11 +160,36 @@ struct FollowPlayerPostProcessTestEffectSystem
 	}
 };
 
+class BoxGrindDecalStampSystem
+	: public ecs::System
+	, public MutAccessGroupStorage<Position, Box, Movement>
+{
+	void on_tick() override
+	{
+		for (auto&& [entity, position, box, movement] : MutAccessGroupStorage<Position, Box, Movement>::access_storage().each())
+		{
+			if (box.previous_sticky_x == 0 && box.previous_sticky_y == 0)
+			{
+				box.previous_sticky_x = position.xy.x;
+				box.previous_sticky_y = position.xy.y;
+			}
+
+			if (abs(box.previous_sticky_x - position.xy.x) > 16 || abs(box.previous_sticky_y - position.xy.y) > 16)
+			{
+				Decal_Stamp(position.xy.x+32+16, position.xy.y+16+8, DECAL_BOXGRIND);
+			}
+		}
+	}
+};
+
 struct PyramidPlunder : public Game
 {
 	LevelManager level_manager;
 	U8           level;
     ecs::Entity  door;
+	Bool         fadeout;
+	Bool         fadein;
+	F32          fadeouttimer;
 
 	PyramidPlunder()
 	{
@@ -177,8 +202,12 @@ struct PyramidPlunder : public Game
 		engine.use<SoundControlSystem>();
 		engine.use<TextRenderControlSystem>();
 		engine.use<FollowPlayerPostProcessTestEffectSystem>();
+		engine.use<BoxGrindDecalStampSystem>();
 
-		door = ecs::no_entity;
+		door         = ecs::no_entity;
+		fadeout      = false;
+		fadein       = false;
+		fadeouttimer = 1.0f;
 	}
 
 	void door_open(void)
@@ -218,6 +247,10 @@ struct PyramidPlunder : public Game
 		level_manager = LevelManager();
 		remove_components(scene.entity);
 		scene.Reset();
+		Decal_Clear();
+		fadein = true;
+		postprocess_fade_force = false;
+		postprocess_fade_timer = -1.0f;
 
 		switch(id)
 		{
@@ -330,7 +363,7 @@ struct PyramidPlunder : public Game
 					block.y = j*96;
 					block.w = 96;
 					block.h = 96;
-					lightmapblock.push_back(block);
+					//lightmapblock.push_back(block);
 				}
 				if(c == 'r')
 				{
@@ -395,12 +428,29 @@ struct PyramidPlunder : public Game
 			.with<Position>(geometry::Vec2{ 4.0f+70, 4.0f })
 			.with<Visibility>(true)
 			.done();
+
+		auto ppfx_fade = spawn()
+			.with<PostProcessTest>(POSTPROCESS_TEST_FADE)
+			.with<Sprite>(TopSprite(999))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/ppfx"))
+			.with<Position>(geometry::Vec2{ 4.0f+36.0f, 4.0f })
+			.with<Visibility>(true)
+			.done();
+
 		auto ppfx_dynamiclight = spawn()
 			.with<PostProcessTest>(POSTPROCESS_TEST_DYNAMICLIGHT)
 			.with<Sprite>(TopSprite(999))
 			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/lightmap2"))
 			.with<Position>(geometry::Vec2{ 4.0f, 4.0f+24.0f*4 })
 			.with<FollowPlayer>(true)
+			.with<Visibility>(true)
+			.done();
+
+		auto ppfx_decalmarker = spawn()
+			.with<PostProcessTest>(POSTPROCESS_TEST_TRACK)
+			.with<Sprite>(TopSprite(999))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/track"))
+			.with<Position>(geometry::Vec2{ 4.0f, 4.0f+24*4 })
 			.with<Visibility>(true)
 			.done();
 
@@ -419,16 +469,6 @@ struct PyramidPlunder : public Game
 			.with<Position>(geometry::Vec2{ 4.0f, 4.0f })
 			.with<Visibility>(true)
 			.done();
-
-		auto ppfx_fade = spawn()
-			.with<PostProcessTest>(POSTPROCESS_TEST_FADE)
-			.with<Sprite>(TopSprite(999))
-			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/ppfx"))
-			.with<Position>(geometry::Vec2{ 4.0f+36.0f, 4.0f })
-			.with<Visibility>(true)
-			.done();
-
-			
 		
 		/*
 		spawn()
@@ -446,7 +486,6 @@ struct PyramidPlunder : public Game
 		TextRender::deinit();
 	}
 };
-
 
 void PushPlateBoxSystem::on_tick()
 {
@@ -539,10 +578,12 @@ void MovementSystem::on_tick()
 						if (dx > 0.0f)
 						{
 							pos.xy.x -= collision_width / 2.0f - dx;
+							/*movement2.velocity.x -= (fx/m)*Time::delta_time();*/
 						}
 						else
 						{
 							pos.xy.x += collision_width / 2.0f + dx;
+							/*movement2.velocity.x += (fx/m)*Time::delta_time();*/
 						}
 					}
 					else
@@ -550,10 +591,12 @@ void MovementSystem::on_tick()
 						if (dx > 0.0f)
 						{
 							pos2.xy.x += collision_width / 2.0f - dx;
+							/*movement.velocity.x -= (fx/m)*Time::delta_time();*/
 						}
 						else
 						{
 							pos2.xy.x -= collision_width / 2.0f + dx;
+							/*movement.velocity.x -= (fx/m)*Time::delta_time();*/
 						}
 					}
 
@@ -565,10 +608,12 @@ void MovementSystem::on_tick()
 						if (dy > 0.0f)
 						{
 							pos.xy.y -= collision_height / 2.0f - dy;
+							/*movement2.velocity.x -= (fx/m)*Time::delta_time();*/
 						}
 						else
 						{
 							pos.xy.y += collision_height / 2.0f + dy;
+							/*movement2.velocity.x += (fx/m)*Time::delta_time();*/
 						}
 					}
 					else
@@ -576,10 +621,12 @@ void MovementSystem::on_tick()
 						if (dy > 0.0f)
 						{
 							pos2.xy.y += collision_height / 2.0f - dy;
+							movement.velocity.x += (fx/m)*Time::delta_time();
 						}
 						else
 						{
 							pos2.xy.y -= collision_height / 2.0f + dy;
+							movement.velocity.x -= (fx/m)*Time::delta_time();
 						}
 					}
 				}
@@ -600,8 +647,73 @@ void MovementSystem::on_tick()
 				if (pos.xy.x > scene.doorx - 96 && pos.xy.x < scene.doorx + 96 &&
 					pos.xy.y > scene.doory - 96 && pos.xy.y < scene.doory + 96)
 				{
+					if (!game->fadeout)
+					{
+						game->fadeout = true;
+						postprocess_fade_timer = 1.0f;
+					}
+				}
+			}
+
+			static F32 decaltimer = 0.25f;
+			static U32 decal      = DECAL_FOOTPRINT_BIPED1;
+			if (movement.velocity.x > 1.5f || movement.velocity.x < -1.5f || movement.velocity.y > 1.5f || movement.velocity.y < -1.5f)
+			{
+				decaltimer -= Time::delta_time();
+				if (decaltimer <= 0.0f)
+				{
+					decaltimer = 0.25f;
+					Decal_Stamp(pos.xy.x+64, pos.xy.y+52, decal);
+					decal = (decal == DECAL_FOOTPRINT_BIPED1 ? DECAL_FOOTPRINT_BIPED2 : DECAL_FOOTPRINT_BIPED1);
+				}
+			}
+
+			if (game->fadeout)
+			{
+				if (postprocess_fade_timer > 0.0f)
+				{
+					F32 delta = Time::delta_time();
+
+					if (delta > 0.1f)
+					{
+						delta = 0.1f;
+					}
+
+					postprocess_fade_timer -= delta;
+					if (postprocess_fade_timer < 0.0f)
+					{
+						postprocess_fade_timer = 0.0f;
+					}
+					postprocess_fade_force = true;
+				}
+				else
+				{
+					postprocess_fade_timer = 0.0f;
+					game->fadeout = false;
 					game->level++;
 					game->start_level(game->level);
+				}
+			}
+			else if (game->fadein)
+			{
+				if (postprocess_fade_timer < 0.0f)
+				{
+					F32 delta = Time::delta_time();
+
+					if (delta > 0.1f)
+					{
+						delta = 0.1f;
+					}
+					postprocess_fade_timer += delta;
+					if (postprocess_fade_timer > 0.0f)
+					{
+						postprocess_fade_timer = 0.0f;
+					}
+				}
+				else
+				{
+					postprocess_fade_timer = 0.0f;
+					game->fadein = false;
 				}
 			}
 		}
