@@ -146,11 +146,13 @@ void PostProcessTextRenderingModule::process_signal(core::PostProcessRenderSigna
 	}
 }
 
-U32        postprocess_fade_timer = 0;
+F32        postprocess_fade_timer = 0.0f;
+Bool       postprocess_fade_force = false;
 U32        dynamiclight_x         = 0;
 U32        dynamiclight_y         = 0;
 static U32 buffer_vignette[960*960];
 static U8  buffer_lightmap[960*960];
+static U8  buffer_decal[960*960];
 
 /*
  * Lightmap buffer at start is white, filled with black colour (rectangles) for each Lightmap_Block.
@@ -205,6 +207,59 @@ void Lightmap_Calculate(std::vector<Lightmap_Block> &block)
 			}
 		}
 	}
+}
+
+void Decal_Stamp(U32 x, U32 y, U32 what)
+{
+	U32 i, j;
+
+	switch (what)
+	{
+	case DECAL_FOOTPRINT_BIPED1:
+	case DECAL_TEST:
+		for (j = y; j < y+4; j++)
+		{
+			for (i = x; i < x+8; i++)
+			{
+				if (x >= 0 && x < 960 && y >= 0 && y < 960)
+				{
+					buffer_decal[j*960+i] = 0x80;
+				}
+			}
+		}
+	break;
+	case DECAL_FOOTPRINT_BIPED2:
+		for (j = y+6; j < y+6+4; j++)
+		{
+			for (i = x+1; i < x+1+8; i++)
+			{
+				if (x >= 0 && x < 960 && y >= 0 && y < 960)
+				{
+					buffer_decal[j*960+i] = 0x80;
+				}
+			}
+		}
+	break;
+	case DECAL_BOXGRIND:
+		for (j = y; j < y+32; j++)
+		{
+			for (i = x; i < x+32; i++)
+			{
+				if (x >= 0 && x < 960 && y >= 0 && y < 960)
+				{
+					buffer_decal[j*960+i] = 0x9f;
+				}
+			}
+		}
+	break;
+	default:
+	break;
+	}
+}
+
+void Decal_Clear(void)
+{
+	memset(buffer_decal, 0, 960*960);
 }
 
 /*
@@ -273,25 +328,41 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
 		}
 		break;
 		case POSTPROCESS_TEST_FADE:
-		if (postprocess_fade_timer > 0)
+		if (postprocess_fade_timer > 0.0f || postprocess_fade_force)
 		{
-			postprocess_fade_timer--;
-			
+			spdlog::info("fade out {}", postprocess_fade_timer);
 			for (y = 0; y < signal.h; y++)
 			{
 				for (x = 0; x < signal.w; x++)
 				{
+					F32 d = postprocess_fade_timer;
 					U32 c = signal.pixels[y * signal.w + x];
 					U32 a = (c >> 0)  & 0xff;
-					U32 r = (c >> 16) & 0xff;
-					U32 g = (c >> 8)  & 0xff;
-					U32 b = (c >> 24) & 0xff;
 
-					if (a > 0)
-					{
-						a--;
-					}
-					signal.pixels[y * signal.w + x] = (a << 0) | (r << 16) | (g << 8) | (b << 24);
+					U32 r = ((U32) (((c>>24)&0xff) * d))&0xff;
+					U32 g = ((U32) (((c>>16)&0xff) * d))&0xff;
+					U32 b = ((U32) (((c>> 8)&0xff) * d))&0xff;
+
+					signal.pixels[y * signal.w + x] = (r << 24) | (g << 16) | (b << 8) | (a << 0);
+				}
+			}
+		}
+		else if (postprocess_fade_timer < 0.0f)
+		{
+			spdlog::info("fade in {}", postprocess_fade_timer);
+			for (y = 0; y < signal.h; y++)
+			{
+				for (x = 0; x < signal.w; x++)
+				{
+					F32 d = 1.0f+postprocess_fade_timer;
+					U32 c = signal.pixels[y * signal.w + x];
+					U32 a = (c >> 0)  & 0xff;
+
+					U32 r = ((U32) (((c>>24)&0xff) * d))&0xff;
+					U32 g = ((U32) (((c>>16)&0xff) * d))&0xff;
+					U32 b = ((U32) (((c>> 8)&0xff) * d))&0xff;
+
+					signal.pixels[y * signal.w + x] = (r << 24) | (g << 16) | (b << 8) | (a << 0);
 				}
 			}
 		}
@@ -401,6 +472,23 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
 					}
 
 					signal.pixels[y * signal.w + x] = (a << 0) | (r << 24) | (g << 16) | (b << 8);
+				}
+			}
+		break;
+		case POSTPROCESS_TEST_TRACK:
+			for (y = 0; y < signal.h; y++)
+			{
+				for (x = 0; x < signal.w; x++)
+				{
+					U32 i;
+
+					if (buffer_decal[y*signal.w+x] != 0)
+					{
+						for (i = 0; i < 3; i++)
+						{
+							((U8*) (&signal.pixels[y * signal.w + x]))[i+1] -= buffer_decal[y * signal.w + x]/32;
+						}
+					}
 				}
 			}
 		break;

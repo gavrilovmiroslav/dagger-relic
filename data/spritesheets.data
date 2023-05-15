@@ -24,4 +24,6 @@ tool/ppfx: ppfx.png.data
 tool/lightmap: lightmap.png.data
 tool/lightmap2: lightmap2.png.data
 tool/environment: environment.png.data
+tool/track: track.png.data
+tool/track2: track2.png.data
 pyramidplunder/boulder: pyramidplunder/boulder.png.data

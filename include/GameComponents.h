@@ -15,6 +15,7 @@ struct Boulder {};
 struct Box
 {
 	I32 id;
+	U32 previous_sticky_x = 0, previous_sticky_y = 0; /* For drawing decal. */
 };
 
 
