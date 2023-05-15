@@ -147,6 +147,8 @@ void PostProcessTextRenderingModule::process_signal(core::PostProcessRenderSigna
 }
 
 U32        postprocess_fade_timer = 0;
+U32        dynamiclight_x         = 0;
+U32        dynamiclight_y         = 0;
 static U32 buffer_vignette[960*960];
 static U8  buffer_lightmap[960*960];
 
@@ -160,7 +162,7 @@ void Lightmap_Calculate(std::vector<Lightmap_Block> &block)
 
 	for (i = 0; i < 960*960; i++)
 	{
-		buffer_lightmap[i] = 0x9f;
+		buffer_lightmap[i] = 0x5f;
 	}
 
 	for (i = 0; i < block.size(); i++)
@@ -171,7 +173,7 @@ void Lightmap_Calculate(std::vector<Lightmap_Block> &block)
 		{
 			for (y = block[i].y; y < block[i].y + block[i].h; y++)
 			{
-				buffer_lightmap[x + y * 960] = 0x1f;
+				buffer_lightmap[x + y * 960] = 0x10;
 			}
 		}
 	}
@@ -211,6 +213,7 @@ void Lightmap_Calculate(std::vector<Lightmap_Block> &block)
 void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSignal& signal)
 {
 	static Bool buffercreate = true;
+	const  U32  dynamiclight_size = 144;
 
 	if (buffercreate)
 	{
@@ -302,18 +305,38 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
 				U32 g = (c >> 16) & 0xff;
 				U32 b = (c >> 8)  & 0xff;
 				U32 a = (c >> 0)  & 0xff;
+				U32 c2 = (buffer_vignette[y * signal.w + x]) & 0xff;
 
 				r  = (buffer_lightmap[y * signal.w + x]) & 0xff;
 				g  = (buffer_lightmap[y * signal.w + x]) & 0xff;
 				b  = (buffer_lightmap[y * signal.w + x]) & 0xff;
 				a  = 0x9f;
 
-				if (r > 255) r = 0;
-				if (g > 255) g = 0;
-				if (b > 255) b = 0;
+				if (r > 255) r = 255;
+				if (g > 255) g = 255;
+				if (b > 255) b = 255;
 				if (a > 255) a = 255;
 
 				signal.pixels[y * signal.w + x] = (a << 0) | (r << 16) | (g << 8) | (b << 24);
+			}
+		}
+		break;
+		case POSTPROCESS_TEST_DYNAMICLIGHT:
+		{
+			// Draw filled circle with radius 32 around player
+			for (y = 0; y < signal.h; y++)
+			{
+				for (x = 0; x < signal.w; x++)
+				{
+					F32 dx = (F32)x-dynamiclight_x;
+					F32 dy = (F32)y-dynamiclight_y;
+					F32 d  = sqrtf(dx*dx+dy*dy);
+
+					if (d < dynamiclight_size)
+					{
+						signal.pixels[y * signal.w + x] = 0x9f9f9f9f;
+					}
+				}
 			}
 		}
 		break;

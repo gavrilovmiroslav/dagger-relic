@@ -3,6 +3,7 @@
 #include "Access.h"
 #include "Definitions.h"
 #include "Geometry.h"
+#include "Rendering.h"
 
 struct Texture;
 
@@ -20,7 +21,10 @@ struct Sprite
 	geometry::Rect clip;
 	geometry::Vec2 pivot{ 0.5f, 0.5f };
 	geometry::Vec2 scale{ 2.0f, 2.0f };
+	I32 layer = 0;
 };
+
+struct Sprite TopSprite(int depth);
 
 struct Image
 {
@@ -56,8 +60,10 @@ class SpriteRenderingModule
 	, public AccessGroupStorage<Sprite>
 	, public AccessUnique<core::WindowingState>
 	, public SignalProcessor<core::RenderSignal>
+	, public SignalProcessor<core::PostProcessRenderSignal2>
 	, public SignalProcessor<core::AssetUnloadingSignal<Texture>>
 {
 	void process_signal(core::RenderSignal& signal) override;
+	void process_signal(core::PostProcessRenderSignal2& signal) override;
 	void process_signal(core::AssetUnloadingSignal<Texture>& signal) override;
 };

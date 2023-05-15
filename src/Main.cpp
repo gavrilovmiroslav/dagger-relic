@@ -132,6 +132,33 @@ struct MovementControlSystem
 	}
 };
 
+struct FollowPlayer
+{
+	bool dofollow;
+};
+
+struct FollowPlayerPostProcessTestEffectSystem
+	: public ecs::System
+	, public MutAccessGroupStorage<Position, PostProcessTest, FollowPlayer>
+	, public MutAccessGroupStorage<Position, Player>
+{
+	void on_tick() override
+	{
+		for (auto&& [entity, position, post_process, follow_player] : MutAccessGroupStorage<Position, PostProcessTest, FollowPlayer>::access_storage().each())
+		{
+			if (follow_player.dofollow)
+			{
+				for (auto&& [entity2, player_position, player] : MutAccessGroupStorage<Position, Player>::access_storage().each())
+				{
+					position.xy.x = player_position.xy.x + 64-16;
+					position.xy.y = player_position.xy.y - 42;
+					dynamiclight_x = player_position.xy.x + 64;
+					dynamiclight_y = player_position.xy.y + 52;
+				}
+			}
+		}
+	}
+};
 
 struct PyramidPlunder : public Game
 {
@@ -149,6 +176,7 @@ struct PyramidPlunder : public Game
 		engine.use<PushPlateBoxSystem>();
 		engine.use<SoundControlSystem>();
 		engine.use<TextRenderControlSystem>();
+		engine.use<FollowPlayerPostProcessTestEffectSystem>();
 
 		door = ecs::no_entity;
 	}
@@ -323,7 +351,7 @@ struct PyramidPlunder : public Game
 
 		auto pause_button = spawn()
 			.with<Button>(ButtonType::PauseMusic)
-			.with<Sprite>(ecs::no_entity, 8)
+			.with<Sprite>(TopSprite(8))
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/audio_active"))
 			.with<Position>(geometry::Vec2{ 880.0f, 910.0f })
 			.with<Visibility>(true)
@@ -332,7 +360,7 @@ struct PyramidPlunder : public Game
 
 		auto play_next = spawn()
 			.with<Button>(ButtonType::PlayNext)
-			.with<Sprite>(ecs::no_entity, 8)
+			.with<Sprite>(TopSprite(8))
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/play_next"))
 			.with<Position>(geometry::Vec2{ 925.0f, 910.0f })
 			.with<Visibility>(true)
@@ -341,7 +369,7 @@ struct PyramidPlunder : public Game
 
 		auto play_previous = spawn()
 			.with<Button>(ButtonType::PlayPrevious)
-			.with<Sprite>(ecs::no_entity, 8)
+			.with<Sprite>(TopSprite(8))
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/play_previous"))
 			.with<Position>(geometry::Vec2{ 835.0f, 910.0f })
 			.with<Visibility>(true)
@@ -353,26 +381,33 @@ struct PyramidPlunder : public Game
 	{
 		TextRender::init();
 
+		level = 0;
+		start_level(level);
+
 		/*
 		 * Persistent entities.
 		 */
 
-
-		level = 0;
-		start_level(level);
-
+		auto ppfx_dynamiclight = spawn()
+			.with<PostProcessTest>(POSTPROCESS_TEST_DYNAMICLIGHT)
+			.with<Sprite>(TopSprite(999))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/lightmap2"))
+			.with<Position>(geometry::Vec2{ 4.0f, 4.0f+24.0f*4 })
+			.with<FollowPlayer>(true)
+			.with<Visibility>(true)
+			.done();
 
 		auto ppfx_lightmap = spawn()
 			.with<PostProcessTest>(POSTPROCESS_TEST_LIGHTMAP)
-			.with<Sprite>(ecs::no_entity, 999)
+			.with<Sprite>(TopSprite(999))
 			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/lightmap"))
-			.with<Position>(geometry::Vec2{ 4.0f, 4.0f+24.0f*3 })
+			.with<Position>(geometry::Vec2{ 4.0f, 4.0f+24.0f*2 })
 			.with<Visibility>(true)
 			.done();
 			
 		auto ppfx_vignette = spawn()
 			.with<PostProcessTest>(POSTPROCESS_TEST_VIGNETTE)
-			.with<Sprite>(ecs::no_entity, 999)
+			.with<Sprite>(TopSprite(999))
 			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/ppfx"))
 			.with<Position>(geometry::Vec2{ 4.0f, 4.0f })
 			.with<Visibility>(true)
@@ -380,11 +415,20 @@ struct PyramidPlunder : public Game
 
 		auto ppfx_fade = spawn()
 			.with<PostProcessTest>(POSTPROCESS_TEST_FADE)
-			.with<Sprite>(ecs::no_entity, 999)
+			.with<Sprite>(TopSprite(999))
 			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/ppfx"))
-			.with<Position>(geometry::Vec2{ 4.0f, 4.0f+24.0f })
+			.with<Position>(geometry::Vec2{ 4.0f+36.0f, 4.0f })
 			.with<Visibility>(true)
 			.done();
+
+		auto ppfx_uiframe = spawn()
+			.with<PostProcessTest>(POSTPROCESS_TEST_UIFRAME)
+			.with<Sprite>(TopSprite(999))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/ppfx"))
+			.with<Position>(geometry::Vec2{ 4.0f+70, 4.0f })
+			.with<Visibility>(true)
+			.done();
+			
 		
 		/*
 		spawn()

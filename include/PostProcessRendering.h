@@ -28,11 +28,16 @@ struct PostProcessRectangle
 	I32 x, y, w, h;
 };
 
-#define POSTPROCESS_TEST_VIGNETTE 1u
-#define POSTPROCESS_TEST_FADE     2u
-#define POSTPROCESS_TEST_LIGHTMAP 3u
+#define POSTPROCESS_TEST_VIGNETTE     1u
+#define POSTPROCESS_TEST_FADE         2u
+#define POSTPROCESS_TEST_LIGHTMAP     3u
+#define POSTPROCESS_TEST_ENVIRONMENT  4u
+#define POSTPROCESS_TEST_DYNAMICLIGHT 5u
+#define POSTPROCESS_TEST_UIFRAME      6u
 
 extern U32 postprocess_fade_timer;
+extern U32 dynamiclight_x;
+extern U32 dynamiclight_y;
 
 struct Lightmap_Block
 {

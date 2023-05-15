@@ -9,7 +9,7 @@
 #define CHUNK_SIZE 1024
 #define DELTA_VOLUME 3
 #define FREQUENCY 48000
-#define INITIAL_VOLUME 100
+#define INITIAL_VOLUME (MIX_MAX_VOLUME/2)
 #define NUM_OF_CHANNELS 2
 
 enum class Sound

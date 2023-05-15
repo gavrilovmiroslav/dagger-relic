@@ -26,6 +26,7 @@ void RenderingModule::on_tick()
 
 	SignalEmitter<RenderFrameStart>::emit(RenderFrameStart{});
 	auto& state = AccessUnique<WindowingState>::access_unique();
+	SDL_SetRenderTarget(state.renderer, render_texture);
 	SDL_RenderClear(state.renderer);
 
 	SignalEmitter<RenderSignal>::emit(RenderSignal{});
@@ -35,16 +36,11 @@ void RenderingModule::on_tick()
 	SignalEmitter<PostProcessRenderSignal>::emit(PostProcessRenderSignal{postprocess_pixels, postprocess_pitch, (U32) width, (U32) height });
 	SDL_UnlockTexture(post_render_texture);
 
-	SDL_LockTexture(post_render_texture2, nullptr, (void **) &postprocess_pixels2, &postprocess_pitch2);
-	memset(postprocess_pixels2, 0, height * postprocess_pitch2);
-	SignalEmitter<PostProcessRenderSignal2>::emit(PostProcessRenderSignal2{postprocess_pixels2, postprocess_pitch, (U32) width, (U32) height });
-	SDL_UnlockTexture(post_render_texture2);
-
 	SDL_SetTextureBlendMode(post_render_texture, SDL_BlendMode::SDL_BLENDMODE_MOD);
 	SDL_RenderCopyEx(state.renderer, post_render_texture, nullptr, nullptr, 0, nullptr, SDL_FLIP_NONE);
 
-	SDL_SetTextureBlendMode(post_render_texture2, SDL_BlendMode::SDL_BLENDMODE_ADD);
-	SDL_RenderCopyEx(state.renderer, post_render_texture2, nullptr, nullptr, 0, nullptr, SDL_FLIP_NONE);
+	//SDL_SetRenderTarget(state.renderer, render_texture);
+	SignalEmitter<PostProcessRenderSignal2>::emit(PostProcessRenderSignal2{postprocess_pixels2, postprocess_pitch, (U32) width, (U32) height });
 
 	SDL_RenderPresent(state.renderer);
 	SignalEmitter<RenderFrameEnd>::emit(RenderFrameEnd{});

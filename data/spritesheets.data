@@ -23,4 +23,5 @@ tool/ppress: ppress.png.data
 tool/ppfx: ppfx.png.data
 tool/lightmap: lightmap.png.data
 tool/lightmap2: lightmap2.png.data
+tool/environment: environment.png.data
 pyramidplunder/boulder: pyramidplunder/boulder.png.data
