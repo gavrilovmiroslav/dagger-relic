@@ -29,6 +29,7 @@ struct Brawl : public Game
 		engine.use<EnemyMovementSystem>();
 		engine.use<PhysicsSystem>();
 		engine.use<DamageSystem>();
+		engine.use<EnemiesController>();
 
 	}
 
@@ -51,10 +52,10 @@ struct Brawl : public Game
 			spawn()
 				.with<Sprite>(ecs::no_entity)
 				.with<Health>(100)
-				.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
+				.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
 				.with<Position>(geometry::Vec2{ 760 - 30*i, 60*i })
 				.with<Visibility>(true)
-				.with<AnimationSpeedController>(1.0f)
+				.with<AnimationSpeedController>(15.0f)
 				.with<Enemy>(geometry::Vec2{ 1, 0 })
 				.done();
 		}

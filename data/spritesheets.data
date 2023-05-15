@@ -4,6 +4,8 @@ Moose/Moose1_Idle: Moose/Moose1_Idle.png.data
 Moose/Moose1_run: Moose/Moose1_run.png.data
 Moose/Moose1_attack_all_effects: Moose/Moose1_attack_all_effects.png.data
 Golem/Golem1_idle: Golem/Golem1_idle.png.data
+Golem/Golem1_run: Golem/Golem1_run.png.data
+Golem/Golem1_attack: Golem/Golem1_attack.png.data
 Skeleton/Skeleton_Idle: Skeleton/Skeleton_Idle.png.data
 Skeleton/Skeleton_attack: Skeleton/Skeleton_attack.png.data
 background/background: background/grass_background.png.data
