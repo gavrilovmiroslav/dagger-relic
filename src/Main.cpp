@@ -1,18 +1,43 @@
-
-#include "LevelManager.h"
 #include "Player.h"
-#include "EngineButton.h"
-#include "MainMenu.h"
-#include "Windowing.h"
-#include "Access.h"
 #include "Config.h"
 #include "Engine.h"
 #include "Logger.h"
+#include "CreateMenu.h"
+#include "Algebra.h"
+#include "LevelManager.h"
+#include "Access.h"
+
 
 
 using namespace core;
 
-/*struct MovementSystem
+struct KeyBinding
+{
+	KeyCode left, down, up, right, a, b, escape;
+};
+
+struct Movement
+{
+    geometry::Vec2 velocity;
+    geometry::Vec2 velocity_max;
+    geometry::Vec2 force;
+    F32            move_force;
+    F32            collision_box_width;
+    F32            collision_box_height;
+
+    Movement(F32 move_force, F32 velocity_max, F32 collision_w, F32 collision_h)
+        : velocity(0.0f, 0.0f)
+        , move_force(move_force)
+        , velocity_max(velocity_max)
+        , force(0.0f, 0.0f)
+        , collision_box_width(collision_w)
+        , collision_box_height(collision_h)
+    {
+
+    }
+};
+
+struct MovementSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<Movement, Position>
 {
@@ -21,15 +46,15 @@ using namespace core;
 		for (auto&& [entity, movement, pos] : access_storage().each())
 		{
 			F32 u = 16.0f;                              /* Friction coefficient. */
-			//F32 m = 5.0f;                               /* Object mass (kg). */
-			//F32 g = 9.807f;                             /* Gravity acceleration. */
-			//F32 n = m*g;                                /* Normal force. */
-			//F32 fnx = -fsignf(movement.velocity.x)*u*n; /* Friction force. */
-			//F32 fny = -fsignf(movement.velocity.y)*u*n;
-			//F32 fx  = fnx+movement.force.x;             /* Total force. */
-			//F32 fy  = fny+movement.force.y;
+			F32 m = 5.0f;                               /* Object mass (kg). */
+			F32 g = 9.807f;                             /* Gravity acceleration. */
+			F32 n = m*g;                                /* Normal force. */
+			F32 fnx = -fsignf(movement.velocity.x)*u*n; /* Friction force. */
+			F32 fny = -fsignf(movement.velocity.y)*u*n;
+			F32 fx  = fnx+movement.force.x;             /* Total force. */
+			F32 fy  = fny+movement.force.y;
 
-			/*for (auto&& [entity2, movement2, pos2] : access_storage().each())
+			for (auto&& [entity2, movement2, pos2] : access_storage().each())
 			{
 				F32 dx, dy;
 				F32 collision_width = movement.collision_box_width + movement2.collision_box_width;
@@ -56,11 +81,10 @@ using namespace core;
 							pos.xy.x += collision_width / 2.0f + dx;
 						}
 
-						/*
 						movement.velocity.x = 0.0f;
 						movement2.velocity.x = 0.0f;
-						*/
-					/*}
+						
+					}
 					else
 					{
 						if (dy > 0.0f)
@@ -72,11 +96,11 @@ using namespace core;
 							pos.xy.y += collision_height / 2.0f + dy;
 						}
 
-						/*
+						
 						movement.velocity.y = 0.0f;
 						movement2.velocity.y = 0.0f;
-						*/
-					/*}
+						
+					}
 				}
 
 			}
@@ -88,7 +112,7 @@ using namespace core;
 			movement.velocity.y = fclampf(movement.velocity.y, -movement.velocity_max.y, movement.velocity_max.y);
 		}
 	}
-};*/
+};
 
 struct ClickControlSystem
 	: public ecs::System
@@ -134,6 +158,7 @@ struct ClickControlSystem
 	}
 };*/
 
+
 struct PyramidPlunder : public Game
 {
 	LevelManager level_manager;
@@ -141,21 +166,21 @@ struct PyramidPlunder : public Game
 	PyramidPlunder()
 	{
 		auto& engine = Engine::get_instance();
-		/*engine.use<BlindfoldChangingSystem>();
+		//engine.use<BlindfoldChangingSystem>();
 		engine.use<MovementSystem>();
-		engine.use<MovementControlSystem>();
-		engine.use<MenuControlSystem>();
-		//engine.use<ClickControlSystem>();*/
+		//engine.use<MovementControlSystem>();
+		//engine.use<MenuControlSystem>();
+		//engine.use<ClickControlSystem>();
 	}
 
-	/*void on_start() override
+	void loadGame()
 	{
 		level_manager = LevelManager();
-		level_manager.load_level("Levels/level1.txt");
+		level_manager.load_level("Levels/level2.txt");
 
 		for(U32 i = 0; i < TILE_ROWS; i++)
 		{
-        		for(U32 j = 0; j < TILE_COLS; j++)
+				for(U32 j = 0; j < TILE_COLS; j++)
 			{
 				Char c = level_manager.level_map[j][i];
 				if(c == 'x')
@@ -207,43 +232,39 @@ struct PyramidPlunder : public Game
 					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE)
 					.done();
 
-					add_component<PlayerMovement>(player, PlayerMovement{PlayerFSM(player), 0.0f});
+					//add_component<PlayerMovement>(player, PlayerMovement{PlayerFSM(player), 0.0f});
 				}
-        	}
+			}
 		}
-	}*/
+	}
+
 	void on_start() override
 	{
+		createMenu();
 		bool quit = false;
 
-		SDL_Event event;
+		while(!quit)
+		{
+			const auto& mouse = MouseState::get();
 
-		EngineMenu engineMenu(nullptr, nullptr);
+			I32 position_x = mouse.get_mouse_position().x;
+			I32 position_y = mouse.get_mouse_position().y;
 
-		engineMenu.initSplashScreen("Press Enter to start", "liberation.ttf", "data/pyramids2.bmp");
-
-		EngineButton playButton(nullptr, "data/play1.bmp", 375, 300, 200, 50);
-		
-		EngineButton optionsButton(nullptr, "data/options1.bmp", 375, 450, 200, 50);
-
-		EngineButton exitButton(nullptr, "data/exit1.bmp", 375, 600, 200, 50);
-
-		while (!quit){
-
-			SDL_PollEvent(&event);
-			if(event.type==SDL_WINDOWEVENT && event.window.event==SDL_WINDOWEVENT_CLOSE){
-				quit = true;
+			Bool valid_position_x = position_x >= 375 && position_x <= 575;
+			Bool valid_position_y = (position_y >= 300 || position_y >= 500) && (position_y <= 350 || position_y <= 550);
+			
+			if (valid_position_x && valid_position_y && mouse.get_mouse_button_left() == MouseEventState::DownNow)
+			{
+				if (position_y <= 350)
+				{
+					loadGame();
+				}
+				else 
+				{
+					Engine::get_instance().quit();
+					quit = true;
+				}
 			}
-
-			SDL_RenderClear(playButton.renderer);
-
-			engineMenu.displaySplashScreen();
-			playButton.display();
-			optionsButton.display();
-			exitButton.display();
-
-			SDL_RenderPresent(playButton.renderer);
-			SDL_Delay(20);
 		}
 	}
 };

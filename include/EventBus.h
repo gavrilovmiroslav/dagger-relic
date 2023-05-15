@@ -452,6 +452,11 @@ namespace core
 		{
 			return mouse_buttons[2];
 		}
+
+		inline Pair<I32> get_mouse_position() const
+		{
+			return mouse_position;
+		}
 	};
 
 	struct KeyState
