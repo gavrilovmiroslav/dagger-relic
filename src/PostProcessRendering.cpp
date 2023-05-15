@@ -156,6 +156,7 @@ static U8  buffer_decal[960*960];
 
 static const U8 lightmap_shadow = 0x10u;
 static const U8 lightmap_light  = 0x5fu;
+
 void Lightmap_Calculate(std::vector<Lightmap_Block> &block)
 {
     U32 i, j;
@@ -336,7 +337,6 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
 		case POSTPROCESS_TEST_FADE:
 		if (postprocess_fade_timer > 0.0f || postprocess_fade_force)
 		{
-			spdlog::info("fade out {}", postprocess_fade_timer);
 			for (y = 0; y < signal.h; y++)
 			{
 				for (x = 0; x < signal.w; x++)
@@ -355,7 +355,6 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
 		}
 		else if (postprocess_fade_timer < 0.0f)
 		{
-			spdlog::info("fade in {}", postprocess_fade_timer);
 			for (y = 0; y < signal.h; y++)
 			{
 				for (x = 0; x < signal.w; x++)
@@ -426,17 +425,18 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
 		}
 		break;
 		case POSTPROCESS_TEST_UIFRAME:
+#define UIFRAME_HEIGHT 64
 			// Crappy algorithm.
 			for (x = 0; x < signal.w; x++)
 			{
-				signal.pixels[(signal.h-86-2) * signal.w + x] = 0x101010ff;
+				signal.pixels[(signal.h-UIFRAME_HEIGHT-2) * signal.w + x] = 0x101010ff;
 			}
 			for (x = 0; x < signal.w; x++)
 			{
-				signal.pixels[(signal.h-86-1) * signal.w + x] = 0x070707ff;
+				signal.pixels[(signal.h-UIFRAME_HEIGHT-1) * signal.w + x] = 0x070707ff;
 			}
 			switchcolour = (switchcolour+1)%2;
-			for (y = signal.h-86; y < signal.h; y++)
+			for (y = signal.h-UIFRAME_HEIGHT; y < signal.h; y++)
 			{
 				for (x = 0; x < signal.w; x++)
 				{
