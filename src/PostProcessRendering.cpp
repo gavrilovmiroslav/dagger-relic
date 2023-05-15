@@ -212,8 +212,9 @@ void Lightmap_Calculate(std::vector<Lightmap_Block> &block)
  */
 void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSignal& signal)
 {
-	static Bool buffercreate = true;
+	static Bool buffercreate      = true;
 	const  U32  dynamiclight_size = 144;
+	static U32  switchcolour      = 0;
 
 	if (buffercreate)
 	{
@@ -323,7 +324,6 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
 		break;
 		case POSTPROCESS_TEST_DYNAMICLIGHT:
 		{
-			// Draw filled circle with radius 32 around player
 			for (y = 0; y < signal.h; y++)
 			{
 				for (x = 0; x < signal.w; x++)
@@ -334,11 +334,75 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
 
 					if (d < dynamiclight_size)
 					{
-						signal.pixels[y * signal.w + x] = 0x9f9f9f9f;
+						U32 i;
+						
+						for (i = 0; i < 3; i++)
+						{
+							F32 c = ((U8*) (&signal.pixels[y * signal.w + x]))[i+1];
+							F32 dl = d/dynamiclight_size;
+							F32 v = (2.0f-dl)*c;
+							((U8*) (&signal.pixels[y * signal.w + x]))[i+1] = (U8) v;
+						}
 					}
 				}
 			}
 		}
+		break;
+		case POSTPROCESS_TEST_UIFRAME:
+			// Crappy algorithm.
+			for (x = 0; x < signal.w; x++)
+			{
+				signal.pixels[(signal.h-86-2) * signal.w + x] = 0x101010ff;
+			}
+			for (x = 0; x < signal.w; x++)
+			{
+				signal.pixels[(signal.h-86-1) * signal.w + x] = 0x070707ff;
+			}
+			switchcolour = (switchcolour+1)%2;
+			for (y = signal.h-86; y < signal.h; y++)
+			{
+				for (x = 0; x < signal.w; x++)
+				{
+					U32 c = signal.pixels[y * signal.w + x];
+					U32 r = (c >> 24) & 0xff;
+					U32 g = (c >> 16) & 0xff;
+					U32 b = (c >> 8)  & 0xff;
+					U32 a = (c >> 0)  & 0xff;
+
+					if (y % 2 == switchcolour)
+					{
+						if (x % 2 == 0)
+						{
+							r = 0;
+							g = 0;
+							b = 0;
+						}
+						else
+						{
+							r = 0x10;
+							g = 0x10;
+							b = 0x10;
+						}
+					}
+					else
+					{
+						if (x % 2 == switchcolour)
+						{
+							r = 0x10;
+							g = 0x10;
+							b = 0x10;
+						}
+						else
+						{
+							r = 0;
+							g = 0;
+							b = 0;
+						}
+					}
+
+					signal.pixels[y * signal.w + x] = (a << 0) | (r << 24) | (g << 16) | (b << 8);
+				}
+			}
 		break;
         default:
         break;

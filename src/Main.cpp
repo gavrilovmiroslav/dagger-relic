@@ -388,6 +388,13 @@ struct PyramidPlunder : public Game
 		 * Persistent entities.
 		 */
 
+		auto ppfx_uiframe = spawn()
+			.with<PostProcessTest>(POSTPROCESS_TEST_UIFRAME)
+			.with<Sprite>(TopSprite(999))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/ppfx"))
+			.with<Position>(geometry::Vec2{ 4.0f+70, 4.0f })
+			.with<Visibility>(true)
+			.done();
 		auto ppfx_dynamiclight = spawn()
 			.with<PostProcessTest>(POSTPROCESS_TEST_DYNAMICLIGHT)
 			.with<Sprite>(TopSprite(999))
@@ -421,13 +428,6 @@ struct PyramidPlunder : public Game
 			.with<Visibility>(true)
 			.done();
 
-		auto ppfx_uiframe = spawn()
-			.with<PostProcessTest>(POSTPROCESS_TEST_UIFRAME)
-			.with<Sprite>(TopSprite(999))
-			.with<SpriteAnimation>(Spritesheet::get_by_name("tool/ppfx"))
-			.with<Position>(geometry::Vec2{ 4.0f+70, 4.0f })
-			.with<Visibility>(true)
-			.done();
 			
 		
 		/*
