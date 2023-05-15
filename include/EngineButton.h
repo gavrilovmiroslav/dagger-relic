@@ -1,11 +1,12 @@
 #include <iostream>
 #include "SDL_ttf.h"
-#include "include/window.h"
 #include "MainMenu.h"
 #include "SDL.h"
 #include "Prelude.h"
 
-class EngineButton {
+class EngineButton
+: public MutAccessUnique<WindowingState>
+{
 public:
     SDL_Texture* texture;
     SDL_Rect rect;
@@ -14,9 +15,10 @@ public:
     Function<void()> callback;
 
     EngineButton(SDL_Renderer* renderer, const char* filename, int x, int y, int w, int h) {
-        this->renderer = renderer;
+        auto& state = MutAccessUnique<WindowingState>::access_unique();
+        this->renderer = state.renderer;
         SDL_Surface* surface = SDL_LoadBMP(filename);
-        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        texture = SDL_CreateTextureFromSurface(state.renderer, surface);
         SDL_FreeSurface(surface);
         rect.x = x;
         rect.y = y;

@@ -6,15 +6,18 @@
 
 using namespace std;
 
-class EngineMenu {
+class EngineMenu
+: public MutAccessUnique<WindowingState>
+{
     public:
 
         EngineMenu(SDL_Renderer *windowsplashFontRenderer, SDL_Window *window){
+            auto& state = MutAccessUnique<WindowingState>::access_unique();
             TTF_Init();
-            splashFontRenderer = windowsplashFontRenderer;
-            windowScreen = window;
+            splashFontRenderer = state.renderer;
+            windowScreen = state.window;
             splashScreenTextBlink = 0;
-            SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+            SDL_GetWindowSize(windowScreen, &windowWidth, &windowHeight);
         }
 
         void initSplashScreen(const char *displayName, const char *fontFamily, const char *backgroundImg = NULL){
