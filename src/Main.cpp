@@ -9,7 +9,6 @@
 #define SCREEN_HEIGHT 600
 #define BALL_RADIUS 16
 #define SPEED_MOD 200.0f
-#define ENEMY_SPEED_MOD 150.0f
 
 #include "Common.h"
 #include "FSM.h"
@@ -17,6 +16,7 @@
 #include "Enemies.h"
 #include "Players.h"
 #include "DamageSystem.h"
+#include "EnemyFSMController.h"
 
 using namespace core;
 
@@ -26,7 +26,6 @@ struct Brawl : public Game
 	{
 		auto &engine = Engine::get_instance();
 		engine.use<PlayerControlsSystem>();
-		engine.use<EnemyMovementSystem>();
 		engine.use<PhysicsSystem>();
 		engine.use<DamageSystem>();
 		engine.use<EnemiesController>();
@@ -49,7 +48,7 @@ struct Brawl : public Game
 
 		for (auto i = 0; i < 4 ; ++i)
 		{
-			spawn()
+			auto enemy = spawn()
 				.with<Sprite>(ecs::no_entity)
 				.with<Health>(100)
 				.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
@@ -57,8 +56,11 @@ struct Brawl : public Game
 				.with<Visibility>(true)
 				.with<AnimationSpeedController>(15.0f)
 				.with<Enemy>(geometry::Vec2{ 1, 0 })
-				.with<EnemyFSM>()
+				.with<Flip>(None)
 				.done();
+
+				auto enemyFSMController_component = EnemyFSMController {enemy};
+				add_component<EnemyFSMController>(enemy, enemy);
 		}
 
 		spawn()
