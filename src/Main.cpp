@@ -57,6 +57,7 @@ struct Brawl : public Game
 				.with<Visibility>(true)
 				.with<AnimationSpeedController>(15.0f)
 				.with<Enemy>(geometry::Vec2{ 1, 0 })
+				.with<EnemyFSM>()
 				.done();
 		}
 
