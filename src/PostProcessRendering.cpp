@@ -153,6 +153,8 @@ U32        dynamiclight_y         = 0;
 static U32 buffer_vignette[960*960];
 static U8  buffer_lightmap[960*960];
 static U8  buffer_decal[960*960];
+static const U8 lightmap_shadow = 0x10u;
+static const U8 lightmap_light  = 0x5fu;
 
 /*
  * Lightmap buffer at start is white, filled with black colour (rectangles) for each Lightmap_Block.
@@ -164,7 +166,7 @@ void Lightmap_Calculate(std::vector<Lightmap_Block> &block)
 
 	for (i = 0; i < 960*960; i++)
 	{
-		buffer_lightmap[i] = 0x5f;
+		buffer_lightmap[i] = lightmap_light;
 	}
 
 	for (i = 0; i < block.size(); i++)
@@ -175,29 +177,36 @@ void Lightmap_Calculate(std::vector<Lightmap_Block> &block)
 		{
 			for (y = block[i].y; y < block[i].y + block[i].h; y++)
 			{
-				buffer_lightmap[x + y * 960] = 0x10;
+				buffer_lightmap[x + y * 960] = lightmap_shadow;
 			}
 		}
 	}
 
 	/* Blur lightmap buffer... */
-	for (j = bluramount; j < 960-bluramount; j++)
+	for (j = 0; j < 960; j++)
 	{
-		for (i = bluramount; i < 960-bluramount; i++)
+		for (i = 0; i < 960; i++)
 		{
 			U32 x, y;
 			U32 c = 0;
 			U32 k = 0;
 
-			for (x = i-bluramount; x <= i+bluramount; x++)
+			for (x = i; x <= i+bluramount*2; x++)
 			{
-				for (y = j-bluramount; y <= j+bluramount; y++)
+				for (y = j; y <= j+bluramount*2; y++)
 				{
-					if (x >= 0 && x < 960 && y >= 0 && y < 960)
+					const U32 x2 = x-bluramount;
+					const U32 y2 = y-bluramount;
+					
+					if (x2 < 960 && y2 < 960)
 					{
-						c += buffer_lightmap[x + y * 960];
-						k++;
+						c += buffer_lightmap[x2 + y2 * 960];
 					}
+					else
+					{
+						c += lightmap_shadow;
+					}
+					k++;
 				}
 			}
 
@@ -330,7 +339,6 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
 		case POSTPROCESS_TEST_FADE:
 		if (postprocess_fade_timer > 0.0f || postprocess_fade_force)
 		{
-			spdlog::info("fade out {}", postprocess_fade_timer);
 			for (y = 0; y < signal.h; y++)
 			{
 				for (x = 0; x < signal.w; x++)
@@ -349,7 +357,6 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
 		}
 		else if (postprocess_fade_timer < 0.0f)
 		{
-			spdlog::info("fade in {}", postprocess_fade_timer);
 			for (y = 0; y < signal.h; y++)
 			{
 				for (x = 0; x < signal.w; x++)
@@ -420,17 +427,18 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
 		}
 		break;
 		case POSTPROCESS_TEST_UIFRAME:
+#define UIFRAME_HEIGHT 64
 			// Crappy algorithm.
 			for (x = 0; x < signal.w; x++)
 			{
-				signal.pixels[(signal.h-86-2) * signal.w + x] = 0x101010ff;
+				signal.pixels[(signal.h-UIFRAME_HEIGHT-2) * signal.w + x] = 0x101010ff;
 			}
 			for (x = 0; x < signal.w; x++)
 			{
-				signal.pixels[(signal.h-86-1) * signal.w + x] = 0x070707ff;
+				signal.pixels[(signal.h-UIFRAME_HEIGHT-1) * signal.w + x] = 0x070707ff;
 			}
 			switchcolour = (switchcolour+1)%2;
-			for (y = signal.h-86; y < signal.h; y++)
+			for (y = signal.h-UIFRAME_HEIGHT; y < signal.h; y++)
 			{
 				for (x = 0; x < signal.w; x++)
 				{

@@ -386,7 +386,7 @@ struct PyramidPlunder : public Game
 			.with<Button>(ButtonType::PauseMusic)
 			.with<Sprite>(TopSprite(8))
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/audio_active"))
-			.with<Position>(geometry::Vec2{ 880.0f, 910.0f })
+			.with<Position>(geometry::Vec2{ 820.0f, 918.0f })
 			.with<Visibility>(true)
 			.done();
 		scene.entity.push_back(pause_button);
@@ -395,7 +395,7 @@ struct PyramidPlunder : public Game
 			.with<Button>(ButtonType::PlayNext)
 			.with<Sprite>(TopSprite(8))
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/play_next"))
-			.with<Position>(geometry::Vec2{ 925.0f, 910.0f })
+			.with<Position>(geometry::Vec2{ 920.0f, 918.0f })
 			.with<Visibility>(true)
 			.done();
 		scene.entity.push_back(play_next);
@@ -404,7 +404,7 @@ struct PyramidPlunder : public Game
 			.with<Button>(ButtonType::PlayPrevious)
 			.with<Sprite>(TopSprite(8))
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/play_previous"))
-			.with<Position>(geometry::Vec2{ 835.0f, 910.0f })
+			.with<Position>(geometry::Vec2{ 870.0f, 918.0f })
 			.with<Visibility>(true)
 			.done();
 		scene.entity.push_back(play_previous);
