@@ -105,7 +105,7 @@ void render_line(struct Bitmap *bm, U32 x0, U32 y0, U32 x1, U32 y1, U32 colour)
 		{
 			break;
 		}
-		
+
 		e2 = err;
 		if (e2 > -dx)
 		{
@@ -154,59 +154,65 @@ static U32 buffer_vignette[960*960];
 static U8  buffer_lightmap[960*960];
 static U8  buffer_decal[960*960];
 
-/*
- * Lightmap buffer at start is white, filled with black colour (rectangles) for each Lightmap_Block.
- */
+static const U8 lightmap_shadow = 0x10u;
+static const U8 lightmap_light  = 0x5fu;
 void Lightmap_Calculate(std::vector<Lightmap_Block> &block)
 {
-	U32 i, j;
-	const U32 bluramount = 10;
+    U32 i, j;
+    const U32 bluramount = 10;
 
-	for (i = 0; i < 960*960; i++)
-	{
-		buffer_lightmap[i] = 0x5f;
-	}
+    for (i = 0; i < 960*960; i++)
+    {
+        buffer_lightmap[i] = lightmap_light;
+    }
 
-	for (i = 0; i < block.size(); i++)
-	{
-		U32 x, y;
+    for (i = 0; i < block.size(); i++)
+    {
+        U32 x, y;
 
-		for (x = block[i].x; x < block[i].x + block[i].w; x++)
-		{
-			for (y = block[i].y; y < block[i].y + block[i].h; y++)
-			{
-				buffer_lightmap[x + y * 960] = 0x10;
-			}
-		}
-	}
+        for (x = block[i].x; x < block[i].x + block[i].w; x++)
+        {
+            for (y = block[i].y; y < block[i].y + block[i].h; y++)
+            {
+                buffer_lightmap[x + y * 960] = lightmap_shadow;
+            }
+        }
+    }
 
-	/* Blur lightmap buffer... */
-	for (j = bluramount; j < 960-bluramount; j++)
-	{
-		for (i = bluramount; i < 960-bluramount; i++)
-		{
-			U32 x, y;
-			U32 c = 0;
-			U32 k = 0;
+    /* Blur lightmap buffer... */
+    for (j = 0; j < 960; j++)
+    {
+        for (i = 0; i < 960; i++)
+        {
+            U32 x, y;
+            U32 c = 0;
+            U32 k = 0;
 
-			for (x = i-bluramount; x <= i+bluramount; x++)
-			{
-				for (y = j-bluramount; y <= j+bluramount; y++)
-				{
-					if (x >= 0 && x < 960 && y >= 0 && y < 960)
-					{
-						c += buffer_lightmap[x + y * 960];
-						k++;
-					}
-				}
-			}
+            for (x = i; x <= i+bluramount*2; x++)
+            {
+                for (y = j; y <= j+bluramount*2; y++)
+                {
+                    const U32 x2 = x-bluramount;
+                    const U32 y2 = y-bluramount;
 
-			if (k > 0)
-			{
-				buffer_lightmap[i + j * 960] = (U8) (c / k);
-			}
-		}
-	}
+                    if (x2 < 960 && y2 < 960)
+                    {
+                        c += buffer_lightmap[x2 + y2 * 960];
+                    }
+                    else
+                    {
+                        c += lightmap_shadow;
+                    }
+                    k++;
+                }
+            }
+
+            if (k > 0)
+            {
+                buffer_lightmap[i + j * 960] = (U8) (c / k);
+            }
+        }
+    }
 }
 
 void Decal_Stamp(U32 x, U32 y, U32 what)
@@ -406,7 +412,7 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
 					if (d < dynamiclight_size)
 					{
 						U32 i;
-						
+
 						for (i = 0; i < 3; i++)
 						{
 							F32 c = ((U8*) (&signal.pixels[y * signal.w + x]))[i+1];
