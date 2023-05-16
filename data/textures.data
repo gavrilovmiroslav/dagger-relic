@@ -5,6 +5,10 @@ nexus/menucursor nexus/arrow.png
 nexus/background nexus/background3.png
 nexus/monster nexus/king2.png
 nexus/jane nexus/jane.png
+nexus/jane_stage1 nexus/jane_stage1.png
+nexus/jane_stage2 nexus/jane_stage2.png
+nexus/jane_stage3 nexus/jane_stage3.png
+nexus/jane_stage4 nexus/jane_stage4.png
 nexus/upper nexus/uppermenu.png
 nexus/attack nexus/button_attack.png
 nexus/block nexus/button_block.png
@@ -12,8 +16,7 @@ nexus/items nexus/button_items.png
 nexus/sword nexus/sword.png
 nexus/shield nexus/shield.png
 nexus/knife nexus/knife.png
-nexus/health nexus/healthbar.png
-nexus/health_reversed nexus/healthbar_reversed.png
+nexus/hand nexus/hand.png
 nexus/healthbar_0 nexus/healthbar_0.png
 nexus/healthbar_1 nexus/healthbar_1.png
 nexus/healthbar_2 nexus/healthbar_2.png
@@ -24,3 +27,4 @@ nexus/healthbar_6 nexus/healthbar_6.png
 nexus/healthbar_7 nexus/healthbar_7.png
 nexus/healthbar_8 nexus/healthbar_8.png
 nexus/healthbar_9 nexus/healthbar_9.png
+nexus/healthbar_10 nexus/healthbar_10.png

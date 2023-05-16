@@ -4,6 +4,9 @@
 #include "Random.h"
 #include <string>
 #include <cmath>
+#include <iostream>
+#include<windows.h>
+
 using namespace core;
 
 struct KeyBindings 
@@ -13,16 +16,35 @@ struct KeyBindings
 	KeyCode left;
 	KeyCode right;
 };
-struct Healthbar
+struct MonsterHealthbar
 {
     int value;
 };
 
+enum Option{
+	HAND=1,
+	SHIELD,
+	GUN,
+	SHORD,
+	BOMB,
+	KNIFE,
+	NMP
+};
 struct Cursor {};
 
 struct Monster{
 	String name;
 	int health;
+};
+
+struct Jane{
+	int health;
+	int monster_score=0;
+	float attack_strength=1.0;
+	float monster_coeff=1.0;
+};
+struct JaneHealthbar{
+	int value;
 };
 
 
@@ -42,10 +64,10 @@ struct Monster{
 
 #define ATTACK_X 1
 #define ATTACK_Y 1
+
 struct OptionIndexSignal{
     int i;
 };
-
 struct PlayerControlsSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<Cursor, KeyBindings, Position>
@@ -77,8 +99,7 @@ struct PlayerControlsSystem
 				if(pos.xy.y+CURSOR_STEP<=MENUBG_PIVOT_Y-50){
                     pos.xy.y += CURSOR_STEP;
                     idx+=1;
-                }
-					  
+                }	  
 			}
 			else if(keys.is_pressed(bindings.left)){
 				if(pos.xy.x-320>0){
@@ -88,7 +109,7 @@ struct PlayerControlsSystem
 					
 			}
 			else if(keys.is_pressed(bindings.right)){
-				if(pos.xy.x+320<SCREEN_WIDTH/2){
+				if(pos.xy.x+320<SCREEN_WIDTH){
                     pos.xy.x+=320;
                     idx+=3;
                 }		
@@ -103,12 +124,17 @@ struct AttackSignal
 	{
 		int id;
 	};
+struct MonsterAttackSignal
+{
+
+};
 struct BlockSignal{};
 
 struct ChoosingOptionSystem
     : public ecs::System
 	, public SignalProcessor<OptionIndexSignal>
     , public SignalEmitter<AttackSignal>
+	, public SignalEmitter<MonsterAttackSignal>
 	, public SignalEmitter<BlockSignal>
 {
     virtual void process_signal(OptionIndexSignal& signal){
@@ -121,7 +147,8 @@ struct ChoosingOptionSystem
             SignalEmitter<BlockSignal>::emit(BlockSignal{});
 			break;
         case 3:
-            break;
+           SignalEmitter<MonsterAttackSignal>::emit(MonsterAttackSignal{});
+		   break;
 		case 4:
 			SignalEmitter<AttackSignal>::emit(AttackSignal{2});
 			break;
@@ -131,16 +158,21 @@ struct ChoosingOptionSystem
 			SignalEmitter<AttackSignal>::emit(AttackSignal{3});
 			break;
 		}
+		SignalEmitter<MonsterAttackSignal>::emit(MonsterAttackSignal{});
     }
 };
 struct AttackSystem
     : public ecs::System
     , public SignalProcessor<AttackSignal>
-    , public MutAccessGroupStorage<Healthbar,SpriteAnimation>
+	, public SignalProcessor<MonsterAttackSignal>
+	, public SignalEmitter<MonsterAttackSignal>
+    , public MutAccessGroupStorage<MonsterHealthbar,SpriteAnimation>
+	, public MutAccessGroupStorage<JaneHealthbar,SpriteAnimation>
+	, public MutAccessGroupStorage<Monster>
+	, public MutAccessGroupStorage<Jane>
 {
-    int monster_health=100;
-	int jane_health=100;
-	String health_sprites[10];
+    
+	String health_sprites[10]; //scale za sprite
 
 	AttackSystem()
 	{
@@ -153,13 +185,19 @@ struct AttackSystem
 	}
 
 	virtual void process_signal(AttackSignal& signal)
-	{
-        int harm=get_harm(signal.id);
-
-		for (auto &&[healthbar_entity, healthbar,sprite] : MutAccessGroupStorage::access_storage().each())
+	{	
+		for (auto &&[entity,monster] : MutAccessGroupStorage<Monster>::access_storage().each())
 		{
-			monster_health=std::max(0,monster_health-10);
-			sprite.change_to(get_sprite(monster_health));
+			int harm=get_harm(signal.id);
+			monster.health=std::max(0,monster.health-harm);
+		}
+    }
+	virtual void process_signal(MonsterAttackSignal& signal)
+	{
+		for(auto &&[entity,jane] : MutAccessGroupStorage<Jane>::access_storage().each()){
+			int harm=10;
+			jane.health=std::max(0,jane.health-harm);
+			jane.monster_score+=10;
 		}
     }
 
@@ -215,6 +253,58 @@ struct MonsterMovement
 		}
 	}
 };
+struct HealthbarSpriteAnimationSystem:
+	public ecs::System
+	, public MutAccessGroupStorage<MonsterHealthbar,SpriteAnimation>
+	, public MutAccessGroupStorage<JaneHealthbar,SpriteAnimation>
+	, public MutAccessGroupStorage<Monster>
+	, public MutAccessGroupStorage<Jane>
+{
+	void on_tick() override 
+	{
+		for (auto &&[entity,monster] : MutAccessGroupStorage<Monster>::access_storage().each())
+		{
+			for (auto &&[healthbar_entity, healthbar,sprite] : MutAccessGroupStorage<MonsterHealthbar,SpriteAnimation>::access_storage().each())
+			{
+				sprite.change_to("nexus/healthbar_"+std::to_string(monster.health/10));
+			}
+		}
+
+		for (auto &&[entity,jane] : MutAccessGroupStorage<Jane>::access_storage().each())
+		{
+			for (auto &&[healthbar_entity, healthbar,sprite] : MutAccessGroupStorage<JaneHealthbar,SpriteAnimation>::access_storage().each())
+			{
+				sprite.change_to("nexus/healthbar_"+std::to_string(jane.health/10));
+			}
+		}
+	}
+};
+struct JaneSpriteAnimationSystem: 
+	public ecs::System, 
+	public MutAccessGroupStorage<Jane, SpriteAnimation>
+{
+	void on_tick() override
+	{
+		for (auto&& [entity,jane,sprite] : access_storage().each()){
+			if(jane.monster_score>50)
+			{
+				sprite.change_to("nexus/jane_stage4");
+			}
+			else if(jane.monster_score>40)
+			{
+				sprite.change_to("nexus/jane_stage3");
+			}
+			else if(jane.monster_score>30)
+			{
+				sprite.change_to("nexus/jane_stage2");
+			}
+			else if(jane.monster_score>20)
+			{
+				sprite.change_to("nexus/jane_stage1");
+			}
+		}
+	}
+};
 struct Pong : public Game
 {
 	Pong()
@@ -222,6 +312,8 @@ struct Pong : public Game
 		
 		auto& engine = Engine::get_instance();
 		engine.use<MonsterMovement>();
+		engine.use<JaneSpriteAnimationSystem>();
+		engine.use<HealthbarSpriteAnimationSystem>();
 		engine.use<PlayerControlsSystem>();
         engine.use<ChoosingOptionSystem>();
 		engine.use<AttackSystem>();
@@ -233,19 +325,19 @@ struct Pong : public Game
 	 
         auto button_attack = spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/attack"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/sword"))
 			.with<Position>(geometry::Vec2{ MENUBG_X+175, MENUBG_Y+55 })
 			.with<Visibility>(true)
 			.done();
         auto button_block = spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/block"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/sword"))
 			.with<Position>(geometry::Vec2{ MENUBG_X+175, MENUBG_Y+55+65})
 			.with<Visibility>(true)
 			.done(); 
         auto button_items = spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/items"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/sword"))
 			.with<Position>(geometry::Vec2{ MENUBG_X+175, MENUBG_Y+55+65+65})
 			.with<Visibility>(true)
 			.done();  
@@ -284,15 +376,16 @@ struct Pong : public Game
 			.done();
 		
 		auto health = spawn()
-            .with<Healthbar>(100)
+            .with<MonsterHealthbar>(100)
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/health"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/healthbar_10"))
 			.with<Position>(geometry::Vec2{ SCREEN_WIDTH-300, 80 })
 			.with<Visibility>(true)
 			.done();
 		health = spawn()
+			.with<JaneHealthbar>(100)
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/health"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/healthbar_10"))
 			.with<Position>(geometry::Vec2{ 300, 80 })
 			.with<Visibility>(true)
 			.done();
@@ -304,6 +397,7 @@ struct Pong : public Game
 			.with<Visibility>(true)
 			.done();	
 		auto jane = spawn()
+			.with<Jane>(100 )
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/jane"))
 			.with<Position>(geometry::Vec2{200,SCREEN_HEIGHT-260})

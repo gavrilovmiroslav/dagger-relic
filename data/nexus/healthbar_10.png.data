@@ -1,4 +1,4 @@
-texture: nexus/health
+texture: nexus/healthbar_10
 dimensions: 1, 1
 sprites: 1
 

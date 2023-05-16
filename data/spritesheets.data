@@ -5,6 +5,10 @@ nexus/menucursor: nexus/menucursor.png.data
 nexus/background: nexus/background.png.data
 nexus/monster: nexus/monster.png.data
 nexus/jane: nexus/jane.png.data
+nexus/jane_stage1: nexus/jane_stage1.png.data
+nexus/jane_stage2: nexus/jane_stage2.png.data
+nexus/jane_stage3: nexus/jane_stage3.png.data
+nexus/jane_stage4: nexus/jane_stage4.png.data
 nexus/upper: nexus/uppermenu.png.data
 nexus/attack: nexus/button_attack.png.data
 nexus/block: nexus/button_block.png.data
@@ -12,8 +16,7 @@ nexus/items: nexus/button_items.png.data
 nexus/sword: nexus/sword.png.data
 nexus/shield: nexus/shield.png.data
 nexus/knife: nexus/knife.png.data
-nexus/health: nexus/health.png.data
-nexus/health_reversed: nexus/healthbar_reversed.png.data
+nexus/hand: nexus/hand.png.data
 nexus/healthbar_0: nexus/healthbar_0.png.data
 nexus/healthbar_1: nexus/healthbar_1.png.data
 nexus/healthbar_2: nexus/healthbar_2.png.data
@@ -24,3 +27,4 @@ nexus/healthbar_6: nexus/healthbar_6.png.data
 nexus/healthbar_7: nexus/healthbar_7.png.data
 nexus/healthbar_8: nexus/healthbar_8.png.data
 nexus/healthbar_9: nexus/healthbar_9.png.data
+nexus/healthbar_10: nexus/healthbar_10.png.data

@@ -1,0 +1,7 @@
+texture: nexus/jane_stage4
+dimensions: 1, 1
+sprites: 1
+
+clip: 0, 0, 36, 150
+pivot: 0.5, 1
+scale: 1, 1
