@@ -10,3 +10,5 @@ Knight/walk: Knight/walk.png.data
 Rogue/walk: Rogue/walk.png.data
 platform/platform: platform/platform.png.data
 box/box: box/box.png.data
+flags/greenflag: flags/greenflag.png.data
+flags/orangeflag: flags/orangeflag.png.data
