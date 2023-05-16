@@ -93,10 +93,10 @@ struct Brawl : public Game
 
 		TimeRender::init();
 		auto time = spawn()
-			.with<TimeRender>("00:00:00", 32)
+			.with<TimeRender>("00:00:00", 30)
 			.with<Sprite>(ecs::no_entity)
 			.with<Visibility>(true)
-			.with<Position>(geometry::Vec2{ 400, 10 })
+			.with<Position>(geometry::Vec2{ 600, 30 })
 			.with<AnimationSpeedController>(1.0f)
 			.done();
 
@@ -104,9 +104,11 @@ struct Brawl : public Game
             .with<Healthbar>(100.0f)
 			.with<Sprite>(ecs::no_entity,-7)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("healthbar/health"))
-			.with<Position>(geometry::Vec2{ 400, 80 })
+			.with<Scale>(geometry::Vec2{ 0.5, 0.5})
+			.with<Position>(geometry::Vec2{ 500, 100 })
 			.with<Visibility>(true)
 			.with<AnimationSpeedController>(1.0f)
+			
 			.done();
 
 		spawn()

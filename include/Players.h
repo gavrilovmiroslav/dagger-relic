@@ -147,11 +147,13 @@ struct PlayerControlsSystem
                 fsm.trigger("stop");
             }
 
-            // health
             
-            
-        }
+            // player.health -= 0.25;
+            // std::cout << player.health << std::endl;
 
+        }
+        
+        // health
         for (auto &&[healthbar_entity, healthbar,sprite] : MutAccessGroupStorage<Healthbar, SpriteAnimation>::access_storage().each())
         {
                 for(int i = 0; i < 10; i++){

@@ -10,7 +10,7 @@ struct TimeRender
 	TTF_Font* font;
 	String text;
 	U32 font_size;
-	SDL_Color text_color = {233, 245, 2};
+	SDL_Color text_color = {0, 0, 0};
 	TimeRender(String text, U32 font_size);
 
 	static void init();
