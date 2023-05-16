@@ -5,13 +5,23 @@
 
 struct Player
 {
-	F32 health;
 };
 
 struct Enemy
 {
 	geometry::Vec2 speed;
-	F32 health;
+};
+
+struct Damage
+{
+	ecs::Entity from;
+	ecs::Entity to;
+	I32 damage;
+};
+
+struct Health
+{
+	I32 health;
 };
 
 struct Healthbar

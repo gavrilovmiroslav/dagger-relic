@@ -19,6 +19,7 @@
 #include "Physics.h"
 #include "Enemies.h"
 #include "Players.h"
+#include "DamageSystem.h"
 #include "TimeRender.h"
 
 using namespace core;
@@ -31,6 +32,8 @@ struct Brawl : public Game
 		engine.use<PlayerControlsSystem>();
 		engine.use<EnemyMovementSystem>();
 		engine.use<PhysicsSystem>();
+		engine.use<DamageSystem>();
+
 		// TODO: make a system to resolve damage and call it here
 		engine.use<TimeRenderControlSystem>();
 	}
@@ -39,8 +42,9 @@ struct Brawl : public Game
 	int num;
 	void on_start() override
 	{
-		auto player = spawn()
-			.with<Player>(100.0f)
+		spawn()
+			.with<Player>()
+			.with<Health>(100)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Moose/Moose1_Idle"))
 			.with<Position>(geometry::Vec2{400, 300})
@@ -54,6 +58,7 @@ struct Brawl : public Game
 		num = rand() % RANGE_X;
 		spawn()
 			.with<Sprite>(ecs::no_entity)
+			.with<Health>(100)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
 			.with<Position>(geometry::Vec2{ num, 0 })
 			.with<Visibility>(true)
@@ -64,6 +69,7 @@ struct Brawl : public Game
 		num = rand() % RANGE_X;
 		spawn()
 			.with<Sprite>(ecs::no_entity)
+			.with<Health>(100)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
 			.with<Position>(geometry::Vec2{ num, 600 })
 			.with<Visibility>(true)
@@ -74,6 +80,7 @@ struct Brawl : public Game
 		num = rand() % RANGE_Y;
 		spawn()
 			.with<Sprite>(ecs::no_entity)
+			.with<Health>(100)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
 			.with<Position>(geometry::Vec2{ 0, num })
 			.with<Visibility>(true)
@@ -84,6 +91,7 @@ struct Brawl : public Game
 		num = rand() % RANGE_Y;
 		spawn()
 			.with<Sprite>(ecs::no_entity)
+			.with<Health>(100)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
 			.with<Position>(geometry::Vec2{ 800, num })
 			.with<Visibility>(true)
