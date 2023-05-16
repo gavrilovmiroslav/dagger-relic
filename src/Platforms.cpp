@@ -19,30 +19,30 @@ void PlatformSystem::on_tick()
 				player.speed.y=0.0f;
 				on_platform=true;
 				
-				if(platform_entity==(ecs::Entity)88 && !is_spawned1){
+				if(platform.id==1 && !is_spawned1){
 					is_spawned1=true;
 					auto platform6 = spawn()
-					.with<Platform>(128.0f, 4.0f)
+					.with<Platform>(128.0f, 4.0f, 6)
 					.with<Sprite>(ecs::no_entity)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
 					.with<Position>(geometry::Vec2{250, 500})
 					.with<Visibility>(true)
 					.done();
 				}
-				if(platform_entity==(ecs::Entity)95 && player_entity==(ecs::Entity)86 && !rougue_on_platform){
+				if(platform.id==9 && player.id==1 && !rougue_on_platform){
 					rougue_on_platform=true;
 					auto platform7 = spawn()
-					.with<Platform>(128.0f, 4.0f)
+					.with<Platform>(128.0f, 4.0f, 7)
 					.with<Sprite>(ecs::no_entity)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
 					.with<Position>(geometry::Vec2{550, 200})
 					.with<Visibility>(true)
 					.done();
 				}
-				if(platform_entity==(ecs::Entity)95 && player_entity==(ecs::Entity)87 && !knight_on_platform){
+				if(platform.id==9 && player.id==2 && !knight_on_platform){
 					knight_on_platform=true;
-					auto platform7 = spawn()
-					.with<Platform>(128.0f, 4.0f)
+					auto platform8 = spawn()
+					.with<Platform>(128.0f, 4.0f, 8)
 					.with<Sprite>(ecs::no_entity)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
 					.with<Position>(geometry::Vec2{250, 200})
@@ -69,10 +69,10 @@ void PlatformSystem::on_tick()
 				box.speed.y>=0.0f
 			    )
 			{
-				if(platform_entity==(ecs::Entity)92 && !box_on_flor){
+				if(platform.id==2 && !box_on_flor){
 					box_on_flor=true;
-					auto platform6 = spawn()
-					.with<Platform>(128.0f, 4.0f)
+					auto platform9 = spawn()
+					.with<Platform>(128.0f, 4.0f, 9)
 					.with<Sprite>(ecs::no_entity)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
 					.with<Position>(geometry::Vec2{400, 300})

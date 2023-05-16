@@ -12,12 +12,14 @@ using namespace core;
 struct Platform {
 	F32 width;
 	F32 height;
+	int id;
 };
 
 struct Player {
     geometry::Vec2 speed;
 	bool isGrounded;
 	F32 visina;
+	int id;
 };
 
 struct Box {

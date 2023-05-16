@@ -24,7 +24,7 @@ struct PurgatoryPals : public Game
 			.with<Position>(geometry::Vec2{500, 300})
 			.with<Gravity>(geometry::Vec2{0, 0.02})
 			.with<Visibility>(true)
-			.with<Player>(geometry::Vec2{ 0, 0 }, false, 300.0f)
+			.with<Player>(geometry::Vec2{ 0, 0 }, false, 300.0f, 1)
 			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT)
 			.with<Animation>("Rogue/jump", "Rogue/walk", "Rogue/idle")
 			.with<Flip>(None)
@@ -36,14 +36,14 @@ struct PurgatoryPals : public Game
 			.with<Position>(geometry::Vec2{200, 300})
 			.with<Gravity>(geometry::Vec2{0, 0.03})
 			.with<Visibility>(true)
-			.with<Player>(geometry::Vec2{ 0, 0 }, false, 300.0f)
+			.with<Player>(geometry::Vec2{ 0, 0 }, false, 300.0f, 2)
 			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_A, KeyCode::KEY_D)
 			.with<Animation>("Knight/jump", "Knight/walk", "Knight/idle")
 			.with<Flip>(None)
 			.done();
 
 		auto platform1 = spawn()
-			.with<Platform>(128.0f, 4.0f)
+			.with<Platform>(128.0f, 4.0f, 1)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
 			.with<Position>(geometry::Vec2{ 550, 400 })
@@ -51,7 +51,7 @@ struct PurgatoryPals : public Game
 			.done();
 
 		auto platform5 = spawn()
-			.with<Platform>(128.0f, 4.0f)
+			.with<Platform>(128.0f, 4.0f, 5)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
 			.with<Position>(geometry::Vec2{ 250, 400 })
@@ -59,7 +59,7 @@ struct PurgatoryPals : public Game
 			.done();	
 
 		auto platform3 = spawn()
-			.with<Platform>(128.0f, 4.0f)
+			.with<Platform>(128.0f, 4.0f, 3)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
 			.with<Position>(geometry::Vec2{ 100, 150 })
@@ -67,7 +67,7 @@ struct PurgatoryPals : public Game
 			.done();
 
 		auto platform4 = spawn()
-			.with<Platform>(128.0f, 4.0f)
+			.with<Platform>(128.0f, 4.0f, 4)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
 			.with<Position>(geometry::Vec2{ 700, 150 })
@@ -75,7 +75,7 @@ struct PurgatoryPals : public Game
 			.done();	
 			
 		auto platform2 = spawn()
-			.with<Platform>(1380.0f, 4.0f)
+			.with<Platform>(1380.0f, 4.0f, 2)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
 			.with<Position>(geometry::Vec2{128, 600})
