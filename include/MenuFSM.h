@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Definitions.h"
-#include "Access.h"
+#include "Prelude.h"
 #include "FiniteStateMachine.h"
 #include "Animations.h"
 #include "SpriteRendering.h"
+#include "LevelManager.h"
 
 enum MenuTransition
 {
@@ -30,8 +30,10 @@ public:
     MenuFSM(entt::entity id);
 
     entt::entity id;
+    SpriteAnimation* sprite;
 
 private:
     void on_exit(MenuState fromState) override;
     void on_enter(MenuState toState) override;
+    void load_game();
 };

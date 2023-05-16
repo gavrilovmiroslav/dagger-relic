@@ -1,9 +1,7 @@
 #pragma once
 
-#include "Access.h"
-#include "Prelude.h"
-#include "GameComponents.h"
 #include "MenuFSM.h"
+#include "GameComponents.h"
 
 struct MenuClick
 {

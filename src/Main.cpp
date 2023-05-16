@@ -1,12 +1,15 @@
 #pragma once
 
-#include "LevelManager.h"
+#include <iostream>
+
 #include "Player.h"
-#include "GameComponents.h"
-#include "MovementControlSystem.h"
 #include "MenuControlSystem.h"
+#include "MovementControlSystem.h"
 
 using namespace core;
+
+bool isPlay = false;
+bool isExit = false;
 
 struct MovementSystem
 	: public ecs::System
@@ -130,9 +133,33 @@ struct BlindfoldChangingSystem
 	}
 };
 
+struct ClickButton
+    : public ecs::System
+    , public MutAccessGroupStorage<KeyBinding>
+{
+	void on_tick() override
+	{
+		const auto& keys = KeyState::get();
+		for (auto&& [entity, key_binding] : access_storage().each())
+		{
+			if(keys.is_pressed(key_binding.p))
+			{
+				std::cout << "isPlay" << std::endl;
+				isPlay = true;
+			}
+			if(keys.is_pressed(key_binding.escape))
+			{
+				//std::cout << "isExit" << std::endl;
+				//isExit = true;
+				Engine::get_instance().quit();
+			}
+		}
+	}
+
+};
+
 struct PyramidPlunder : public Game
 {
-	LevelManager level_manager;
 
 	PyramidPlunder()
 	{
@@ -141,11 +168,14 @@ struct PyramidPlunder : public Game
 		engine.use<MovementSystem>();
 		engine.use<MovementControlSystem>();
 		engine.use<MenuControlSystem>();
+		engine.use<ClickButton>();
 		//engine.use<ClickControlSystem>();
 	}
 
-	void on_start() override
+
+void load_game()
 	{
+		LevelManager level_manager;
 		level_manager = LevelManager();
 		level_manager.load_level("Levels/level1.txt");
 
@@ -189,10 +219,10 @@ struct PyramidPlunder : public Game
 					.with<SpriteAnimation>(Spritesheet::get_by_name("pushplate/pushplate_3"))
 					.with<Visibility>(true)
 					.with<Position>(geometry::Vec2{ i*96, j*96})
-					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE,KeyCode::KEY_A, KeyCode::KEY_B, KeyCode::KEY_ESCAPE)
+					.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE,KeyCode::KEY_A, KeyCode::KEY_P, KeyCode::KEY_ESCAPE)
 					.done();
 
-					add_component<MenuClick>(push_plate, MenuClick{MenuFSM(push_plate)});
+					//add_component<MenuClick>(push_plate, MenuClick{MenuFSM(push_plate)});
 				}
 				if(c == 'a')
 				{
@@ -210,6 +240,47 @@ struct PyramidPlunder : public Game
 				}
         	}
 		}
+	}
+
+	void on_start() override
+	{
+		auto background = spawn()
+			.with<ClickButton>()
+			.with<Sprite>(ecs::no_entity, 10)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramids2"))
+			.with<Visibility>(true)
+			.with<Position>(geometry::Vec2{ 0, 0 })
+			.with<Scale>(geometry::Vec2{1.0f,1.0f})
+			.done();
+
+		auto play_button = spawn()
+			.with<ClickButton>()
+			.with<Sprite>(ecs::no_entity, 6)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("play1"))
+			.with<Visibility>(true)
+			.with<Position>(geometry::Vec2{ 375, 300})
+			.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE, KeyCode::KEY_A, KeyCode::KEY_P, KeyCode::KEY_ESCAPE)
+			.done();
+
+		auto exit_button = spawn()
+			.with<ClickButton>()
+			.with<Sprite>(ecs::no_entity, 6)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("exit1"))
+			.with<Visibility>(true)
+			.with<Position>(geometry::Vec2{ 375, 500 })
+			.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE,KeyCode::KEY_A, KeyCode::KEY_P, KeyCode::KEY_ESCAPE)
+			.done();
+
+		std::cout << isPlay << std::endl;
+		std::cout << isExit << std::endl;
+		/*if(isPlay)
+		{
+			load_game();
+		}*/
+		/*if(isExit)
+		{
+
+		}*/
 	}
 };
 
