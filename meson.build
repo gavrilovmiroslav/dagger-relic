@@ -38,7 +38,9 @@ sources = [
     'src/Background.cpp',
     'src/Item.cpp',
     'src/Monster.cpp',
-    'src/TimeRender.cpp'
+    'src/TimeRender.cpp',
+    'src/HealthBar.cpp',
+    'src/Fight.cpp'
 ]
 
 executable('dagger',

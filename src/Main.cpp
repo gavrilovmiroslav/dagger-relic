@@ -13,6 +13,7 @@ using namespace core;
 struct FallingHero
 	: public Game
 	, public AllocateUnique<OurGlobalVar>
+	, public SignalEmitter<OnStartSignal>
 {
 	FallingHero()
 	{
@@ -23,6 +24,9 @@ struct FallingHero
 		engine.use<ItemSystem>();
 		engine.use<MonsterSystem>();
 		engine.use<TimeRenderControlSystem>();
+		engine.use<HealthBarAnimationSystem>();
+		engine.use<PhysicsSystem>();
+
 	}
 	void on_start() override
 	{
@@ -46,6 +50,7 @@ struct FallingHero
 			    .with<Sprite>(ecs::no_entity)
 			    .with<SpriteAnimation>(Spritesheet::get_by_name("platform/platformPack"))
 			    .with<Position>(geometry::Vec2{64 * i, SCREEN_HEIGHT * NUMBER_OF_BACKGROUND - 64})
+			    .with<AnimationSpeedController>(15.0f)
 			    .with<Visibility>(true)
 			    .with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S)
 			    .done();
@@ -61,11 +66,13 @@ struct FallingHero
 			.with<Monster>(0.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("monster/idle"))
-			.with<Position>(geometry::Vec2{SCREEN_WIDTH - 300 , SCREEN_HEIGHT * NUMBER_OF_BACKGROUND - 164})
 			.with<Scale>(geometry::Vec2{3, 3})
+			.with<Position>(geometry::Vec2{SCREEN_WIDTH - 300 , SCREEN_HEIGHT * NUMBER_OF_BACKGROUND - 164})
+			.with<AnimationSpeedController>(1.0f)
 			.with<Visibility>(true)
-			.with<Flip>(Horizontal)
+			.with<Flip>(None)
 			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S)
+			.with<Status>(70.0)
 			.done();
 		for (int i = 0; i < NUMBER_OF_BACKGROUND; i++)
 			spawn()
@@ -74,6 +81,7 @@ struct FallingHero
 			    .with<SpriteAnimation>(Spritesheet::get_by_name("background/bg47"))
 			    .with<Scale>(geometry::Vec2{4, 3})
 			    .with<Position>(geometry::Vec2{0, SCREEN_HEIGHT * i})
+			    .with<AnimationSpeedController>(15.0f)
 			    .with<Visibility>(true)
 			    .with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S)
 			    .done();
@@ -83,8 +91,10 @@ struct FallingHero
 				.with<SpriteAnimation>(Spritesheet::get_by_name("fallingHero/heroStanding"))
 				.with<Position>(geometry::Vec2{300, 100})
 				.with<Scale>(geometry::Vec2{3, 3})
+				.with<AnimationSpeedController>(15.0f)
 				.with<Visibility>(true)
 				.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D, KeyCode::KEY_SPACE)
+				.with<Status>(70.0)
 				.done();
 
 		for (int i = 0; i < rows; ++i)
@@ -99,12 +109,34 @@ struct FallingHero
 							.with<SpriteAnimation>(Spritesheet::get_by_name("coin/goldCoin"))
 							.with<Position>(geometry::Vec2{j * SCREEN_WIDTH / cols, i * SCREEN_HEIGHT / 4})
 							.with<Scale>(geometry::Vec2{3, 3})
+							.with<AnimationSpeedController>(15.0f)
 							.with<Visibility>(true)
 							.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S)
 							.done();
 				}
 			}
 		}
+
+		auto heroHealthBar = spawn()
+			.with<Status>(70.0)
+			.with<CharacterId>(hero)
+			.with<Sprite>(ecs::no_entity, 1)
+			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("healthBar/healthBar"), 1.0f, 0)
+            		.with<Scale>(geometry::Vec2{0.3f,0.3f})
+			.with<Position>(geometry::Vec2{100, 10})
+			.with<Visibility>(true)
+			.done();
+		auto monsterHealthBar = spawn()
+			.with<Status>(70.0)
+			.with<CharacterId>(monster)
+			.with<Sprite>(ecs::no_entity, 1)
+			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("healthBar/healthBar"), 1.0f, 0)
+            		.with<Scale>(geometry::Vec2{0.3f,0.3f})
+			.with<Position>(geometry::Vec2{500, 10})
+			.with<Visibility>(true)
+			.done();
+		SignalEmitter<OnStartSignal>::emit(OnStartSignal{70});
+
 	}
 	void on_end() override
 	{

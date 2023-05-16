@@ -31,7 +31,7 @@ void TimeRenderControlSystem::on_tick()
 {
 	for (auto &&[entity, time_render, position, sprite] : access_storage().each())
 	{
-		sprite.depth = -50;
+		sprite.depth = -10;
 		if (!time_render.font)
 		{
 			continue;
@@ -44,6 +44,7 @@ void TimeRenderControlSystem::on_tick()
         	int milliseconds = elapsed_time_ms % 1000;
 		String time = "" + std::to_string(minutes) + ":" +  std::to_string(seconds) + ":" +  std::to_string(milliseconds);
 		time_render.text = time;
+		int oldTime = elapsed_time_ms;
 
 		auto &state = MutAccessUnique<WindowingState>::access_unique();
 		SDL_Surface *text_surf = TTF_RenderText_Solid(time_render.font, time_render.text.c_str(), time_render.text_color);

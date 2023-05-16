@@ -1,0 +1,67 @@
+create-dot 1
+add-tag 1 "Position" "498, 518"
+add-tag 1 "Label" "Idle"
+add-tag 1 "Entry" "true"
+
+create-dot 3
+add-tag 3 "Position" "614, 395"
+add-tag 3 "Label" "Walking"
+
+create-dot 5
+add-tag 5 "Position" "696, 548"
+add-tag 5 "Label" "Attacking"
+
+create-link 11
+set-source 11 1
+set-target 11 1
+add-tag 11 "Position" "422, 555"
+add-tag 11 "Label" "stop"
+
+create-link 7
+set-source 7 1
+set-target 7 3
+add-tag 7 "Position" "539, 435.5"
+add-tag 7 "Label" "walk"
+add-tag 7 "Action" "TryMove"
+
+create-link 13
+set-source 13 3
+set-target 13 1
+add-tag 13 "Position" "556, 456.5"
+add-tag 13 "Label" "stop"
+add-tag 13 "Action" "TryStop"
+
+create-link 19
+set-source 19 5
+set-target 19 1
+add-tag 19 "Position" "597, 533"
+add-tag 19 "Label" "animDone"
+add-tag 19 "Action" "TryStop"
+
+create-link 9
+set-source 9 1
+set-target 9 5
+add-tag 9 "Position" "590, 557"
+add-tag 9 "Label" "attack"
+add-tag 9 "Action" "TryAttack"
+
+create-link 17
+set-source 17 3
+set-target 17 3
+add-tag 17 "Position" "681, 351"
+add-tag 17 "Label" "walk"
+add-tag 17 "Action" "TryMove"
+
+create-link 15
+set-source 15 3
+set-target 15 5
+add-tag 15 "Position" "655, 471.5"
+add-tag 15 "Label" "attack"
+add-tag 15 "Action" "TryAttack"
+
+create-link 20
+set-source 20 5
+set-target 20 5
+add-tag 20 "Position" "800, 565"
+add-tag 20 "Label" "checkForHit"
+add-tag 20 "Action" "TryHit"
