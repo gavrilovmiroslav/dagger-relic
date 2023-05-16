@@ -156,8 +156,6 @@ struct ClickButton
 			}
 			if(keys.is_pressed(key_binding.escape))
 			{
-				//std::cout << "isExit" << std::endl;
-				//isExit = true;
 				spdlog::info("exit");
 				Engine::get_instance().quit();
 			}
@@ -203,8 +201,6 @@ void PushPlateBoxSystem::on_tick()
 				{
 					spdlog::info("All pushplates active!");
 					game->door_open();
-					//game->level++;
-					//game->start_level(game->level);
 				}
 			}
 		}
@@ -257,12 +253,10 @@ void MovementSystem::on_tick()
 						if (dx > 0.0f)
 						{
 							pos.xy.x -= collision_width / 2.0f - dx;
-							/*movement2.velocity.x -= (fx/m)*Time::delta_time();*/
 						}
 						else
 						{
 							pos.xy.x += collision_width / 2.0f + dx;
-							/*movement2.velocity.x += (fx/m)*Time::delta_time();*/
 						}
 					}
 					else
@@ -270,12 +264,10 @@ void MovementSystem::on_tick()
 						if (dx > 0.0f)
 						{
 							pos2.xy.x += collision_width / 2.0f - dx;
-							/*movement.velocity.x -= (fx/m)*Time::delta_time();*/
 						}
 						else
 						{
 							pos2.xy.x -= collision_width / 2.0f + dx;
-							/*movement.velocity.x -= (fx/m)*Time::delta_time();*/
 						}
 					}
 
@@ -287,12 +279,10 @@ void MovementSystem::on_tick()
 						if (dy > 0.0f)
 						{
 							pos.xy.y -= collision_height / 2.0f - dy;
-							/*movement2.velocity.x -= (fx/m)*Time::delta_time();*/
 						}
 						else
 						{
 							pos.xy.y += collision_height / 2.0f + dy;
-							/*movement2.velocity.x += (fx/m)*Time::delta_time();*/
 						}
 					}
 					else
@@ -420,13 +410,6 @@ void PyramidPlunder::on_start()
 {
 	TextRender::init();
 
-	//level = 0;
-	//start_level(level);
-
-	/*
-		* Persistent entities.
-		*/
-
 	background = spawn()
 		.with<Sprite>(ecs::no_entity, 10)
 		.with<SpriteAnimation>(Spritesheet::get_by_name("pyramids2"))
@@ -451,15 +434,7 @@ void PyramidPlunder::on_start()
 		.with<KeyBinding>(KeyCode::KEY_LEFT, KeyCode::KEY_DOWN, KeyCode::KEY_UP, KeyCode::KEY_RIGHT, KeyCode::KEY_SPACE,KeyCode::KEY_LSHIFT, KeyCode::KEY_A, KeyCode::KEY_P, KeyCode::KEY_ESCAPE)
 		.done();
 
-	/*
-	spawn()
-	.with<PushPlateCounter>()
-	.with<Sprite>(ecs::no_entity, (int) (~0u))
-	.with<SpriteAnimation>(Spritesheet::get_by_name("tool/ppress"))
-	.with<Visibility>(true)
-	.with<Position>(geometry::Vec2{0, 0})
-	.done();
-	*/
+	
 }
 PyramidPlunder::PyramidPlunder()
 {
@@ -691,7 +666,6 @@ void PyramidPlunder::start_level(const U8 id)
 				block.y = j*96;
 				block.w = 96;
 				block.h = 96;
-				//lightmapblock.push_back(block);
 			}
 			if(c == 'r')
 			{

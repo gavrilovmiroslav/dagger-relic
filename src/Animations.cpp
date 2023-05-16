@@ -31,7 +31,6 @@ void AnimationModule::process_signal(core::PostRenderSignal&)
 		auto current_sprite = sheet.sprites[anim.current_frame];
 		sprite = sprites.get<Sprite>(current_sprite);
 		
-		/* WTF? */
 		sprite.depth = d;
 		sprite.layer = layer; 
 

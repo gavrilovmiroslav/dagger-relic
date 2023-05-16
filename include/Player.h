@@ -38,8 +38,6 @@ struct BlindfoldChangingSystem
 	using QueryBoulders = MutAccessGroupStorage<Boulder, Visibility>;
 	using QueryBoxes = MutAccessGroupStorage<Box, Visibility>;
 
-	// Bool traps_visible = AccessComponentById<Visibility>::get(QueryTraps::access_storage().front()).state;
-
 	U32 counter = 0;
 	StaticArray<SpecialBlindfold, 3> blindfolds = { SpecialBlindfold::HumanEyes, SpecialBlindfold::FoxEyes, SpecialBlindfold::ScorpionEyes };
 	SpecialBlindfold new_blindfold;
