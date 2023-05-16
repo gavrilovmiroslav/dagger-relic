@@ -6,6 +6,8 @@ fallingHero/runningLeft fallingHero/runningLeft.png
 fallingHero/attackLeft fallingHero/attackLeft.png
 fallingHero/falling fallingHero/falling.png
 monster/idle monster/idle.png
+monster/attacking monster/attacking.png
 background/bg47 background/bg47.png
 platform/platformPack platform/platformPack.png
 coin/goldCoin coin/goldCoin.png
+healthBar/healthBar healthBar/healthBar.png

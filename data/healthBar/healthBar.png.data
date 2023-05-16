@@ -1,0 +1,35 @@
+texture: healthBar/healthBar
+dimensions: 1, 1
+sprites: 8
+
+clip: 3, 0, 421, 60
+pivot: 0.0, 0.0
+scale: 1, 1
+
+clip: 0, 60, 421, 60
+pivot: 0.0, 0.0
+scale: 1, 1
+
+clip: 0, 120, 421, 60
+pivot: 0.0, 0.0
+scale: 1, 1
+
+clip: 0, 180, 421, 60
+pivot: 0.0, 0.0
+scale: 1, 1
+
+clip: 0, 240, 421, 60
+pivot: 0.0, 0.0
+scale: 1, 1
+
+clip: 0, 300, 421, 60
+pivot: 0.0, 0.0
+scale: 1, 1
+
+clip: 0, 360, 421, 60
+pivot: 0.0, 0.0
+scale: 1, 1
+
+clip: 0, 420, 421, 60
+pivot: 0.0, 0.0
+scale: 1, 1
