@@ -7,18 +7,11 @@ struct PlayerCollisionSignal
 	ecs::Entity player;
 };
 
-struct EnemyCollisionSignal
-{
-	ecs::Entity player;
-	ecs::Entity enemy;
-};
-
 struct PhysicsSystem
 	: public ecs::System,
 	  public AccessGroupStorage<Player, Position>
 	, public MutAccessGroupStorage<Enemy, Position>
 	, public SignalEmitter<PlayerCollisionSignal>
-	, public SignalEmitter<EnemyCollisionSignal>
 
 {
 	using QueryPlayers = AccessGroupStorage<Player, Position>;
@@ -57,7 +50,6 @@ struct PhysicsSystem
 				if (intersects(player_pos.xy, pos.xy, 50))
 				{
 					SignalEmitter<PlayerCollisionSignal>::emit(PlayerCollisionSignal{ enemy_entity, player_entity});
-					SignalEmitter<EnemyCollisionSignal>::emit(EnemyCollisionSignal { player_entity, enemy_entity});
 					
 				}
 			}

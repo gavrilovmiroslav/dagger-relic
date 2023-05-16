@@ -4,7 +4,7 @@
 #define ENEMY_DISTANCER 90.0f
 
 #include "EnemyFSM.h"
-#include "Enemies.h"
+// #include "Enemies.h"
 #include "Prelude.h"
 
 struct EnemyFSMController : public ecs::System,
@@ -16,7 +16,7 @@ struct EnemyFSMController : public ecs::System,
 							public MutAccessComponentById<SpriteAnimation>,
 							public MutAccessComponentById<Flip>,
 							public MutAccessComponentById<Enemy>
-							// public SignalProcessor<EnemyCollisionSignal>
+
 
 {
 
@@ -173,7 +173,7 @@ struct EnemyFSMController : public ecs::System,
 		Position &player_position = MutAccessComponentById<Position>::get(player);
 		Position &pos = MutAccessComponentById<Position>::get(enemy_entity_cache);
 
-		if (distance(player_position.xy, pos.xy) < ATTACKING_RANGE && sprite.current_frame == 8 && doing_damage)
+		if (distance(player_position.xy, pos.xy) < 50.0f && sprite.current_frame == 8 && doing_damage)
 		{
 			spawn()
 				.with<Damage>(enemy_entity_cache, player,10)
@@ -207,25 +207,4 @@ struct EnemyFSMController : public ecs::System,
 		return vec;
 	}
 
-	virtual void process_signal(EnemyCollisionSignal &signal)
-	{
-		// 	// Logger::info("I'm here");
-		// 	// if(signal.enemy != enemy_entity_cache)
-		// 	// {
-		// 	// 	Logger::info("Inside eq check if ");
-		// 	// 	return;
-		// 	// }
-
-		// 	auto &player_entt = signal.player;
-		// 	auto &enemy_entt = signal.enemy;
-		// 	Logger::info("Doing damage {}", (int)doing_damage);
-		//     if (doing_damage)
-		//     {
-		// 		Logger::info("Inside doing damage if");
-
-		//         spawn().
-		//             with<Damage>(player_entt, enemy_entt, 10)
-		//             .done();
-		//     }
-	}
 };

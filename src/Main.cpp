@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Prelude.h"
 #include "Random.h"
 #include <iostream>
@@ -10,7 +8,6 @@
 #define SCREEN_HEIGHT 600
 #define BALL_RADIUS 16
 #define SPEED_MOD 200.0f
-#define ENEMY_SPEED_MOD 150.0f
 #define RANGE_X 801
 #define RANGE_Y 601
 
@@ -23,6 +20,7 @@
 #include "EnemyFSMController.h"
 #include "TimeRender.h"
 
+
 using namespace core;
 
 struct Brawl : public Game
@@ -34,8 +32,6 @@ struct Brawl : public Game
 		engine.use<PhysicsSystem>();
 		engine.use<DamageSystem>();
 		engine.use<EnemiesController>();
-
-		// TODO: make a system to resolve damage and call it here
 		engine.use<TimeRenderControlSystem>();
 	}
 
@@ -43,7 +39,7 @@ struct Brawl : public Game
 	int num;
 	void on_start() override
 	{
-		spawn()
+		 spawn()
 			.with<Player>()
 			.with<Health>(100)
 			.with<Sprite>(ecs::no_entity, 10)
@@ -57,48 +53,63 @@ struct Brawl : public Game
 
 
 		num = rand() % RANGE_X;
-		spawn()
+		auto enemy2 = spawn()
 			.with<Sprite>(ecs::no_entity)
 			.with<Health>(100)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
 			.with<Position>(geometry::Vec2{ num, 0 })
 			.with<Visibility>(true)
-			.with<AnimationSpeedController>(1.0f)
+			.with<Flip>(None)
+			.with<AnimationSpeedController>(15.0f)
 			.with<Enemy>(geometry::Vec2{ 1, 0 }, 90.0f)
+
 			.done();
 
+		add_component<EnemyFSMController>(enemy2, enemy2);
+
 		num = rand() % RANGE_X;
-		spawn()
+		auto enemy3 = spawn()
 			.with<Sprite>(ecs::no_entity)
 			.with<Health>(100)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
 			.with<Position>(geometry::Vec2{ num, 600 })
 			.with<Visibility>(true)
-			.with<AnimationSpeedController>(1.0f)
+			.with<Flip>(None)
+			.with<AnimationSpeedController>(15.0f)
 			.with<Enemy>(geometry::Vec2{ 1, 0 }, 90.0f)
 			.done();
+		
+		add_component<EnemyFSMController>(enemy3, enemy3);
 
 		num = rand() % RANGE_Y;
-		spawn()
+		auto enemy4 = spawn()
 			.with<Sprite>(ecs::no_entity)
 			.with<Health>(100)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
 			.with<Position>(geometry::Vec2{ 0, num })
 			.with<Visibility>(true)
-			.with<AnimationSpeedController>(1.0f)
+			.with<Flip>(None)
+			.with<AnimationSpeedController>(15.0f)
 			.with<Enemy>(geometry::Vec2{ 1, 0 }, 90.0f)
 			.done();
 
+		add_component<EnemyFSMController>(enemy4, enemy4);
+		
+
 		num = rand() % RANGE_Y;
-		spawn()
+		auto enemy5 = spawn()
 			.with<Sprite>(ecs::no_entity)
 			.with<Health>(100)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
 			.with<Position>(geometry::Vec2{ 800, num })
 			.with<Visibility>(true)
-			.with<AnimationSpeedController>(1.0f)
-			.with<Enemy>(geometry::Vec2{ 1, 0 })
+			.with<Flip>(None)
+			.with<AnimationSpeedController>(15.0f)
+			.with<Enemy>(geometry::Vec2{ 1, 0 }, 90.0f)
 			.done();
+
+		add_component<EnemyFSMController>(enemy5, enemy5);
+
 
 		TimeRender::init();
 		auto time = spawn()

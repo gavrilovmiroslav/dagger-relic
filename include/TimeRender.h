@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Prelude.h"
-#include "Access.h"
 #include "Common.h"
 #include "SDL_ttf.h"
+#include "EnemyFSMController.h"
 
 struct TimeRender
 {
