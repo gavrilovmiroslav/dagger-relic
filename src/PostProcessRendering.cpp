@@ -1,5 +1,6 @@
 #include "PostProcessRendering.h"
 #include "Prelude.h"
+#include "Scene.h"
 
 extern U8 r_image_font_6_11[2464];
 
@@ -274,6 +275,12 @@ void Decal_Clear(void)
  */
 void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSignal& signal)
 {
+	if(!scene.in_game)
+	{
+		memset(signal.pixels, 0xff, signal.h * signal.w * sizeof(U32));
+		return;
+	}
+
 	static Bool buffercreate      = true;
 	const  U32  dynamiclight_size = 144;
 	static U32  switchcolour      = 0;

@@ -13,6 +13,7 @@ struct Scene
     I32  doory    = 0;
 
     ecs::Entity player;
+    Bool in_game = false;
 
     std::vector<ecs::Entity> entity;
 

@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Scene.h"
 
 Player::Player(SpecialBlindfold blindfold)
 	: current_blindfold(blindfold)
@@ -18,6 +19,11 @@ Player::Player(SpecialBlindfold blindfold)
 
 void BlindfoldChangingSystem::on_tick()
 {
+	if(!scene.in_game)
+	{
+		return;
+	}
+
 	const auto& keys = KeyState::get();
 
 	Bool walls_visible = AccessComponentById<Visibility>::get(QueryWalls::access_storage().front()).state;

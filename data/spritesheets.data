@@ -14,7 +14,6 @@ pushplate/pushplate_5: pushplate/pushplate_5.png.data
 pyramidplunder/wall: pyramidplunder/wall.png.data
 pyramidplunder/wall_1: pyramidplunder/wall_1.png.data
 pyramidplunder/wall_2: pyramidplunder/wall_2.png.data
-<<<<<<< HEAD
 pyramidplunder/door: pyramidplunder/door.png.data
 pyramidplunder/dooropen: pyramidplunder/dooropen.png.data
 pyramidplunder/audio_active: pyramidplunder/audio_active.png.data
@@ -29,8 +28,6 @@ tool/environment: environment.png.data
 tool/track: track.png.data
 tool/track2: track2.png.data
 pyramidplunder/boulder: pyramidplunder/boulder.png.data
-=======
 play1: play1.png.data
 exit1: exit1.png.data
 pyramids2: pyramids2.png.data
->>>>>>> team/rushcrafters_menu
