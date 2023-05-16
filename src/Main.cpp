@@ -16,6 +16,7 @@
 #include "Physics.h"
 #include "Enemies.h"
 #include "Players.h"
+#include "DamageSystem.h"
 
 using namespace core;
 
@@ -27,13 +28,15 @@ struct Brawl : public Game
 		engine.use<PlayerControlsSystem>();
 		engine.use<EnemyMovementSystem>();
 		engine.use<PhysicsSystem>();
-		// TODO: make a system to resolve damage and call it here
+		engine.use<DamageSystem>();
+
 	}
 
 	void on_start() override
 	{
 		spawn()
-			.with<Player>(100.0f)
+			.with<Player>()
+			.with<Health>(100)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Moose/Moose1_Idle"))
 			.with<Position>(geometry::Vec2{400, 300})
@@ -47,11 +50,12 @@ struct Brawl : public Game
 		{
 			spawn()
 				.with<Sprite>(ecs::no_entity)
+				.with<Health>(100)
 				.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
 				.with<Position>(geometry::Vec2{ 760 - 30*i, 60*i })
 				.with<Visibility>(true)
 				.with<AnimationSpeedController>(1.0f)
-				.with<Enemy>(geometry::Vec2{ 1, 0 }, 100.0f)
+				.with<Enemy>(geometry::Vec2{ 1, 0 })
 				.done();
 		}
 

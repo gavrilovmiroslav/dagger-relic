@@ -44,7 +44,7 @@ struct PhysicsSystem
 	{
 		for (auto&& [enemy_entity, enemy, pos] : QueryEnemies::access_storage().each())
 		{
-			for (auto&& [player_entity, player, player_pos] : QueryPlayers::access_storage().each())
+			for (auto&& [player_entity, player_pos] : QueryPlayers::access_storage().each())
 			{
 				if (intersects(player_pos.xy, pos.xy, 16))
 				{
