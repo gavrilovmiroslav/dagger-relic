@@ -68,6 +68,26 @@ public:
         return action_dispatch[key].sink<FSMReaction>();
     }
 
+    Bool trigger(Transition transition, State from, State& next)
+    {
+        if (transitions[from].count(transition) == 0)
+        {
+            return false;
+        }
+
+        next = transitions[from][transition];
+        auto& action = transition_with_actions[from][transition];
+        FSMReaction reaction{ from, transition, action, next };
+
+        dispatcher.trigger(reaction);
+        if (is_action_defined(action))
+        {
+            action_dispatch[action].trigger(reaction);
+        }
+
+        return true;
+    }
+
     Bool trigger(Transition transition)
     {
         if (transitions[current_state].count(transition) == 0)

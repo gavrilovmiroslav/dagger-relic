@@ -73,61 +73,55 @@ void TimeRenderControlSystem::on_tick()
 				{
 					num = rand() % RANGE_X;
 					auto enemy2 = spawn()
-									  .with<Sprite>(ecs::no_entity)
-									  .with<Health>(100)
-									  .with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
-									  .with<Position>(geometry::Vec2{num, 0})
-									  .with<Visibility>(true)
-									  .with<Flip>(None)
-									  .with<AnimationSpeedController>(15.0f)
-									  .with<Enemy>(geometry::Vec2{1, 0}, 90.0f)
-
-									  .done();
-
-
-					add_component<EnemyFSMController>(enemy2, enemy2);
+									.with<Sprite>(ecs::no_entity)
+									.with<Health>(100)
+									.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
+									.with<Position>(geometry::Vec2{num, 0})
+									.with<Visibility>(true)
+									.with<Flip>(None)
+									.with<AnimationSpeedController>(15.0f)
+									.with<Enemy>(geometry::Vec2{1, 0}, 90.0f)
+									.with<EnemyFSMInstance>("Idle")
+									.done();
 
 					num = rand() % RANGE_X;
 					auto enemy3 = spawn()
-									  .with<Sprite>(ecs::no_entity)
-									  .with<Health>(100)
-									  .with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
-									  .with<Position>(geometry::Vec2{num, 600})
-									  .with<Visibility>(true)
-									  .with<Flip>(None)
-									  .with<AnimationSpeedController>(15.0f)
-									  .with<Enemy>(geometry::Vec2{1, 0}, 90.0f)
-									  .done();
-
-					add_component<EnemyFSMController>(enemy3, enemy3);
+									.with<Sprite>(ecs::no_entity)
+									.with<Health>(100)
+									.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
+									.with<Position>(geometry::Vec2{num, 600})
+									.with<Visibility>(true)
+									.with<Flip>(None)
+									.with<AnimationSpeedController>(15.0f)
+									.with<Enemy>(geometry::Vec2{1, 0}, 90.0f)
+									.with<EnemyFSMInstance>("Idle")
+									.done();
 
 					num = rand() % RANGE_Y;
 					auto enemy4 = spawn()
-									  .with<Sprite>(ecs::no_entity)
-									  .with<Health>(100)
-									  .with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
-									  .with<Position>(geometry::Vec2{0, num})
-									  .with<Visibility>(true)
-									  .with<Flip>(None)
-									  .with<AnimationSpeedController>(15.0f)
-									  .with<Enemy>(geometry::Vec2{1, 0}, 90.0f)
-									  .done();
-
-					add_component<EnemyFSMController>(enemy4, enemy4);
+									.with<Sprite>(ecs::no_entity)
+									.with<Health>(100)
+									.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
+									.with<Position>(geometry::Vec2{0, num})
+									.with<Visibility>(true)
+									.with<Flip>(None)
+									.with<AnimationSpeedController>(15.0f)
+									.with<Enemy>(geometry::Vec2{1, 0}, 90.0f)
+									.with<EnemyFSMInstance>("Idle")
+									.done();
 
 					num = rand() % RANGE_Y;
 					auto enemy5 = spawn()
-									  .with<Sprite>(ecs::no_entity)
-									  .with<Health>(100)
-									  .with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
-									  .with<Position>(geometry::Vec2{800, num})
-									  .with<Visibility>(true)
-									  .with<Flip>(None)
-									  .with<AnimationSpeedController>(15.0f)
-									  .with<Enemy>(geometry::Vec2{1, 0}, 90.0f)
-									  .done();
-
-					add_component<EnemyFSMController>(enemy5, enemy5);
+									.with<Sprite>(ecs::no_entity)
+									.with<Health>(100)
+									.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
+									.with<Position>(geometry::Vec2{800, num})
+									.with<Visibility>(true)
+									.with<Flip>(None)
+									.with<AnimationSpeedController>(15.0f)
+									.with<Enemy>(geometry::Vec2{1, 0}, 90.0f)
+									.with<EnemyFSMInstance>("Idle")
+									.done();
 				}
 				numSpawnedEnemies++;
 			}
