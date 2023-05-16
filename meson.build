@@ -38,6 +38,9 @@ sources = [
     'src/SpriteRendering.cpp',
     'src/TextRender.cpp',
     'src/Windowing.cpp',
+    'src/PlayerFSM.cpp',
+    'src/MenuFSM.cpp',
+    'src/MenuControlSystem.cpp',
     'src/Main.cpp'
 ]
 

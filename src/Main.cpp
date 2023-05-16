@@ -1,22 +1,20 @@
 #pragma once
 
-#include "Algebra.h"
-#include "GameComponents.h"
 #include "LevelManager.h"
 #include "Player.h"
 #include "Prelude.h"
 #include "PushPlate.h"
-#include "Random.h"
 #include "SoundManager.h"
 #include "TextRender.h"
 #include "Scene.h"
+#include "MovementControlSystem.h"
 
 using namespace core;
 
 struct PyramidPlunder;
 static PyramidPlunder *game;
 
-struct Movement
+/*struct Movement
 {
 	geometry::Vec2 velocity;
 	geometry::Vec2 velocity_max;
@@ -35,7 +33,7 @@ struct Movement
 	{
 
 	}
-};
+};*/
 
 struct MovementSystem
 	: public ecs::System
@@ -82,7 +80,7 @@ struct DebugRectangleSystem
 	}
 };
 
-struct MovementControlSystem
+/*struct MovementControlSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<KeyBinding, Movement, SpriteAnimation>
 {
@@ -130,7 +128,7 @@ struct MovementControlSystem
 			}
 		}
 	}
-};
+};*/
 
 struct FollowPlayer
 {
@@ -275,7 +273,7 @@ struct PyramidPlunder : public Game
 					.with<Position>(geometry::Vec2{ i*96, j*96 })
 					.done();
 					scene.entity.push_back(en);
-					
+
 					struct Lightmap_Block block;
 					block.x = i*96;
 					block.y = j*96;
@@ -333,6 +331,7 @@ struct PyramidPlunder : public Game
 					.done();
 					scene.entity.push_back(en);
 					scene.player = en;
+					add_component<PlayerMovement>(scene.player, PlayerMovement{PlayerFSM(scene.player), 0.0f});
 				}
 				if (c == 'd')
 				{
@@ -386,7 +385,7 @@ struct PyramidPlunder : public Game
 			.with<Button>(ButtonType::PauseMusic)
 			.with<Sprite>(TopSprite(8))
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/audio_active"))
-			.with<Position>(geometry::Vec2{ 880.0f, 910.0f })
+			.with<Position>(geometry::Vec2{ 820.0f, 918.0f })
 			.with<Visibility>(true)
 			.done();
 		scene.entity.push_back(pause_button);
@@ -395,7 +394,7 @@ struct PyramidPlunder : public Game
 			.with<Button>(ButtonType::PlayNext)
 			.with<Sprite>(TopSprite(8))
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/play_next"))
-			.with<Position>(geometry::Vec2{ 925.0f, 910.0f })
+			.with<Position>(geometry::Vec2{ 920.0f, 918.0f })
 			.with<Visibility>(true)
 			.done();
 		scene.entity.push_back(play_next);
@@ -404,7 +403,7 @@ struct PyramidPlunder : public Game
 			.with<Button>(ButtonType::PlayPrevious)
 			.with<Sprite>(TopSprite(8))
 			.with<SpriteAnimation>(Spritesheet::get_by_name("pyramidplunder/play_previous"))
-			.with<Position>(geometry::Vec2{ 835.0f, 910.0f })
+			.with<Position>(geometry::Vec2{ 870.0f, 918.0f })
 			.with<Visibility>(true)
 			.done();
 		scene.entity.push_back(play_previous);
@@ -461,7 +460,7 @@ struct PyramidPlunder : public Game
 			.with<Position>(geometry::Vec2{ 4.0f, 4.0f+24.0f*2 })
 			.with<Visibility>(true)
 			.done();
-			
+
 		auto ppfx_vignette = spawn()
 			.with<PostProcessTest>(POSTPROCESS_TEST_VIGNETTE)
 			.with<Sprite>(TopSprite(999))
@@ -469,7 +468,7 @@ struct PyramidPlunder : public Game
 			.with<Position>(geometry::Vec2{ 4.0f, 4.0f })
 			.with<Visibility>(true)
 			.done();
-		
+
 		/*
 		spawn()
 		.with<PushPlateCounter>()

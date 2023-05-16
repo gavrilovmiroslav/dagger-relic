@@ -28,6 +28,7 @@ struct KeyBinding
 {
 	KeyCode left, down, up, right;
 	KeyCode blindfold_change, reversed_change;
+	KeyCode a,p,escape;
 };
 
 struct PushPlateActivatedSignal {};
