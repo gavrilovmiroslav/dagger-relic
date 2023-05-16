@@ -20,6 +20,7 @@
 #include "Enemies.h"
 #include "Players.h"
 #include "DamageSystem.h"
+#include "EnemyFSMController.h"
 #include "TimeRender.h"
 
 using namespace core;
@@ -30,9 +31,9 @@ struct Brawl : public Game
 	{
 		auto &engine = Engine::get_instance();
 		engine.use<PlayerControlsSystem>();
-		engine.use<EnemyMovementSystem>();
 		engine.use<PhysicsSystem>();
 		engine.use<DamageSystem>();
+		engine.use<EnemiesController>();
 
 		// TODO: make a system to resolve damage and call it here
 		engine.use<TimeRenderControlSystem>();
@@ -45,7 +46,7 @@ struct Brawl : public Game
 		spawn()
 			.with<Player>()
 			.with<Health>(100)
-			.with<Sprite>(ecs::no_entity)
+			.with<Sprite>(ecs::no_entity, 10)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Moose/Moose1_Idle"))
 			.with<Position>(geometry::Vec2{400, 300})
 			.with<Visibility>(true)
@@ -59,33 +60,33 @@ struct Brawl : public Game
 		spawn()
 			.with<Sprite>(ecs::no_entity)
 			.with<Health>(100)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
 			.with<Position>(geometry::Vec2{ num, 0 })
 			.with<Visibility>(true)
 			.with<AnimationSpeedController>(1.0f)
-			.with<Enemy>(geometry::Vec2{ 1, 0 })
+			.with<Enemy>(geometry::Vec2{ 1, 0 }, 90.0f)
 			.done();
 
 		num = rand() % RANGE_X;
 		spawn()
 			.with<Sprite>(ecs::no_entity)
 			.with<Health>(100)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
 			.with<Position>(geometry::Vec2{ num, 600 })
 			.with<Visibility>(true)
 			.with<AnimationSpeedController>(1.0f)
-			.with<Enemy>(geometry::Vec2{ 1, 0 })
+			.with<Enemy>(geometry::Vec2{ 1, 0 }, 90.0f)
 			.done();
 
 		num = rand() % RANGE_Y;
 		spawn()
 			.with<Sprite>(ecs::no_entity)
 			.with<Health>(100)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
 			.with<Position>(geometry::Vec2{ 0, num })
 			.with<Visibility>(true)
 			.with<AnimationSpeedController>(1.0f)
-			.with<Enemy>(geometry::Vec2{ 1, 0 })
+			.with<Enemy>(geometry::Vec2{ 1, 0 }, 90.0f)
 			.done();
 
 		num = rand() % RANGE_Y;
