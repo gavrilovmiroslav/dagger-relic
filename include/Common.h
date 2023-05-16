@@ -9,6 +9,7 @@ struct Player
 struct Enemy
 {
 	geometry::Vec2 speed;
+	F32 movement_speed;
 };
 
 struct Damage

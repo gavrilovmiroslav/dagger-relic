@@ -35,6 +35,10 @@ struct EnemiesController : public ecs::System,
 				else 
 				{
 					//check for hit here
+					if(sprite_animation.current_frame == 8)
+					{
+						fsm_controller.fsm.trigger("checkForHit");
+					}
 				}
 				
 				auto dist = distance(enemy_position.xy, player_position.xy);

@@ -37,7 +37,7 @@ struct Brawl : public Game
 		spawn()
 			.with<Player>()
 			.with<Health>(100)
-			.with<Sprite>(ecs::no_entity)
+			.with<Sprite>(ecs::no_entity, 10)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Moose/Moose1_Idle"))
 			.with<Position>(geometry::Vec2{400, 300})
 			.with<Visibility>(true)
@@ -49,13 +49,13 @@ struct Brawl : public Game
 		for (auto i = 0; i < 4 ; ++i)
 		{
 			auto enemy = spawn()
-				.with<Sprite>(ecs::no_entity)
+				.with<Sprite>(ecs::no_entity, i)
 				.with<Health>(100)
 				.with<SpriteAnimation>(Spritesheet::get_by_name("Golem/Golem1_idle"))
 				.with<Position>(geometry::Vec2{ 760 - 30*i, 60*i })
 				.with<Visibility>(true)
 				.with<AnimationSpeedController>(15.0f)
-				.with<Enemy>(geometry::Vec2{ 1, 0 })
+				.with<Enemy>(geometry::Vec2{ 1, 0 }, 90.0f)
 				.with<Flip>(None)
 				.done();
 
