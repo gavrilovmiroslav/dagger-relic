@@ -19,6 +19,7 @@
 #include "DamageSystem.h"
 #include "EnemyFSMController.h"
 #include "TimeRender.h"
+#include "ScoreRender.h"
 
 
 using namespace core;
@@ -33,6 +34,7 @@ struct Brawl : public Game
 		engine.use<DamageSystem>();
 		engine.use<EnemiesController>();
 		engine.use<TimeRenderControlSystem>();
+		engine.use<ScoreRenderControlSystem>();
 	}
 
 	
@@ -42,6 +44,7 @@ struct Brawl : public Game
 		 spawn()
 			.with<Player>()
 			.with<Health>(100)
+			.with<Score>(0)
 			.with<Sprite>(ecs::no_entity, 10)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Moose/Moose1_Idle"))
 			.with<Position>(geometry::Vec2{400, 300})
@@ -110,11 +113,19 @@ struct Brawl : public Game
 
 		add_component<EnemyFSMController>(enemy5, enemy5);
 
+		ScoreRender::init();
+		auto score = spawn()
+			.with<ScoreRender>("Score: 0", 30)
+			.with<Sprite>(ecs::no_entity, -7)
+			.with<Visibility>(true)
+			.with<Position>(geometry::Vec2{ 50, 30 })
+			.with<AnimationSpeedController>(1.0f)
+			.done();
 
 		TimeRender::init();
 		auto time = spawn()
 			.with<TimeRender>("00:00:00", 30)
-			.with<Sprite>(ecs::no_entity)
+			.with<Sprite>(ecs::no_entity, -7)
 			.with<Visibility>(true)
 			.with<Position>(geometry::Vec2{ 600, 30 })
 			.with<AnimationSpeedController>(1.0f)
@@ -138,6 +149,15 @@ struct Brawl : public Game
 			.with<AnimationSpeedController>(1.0f)
 			.with<Visibility>(true)
 			.done();
+
+		// spawn()
+		// 	.with<Score>(0)
+		// 	.with<Sprite>(ecs::no_entity)
+		// 	.with<Position>(geometry::Vec2{ SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 2})
+		// 	// .with<AnimationSpeedController>(1.0f)
+		// 	.with<Visibility>(true)
+		// 	.done();
+
 	}
 
 	
@@ -145,6 +165,7 @@ struct Brawl : public Game
 	void on_end() override
 	{
 		TimeRender::deinit();
+		ScoreRender::deinit();
 	}
 };
 

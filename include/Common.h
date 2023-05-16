@@ -20,6 +20,10 @@ struct Damage
 	I32 damage;
 };
 
+struct Score {
+	I32 score;
+};
+
 struct Health
 {
 	I32 health;

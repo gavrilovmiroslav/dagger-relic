@@ -33,7 +33,8 @@ sources = [
     'src/SpriteRendering.cpp',
     'src/Windowing.cpp',
     'src/Main.cpp',
-    'src/TimeRender.cpp'
+    'src/TimeRender.cpp',
+    'src/ScoreRender.cpp'
 ]
 
 executable('dagger',
