@@ -20,7 +20,6 @@
 #include "EnemyFSMController.h"
 #include "TimeRender.h"
 
-
 using namespace core;
 
 struct Brawl : public Game
@@ -32,10 +31,10 @@ struct Brawl : public Game
 		engine.use<PhysicsSystem>();
 		engine.use<DamageSystem>();
 		engine.use<EnemiesController>();
+		engine.use<EnemyFSMController>();
 		engine.use<TimeRenderControlSystem>();
 	}
 
-	
 	int num;
 	void on_start() override
 	{
@@ -62,10 +61,8 @@ struct Brawl : public Game
 			.with<Flip>(None)
 			.with<AnimationSpeedController>(15.0f)
 			.with<Enemy>(geometry::Vec2{ 1, 0 }, 90.0f)
-
+			.with<EnemyFSMInstance>("Idle")
 			.done();
-
-		add_component<EnemyFSMController>(enemy2, enemy2);
 
 		num = rand() % RANGE_X;
 		auto enemy3 = spawn()
@@ -77,10 +74,9 @@ struct Brawl : public Game
 			.with<Flip>(None)
 			.with<AnimationSpeedController>(15.0f)
 			.with<Enemy>(geometry::Vec2{ 1, 0 }, 90.0f)
+			.with<EnemyFSMInstance>("Idle")
 			.done();
 		
-		add_component<EnemyFSMController>(enemy3, enemy3);
-
 		num = rand() % RANGE_Y;
 		auto enemy4 = spawn()
 			.with<Sprite>(ecs::no_entity)
@@ -91,10 +87,8 @@ struct Brawl : public Game
 			.with<Flip>(None)
 			.with<AnimationSpeedController>(15.0f)
 			.with<Enemy>(geometry::Vec2{ 1, 0 }, 90.0f)
+			.with<EnemyFSMInstance>("Idle")
 			.done();
-
-		add_component<EnemyFSMController>(enemy4, enemy4);
-		
 
 		num = rand() % RANGE_Y;
 		auto enemy5 = spawn()
@@ -106,10 +100,8 @@ struct Brawl : public Game
 			.with<Flip>(None)
 			.with<AnimationSpeedController>(15.0f)
 			.with<Enemy>(geometry::Vec2{ 1, 0 }, 90.0f)
+			.with<EnemyFSMInstance>("Idle")
 			.done();
-
-		add_component<EnemyFSMController>(enemy5, enemy5);
-
 
 		TimeRender::init();
 		auto time = spawn()

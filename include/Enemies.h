@@ -8,52 +8,46 @@
 
 struct EnemiesController : public ecs::System,
 						   public MutAccessStorage<Enemy>,
-						   public MutAccessGroupStorage<Enemy, Position, SpriteAnimation, EnemyFSMController>,
+						   public MutAccessGroupStorage<Enemy, Position, SpriteAnimation, EnemyFSMInstance>,
 						   public AccessGroupStorage<Player, Position>,
 						   public MutAccessStorage<Player>,
 						   public MutAccessComponentById<SpriteAnimation>,
 						   public MutAccessComponentById<Position>
 {
-
 	ecs::Entity player_entity_cache;
 	ecs::Entity enemy_entity_cache;
-	using QueryEnemies = MutAccessGroupStorage<Enemy, Position, SpriteAnimation, EnemyFSMController>;
+
+	using QueryEnemies = MutAccessGroupStorage<Enemy, Position, SpriteAnimation, EnemyFSMInstance>;
 	using QueryPlayers = AccessGroupStorage<Player, Position>;
-
-
 
 	void on_tick() override 
 	{
-		for (auto&& [enemy_entitiy, enemy, enemy_position, sprite_animation, fsm_controller] : QueryEnemies::access_storage().each())
+		for (auto&& [enemy_entity, enemy, enemy_position, sprite_animation, fsm_instance] : QueryEnemies::access_storage().each())
 		{
 			for (auto &&[player_entity, player_position] : QueryPlayers::access_storage().each())
 			{
 				if(sprite_animation.is_finished())
 				{
-					fsm_controller.fsm.trigger("animDone");
+					fsm_instance.queued_command = "animDone";
 				}
 				else 
 				{
-					//check for hit here
 					if(sprite_animation.current_frame == 8)
 					{
-						fsm_controller.fsm.trigger("checkForHit");
+						fsm_instance.queued_command = "checkForHit";
 					}
 				}
 				
 				auto dist = distance(enemy_position.xy, player_position.xy);
 				if(dist <= ATTACKING_RANGE)
 				{
-					fsm_controller.fsm.trigger("attack");
+					fsm_instance.queued_command = "attack";
 				}
 				else
 				{
-					fsm_controller.fsm.trigger("walk");
+					fsm_instance.queued_command = "walk";
 				}
 			}
 		}
-
-
 	}
-
 };
