@@ -71,41 +71,45 @@ void TimeRenderControlSystem::on_tick()
 					num = rand() % RANGE_X;
 				spawn()
 					.with<Sprite>(ecs::no_entity)
+					.with<Health>(100)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
 					.with<Position>(geometry::Vec2{ num, 0 })
 					.with<Visibility>(true)
 					.with<AnimationSpeedController>(1.0f)
-					.with<Enemy>(geometry::Vec2{ 1, 0 }, 100.0f)
+					.with<Enemy>(geometry::Vec2{ 1, 0 })
 					.done();
 
 				num = rand() % RANGE_X;
 				spawn()
 					.with<Sprite>(ecs::no_entity)
+					.with<Health>(100)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
 					.with<Position>(geometry::Vec2{ num, 600 })
 					.with<Visibility>(true)
 					.with<AnimationSpeedController>(1.0f)
-					.with<Enemy>(geometry::Vec2{ 1, 0 }, 100.0f)
+					.with<Enemy>(geometry::Vec2{ 1, 0 })
 					.done();
 
 				num = rand() % RANGE_Y;
 				spawn()
 					.with<Sprite>(ecs::no_entity)
+					.with<Health>(100)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
 					.with<Position>(geometry::Vec2{ 0, num })
 					.with<Visibility>(true)
 					.with<AnimationSpeedController>(1.0f)
-					.with<Enemy>(geometry::Vec2{ 1, 0 }, 100.0f)
+					.with<Enemy>(geometry::Vec2{ 1, 0 })
 					.done();
 
 				num = rand() % RANGE_Y;
 				spawn()
 					.with<Sprite>(ecs::no_entity)
+					.with<Health>(100)
 					.with<SpriteAnimation>(Spritesheet::get_by_name("Skeleton/Skeleton_Idle"))
 					.with<Position>(geometry::Vec2{ 800, num })
 					.with<Visibility>(true)
 					.with<AnimationSpeedController>(1.0f)
-					.with<Enemy>(geometry::Vec2{ 1, 0 }, 100.0f)
+					.with<Enemy>(geometry::Vec2{ 1, 0 })
 					.done();
 				}
 				numSpawnedEnemies++;

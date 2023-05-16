@@ -14,7 +14,8 @@ struct PlayerControlsSystem
       public MutAccessComponentById<KeyBindings>,
       public AccessComponentById<Player>,	  
       public SignalProcessor<PlayerCollisionSignal>,
-      public MutAccessGroupStorage<Healthbar,SpriteAnimation>
+      public MutAccessGroupStorage<Healthbar,SpriteAnimation>,
+      public MutAccessComponentById<Health>
 {
     ecs::Entity player_entity_cache;
     PlayerFSM fsm;
@@ -118,7 +119,7 @@ struct PlayerControlsSystem
         for (auto &&[ entity, bindings, anim ] : MutAccessGroupStorage<Player, KeyBindings, SpriteAnimation>::access_storage().each())
         {
             player_entity_cache = entity;
-            player_health = player.health;
+            player_health = MutAccessComponentById<Health>::get(player_entity_cache).health;
 
             if (anim.is_finished())
             {
