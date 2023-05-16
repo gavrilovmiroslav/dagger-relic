@@ -1,0 +1,7 @@
+texture: healthbar/healthbar_9
+dimensions: 1, 1
+sprites: 1
+
+clip: 0, 0, 400, 224
+pivot: 0.5, 0.5
+scale: 1, 1

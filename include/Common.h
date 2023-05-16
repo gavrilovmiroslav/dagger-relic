@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Definitions.h"
+#include <string>
 
 struct Player
 {
@@ -21,6 +22,11 @@ struct Damage
 struct Health
 {
 	I32 health;
+};
+
+struct Healthbar
+{
+    F32 value;
 };
 
 struct KeyBindings
