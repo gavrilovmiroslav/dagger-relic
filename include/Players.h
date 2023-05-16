@@ -13,11 +13,16 @@ struct PlayerControlsSystem
       public MutAccessComponentById<Position>,
       public MutAccessComponentById<KeyBindings>,
       public AccessComponentById<Player>,	  
-      public SignalProcessor<PlayerCollisionSignal>
+      public SignalProcessor<PlayerCollisionSignal>,
+      public MutAccessGroupStorage<Healthbar,SpriteAnimation>
 {
     ecs::Entity player_entity_cache;
     PlayerFSM fsm;
     Bool doing_damage = false;
+
+
+    String base_string="healthbar/healthbar_";
+    F32 player_health;
 
     PlayerControlsSystem()
     {
@@ -118,6 +123,7 @@ struct PlayerControlsSystem
         for (auto &&[ entity, player, bindings, anim ] : MutAccessGroupStorage<Player, KeyBindings, SpriteAnimation>::access_storage().each())
         {
             player_entity_cache = entity;
+            player_health = player.health;
 
             if (anim.is_finished())
             {
@@ -140,6 +146,20 @@ struct PlayerControlsSystem
             {
                 fsm.trigger("stop");
             }
+
+            // health
+            
+            
+        }
+
+        for (auto &&[healthbar_entity, healthbar,sprite] : MutAccessGroupStorage<Healthbar, SpriteAnimation>::access_storage().each())
+        {
+                for(int i = 0; i < 10; i++){
+                    if((100 - 10*(i+1) <= player_health) && (player_health < 100 - 10*i)){
+                        String health_sprite = base_string + std::to_string(9-i);
+                        sprite.change_to(health_sprite);
+                    }
+                } 
         }
     }
 };

@@ -39,7 +39,7 @@ struct Brawl : public Game
 	int num;
 	void on_start() override
 	{
-		spawn()
+		auto player = spawn()
 			.with<Player>(100.0f)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Moose/Moose1_Idle"))
@@ -96,10 +96,19 @@ struct Brawl : public Game
 			.with<TimeRender>("00:00:00", 32)
 			.with<Sprite>(ecs::no_entity)
 			.with<Visibility>(true)
-			.with<Position>(geometry::Vec2{ 700, 10 })
+			.with<Position>(geometry::Vec2{ 400, 10 })
+			.with<AnimationSpeedController>(1.0f)
 			.done();
 
-		
+		auto health = spawn()
+            .with<Healthbar>(100.0f)
+			.with<Sprite>(ecs::no_entity,-7)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("healthbar/health"))
+			.with<Position>(geometry::Vec2{ 400, 80 })
+			.with<Visibility>(true)
+			.with<AnimationSpeedController>(1.0f)
+			.done();
+
 		spawn()
 			.with<Sprite>(ecs::no_entity, -10)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("background/background"))

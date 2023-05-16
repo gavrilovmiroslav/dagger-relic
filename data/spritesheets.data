@@ -7,3 +7,14 @@ Golem/Golem1_idle: Golem/Golem1_idle.png.data
 Skeleton/Skeleton_Idle: Skeleton/Skeleton_Idle.png.data
 Skeleton/Skeleton_attack: Skeleton/Skeleton_attack.png.data
 background/background: background/grass_background.png.data
+healthbar/health: healthbar/health.png.data
+healthbar/healthbar_0: healthbar/healthbar_0.png.data
+healthbar/healthbar_1: healthbar/healthbar_1.png.data
+healthbar/healthbar_2: healthbar/healthbar_2.png.data
+healthbar/healthbar_3: healthbar/healthbar_3.png.data
+healthbar/healthbar_4: healthbar/healthbar_4.png.data
+healthbar/healthbar_5: healthbar/healthbar_5.png.data
+healthbar/healthbar_6: healthbar/healthbar_6.png.data
+healthbar/healthbar_7: healthbar/healthbar_7.png.data
+healthbar/healthbar_8: healthbar/healthbar_8.png.data
+healthbar/healthbar_9: healthbar/healthbar_9.png.data

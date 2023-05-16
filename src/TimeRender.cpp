@@ -9,7 +9,7 @@
 TimeRender::TimeRender(String text, U32 font_size)
     : text(text), font_size(font_size)
 { 
-	font = TTF_OpenFont("./data/fonts/digital-7.ttf", font_size);
+	font = TTF_OpenFont("./data/fonts/DejaVuSans.ttf", font_size);
 
 	if (!font)
 	{
@@ -41,7 +41,7 @@ void TimeRenderControlSystem::on_tick()
 	
 	for (auto &&[entity, time_render, position, sprite] : access_storage().each())
 	{
-		// sprite.depth = -50;
+		// sprite.depth = -7;
 		// if (!time_render.font)
 		// {
 		// 	continue;
