@@ -19,3 +19,5 @@ test/HealthPotion test/HealthPotion.png
 test/Background test/Background.png
 test/FirebombTome test/FirebombTome.png
 test/Firebomb test/Firebomb.png
+test/p1Win test/p1Win.png
+test/p2Win test/p2Win.png

@@ -102,7 +102,7 @@ struct SWMG
 			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D, KeyCode::KEY_F, KeyCode::KEY_G)
 			.with<Flip>(None)
 			.with<Item>("None", 3)
-			.with<Status>(100)
+			.with<Status>(100, "test/p2Win")
 			.done();
 		auto player_one_component = Player { PlayerFSM(player_one_entity, MutAccessComponentById<SpriteAnimation>::get(player_one_entity), PlayerColor::PURPLE), 0.0f };
 		add_component<Player>(player_one_entity, player_one_component);
@@ -115,7 +115,7 @@ struct SWMG
 			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT, KeyCode::KEY_K, KeyCode::KEY_L)
 			.with<Flip>(Horizontal)
 			.with<Item>("None", 3)
-			.with<Status>(100)
+			.with<Status>(100, "test/p1Win")
 			.done();
 		auto player_two_component = Player { PlayerFSM(player_two_entity, MutAccessComponentById<SpriteAnimation>::get(player_two_entity), PlayerColor::GREEN), 0.0f };
 		add_component<Player>(player_two_entity, player_two_component);

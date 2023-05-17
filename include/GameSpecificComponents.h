@@ -56,6 +56,7 @@ struct Spell
 struct Status
 {
 	I32 health;
+	String win_text;
 };
 
 struct HealthBar

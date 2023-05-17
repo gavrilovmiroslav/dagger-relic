@@ -132,6 +132,12 @@ void SpellCollisionSystem::process_signal(SpellPlayerCollisionSignal &signal)
 				HealthUpdateEmitter::emit(HealthUpdateSignal{signal.player, status->health});
 				if (status->health <= 0)
 				{
+					spawn()
+						.with<Sprite>(ecs::no_entity, 25)
+						.with<SpriteAnimation>(Spritesheet::get_by_name(status->win_text))
+						.with<Visibility>(true)
+						.with<Position>(geometry::Vec2{ SCREEN_WIDTH/2, SCREEN_HEIGHT/2})
+						.done();
 					despawn(signal.player);
 				}
 			}

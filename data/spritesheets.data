@@ -19,3 +19,5 @@ test/HealthPotion: test/HealthPotion.png.data
 test/Background: test/Background.png.data
 test/FirebombTome: test/FirebombTome.png.data
 test/Firebomb: test/Firebomb.png.data
+test/p1Win: test/p1Win.png.data
+test/p2Win: test/p2Win.png.data
