@@ -94,6 +94,7 @@ struct MonsterSystem
 		auto& sprite = MutAccessComponentById<SpriteAnimation>::get(monster_entity_cache);
 		doing_damage = sprite.current_frame >= 3 && sprite.current_frame <= 5;
 	}
+
 	void process_signal(PlayerCollisionSignal& signal)
 	{
 		if (doing_damage && fighting)
@@ -109,5 +110,6 @@ struct MonsterSystem
 			}
 		}
 	}
+
 	void on_tick() override;
 };
