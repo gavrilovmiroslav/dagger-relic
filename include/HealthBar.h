@@ -12,7 +12,6 @@ struct HealthBarSpriteAnimation
 	ecs::Entity spritesheet;
 	AnimationSpeed frame_length{ 1.0f };
 	I32 current_frame{ 0 };
-
 };
 
 struct Sprite;
@@ -25,7 +24,6 @@ class HealthBarAnimationSystem
 	, public MutAccessGroupStorage<Sprite, HealthBarSpriteAnimation, CharacterId>
 	, public SignalProcessor<HealthUpdateSignal>
 	, public SignalProcessor<OnStartSignal>
-	//, public AccessEntityValidity
 {
 	virtual void process_signal(HealthUpdateSignal& signal);
 	virtual void process_signal(OnStartSignal& signal);

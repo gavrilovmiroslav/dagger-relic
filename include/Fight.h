@@ -26,11 +26,15 @@ struct PhysicsSystem
 			abs(enemy_center.y - player_center.y)
 		};
 
-		if (circle_distance.x > (player_width + enemy_radius)) { return false; }
-		if (circle_distance.y > (player_height + enemy_radius)) { return false; }
+		if (circle_distance.x > (player_width + enemy_radius) || circle_distance.y > (player_height + enemy_radius))
+		{
+			return false;
+		}
 
-		if (circle_distance.x <= player_width) { return true; }
-		if (circle_distance.y <= player_height) { return true; }
+		if (circle_distance.x <= player_width || circle_distance.y <= player_height)
+		{
+			return true;
+		}
 
 		const auto dx = circle_distance.x - player_width;
 		const auto dy = circle_distance.y - player_height;

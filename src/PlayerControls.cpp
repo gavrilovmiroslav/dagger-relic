@@ -4,9 +4,6 @@ void PlayerControlsSystem::on_tick()
 {
 	const auto &keys = KeyState::get();
 	auto &ourGlobal = MutAccessUnique<OurGlobalVar>::access_unique();
-	geometry::Vec2 tmp = {0,0};
-
-
 	if (keys.is_pressed(KEY_ESCAPE))
 	{
 		Engine::get_instance().quit();
@@ -21,18 +18,18 @@ void PlayerControlsSystem::on_tick()
 		}
 
 		if (sprite.is_finished())
-            	{
-                	fsm.trigger("animDone");
-            	}
+		{
+			fsm.trigger("animDone");
+		}
 		else
-            	{
-                	fsm.trigger("checkForHit");
-            	}
+		{
+			fsm.trigger("checkForHit");
+		}
 
 		if (ourGlobal.isGrounded && keys.is_down(bindings.attack))
-            	{
-                	fsm.trigger("attack");
-           	}
+		{
+			fsm.trigger("attack");
+		}
 		else if (keys.is_down(bindings.left) || keys.is_down(bindings.right))
 		{
 			fsm.trigger("walk");

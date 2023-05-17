@@ -16,7 +16,7 @@ struct MonsterSystem
 	, public SignalEmitter<HealthUpdateSignal>
 	, public MutAccessComponentById<Position>
 	, public MutAccessComponentById<Flip>
-      	, public AccessComponentById<Monster>
+	, public AccessComponentById<Monster>
 	, public SignalProcessor<PlayerCollisionSignal>
 {
 	using QueryPlayer = MutAccessGroupStorage<Player, Position>;
@@ -24,24 +24,24 @@ struct MonsterSystem
 
 	ecs::Entity monster_entity_cache;
 	ecs::Entity player_entity_cache;
-    	MonsterFSM fsm;
-    	Bool doing_damage = false;
+	MonsterFSM fsm;
+	Bool doing_damage = false;
 	Bool fighting = false;
 	Bool side = true;
 	Bool goLeft = true;
 
 	MonsterSystem()
-    	{
+	{
 		fsm.events_for_action("TryMove").connect<&MonsterSystem::TryMove>(this);
 		fsm.events_for_action("TryStop").connect<&MonsterSystem::TryStop>(this);
 		fsm.events_for_action("TryAttack").connect<&MonsterSystem::TryAttack>(this);
 		fsm.events_for_action("TryHit").connect<&MonsterSystem::TryHit>(this);
 		fsm.current_state = "Idle";
-    	}
+	}
 	using HealthUpdateEmitter = SignalEmitter<HealthUpdateSignal>;
 
 	void TryMove()
-    	{
+	{
 		auto& sprite = MutAccessComponentById<SpriteAnimation>::get(monster_entity_cache);
 		sprite.change_to("monster/idle");
 
@@ -59,7 +59,7 @@ struct MonsterSystem
 			if (pos.xy.x < -MONSTER_OFFSET_LEFT)
 				goLeft = false;
 		}
-		else if(!goLeft)
+		else if (!goLeft)
 		{
 			flip = Flip::None;
 			side = true;
@@ -94,6 +94,7 @@ struct MonsterSystem
 		auto& sprite = MutAccessComponentById<SpriteAnimation>::get(monster_entity_cache);
 		doing_damage = sprite.current_frame >= 3 && sprite.current_frame <= 5;
 	}
+
 	void process_signal(PlayerCollisionSignal& signal)
 	{
 		if (doing_damage && fighting)
@@ -109,5 +110,6 @@ struct MonsterSystem
 			}
 		}
 	}
+
 	void on_tick() override;
 };

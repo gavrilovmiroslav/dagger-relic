@@ -53,7 +53,7 @@ struct Monster
 };
 struct CharacterId
 {
-	ecs::Entity characterId;;
+	ecs::Entity characterId;
 };
 struct Status
 {
@@ -80,4 +80,3 @@ struct OnStartSignal
 {
 	I32 start_health;
 };
-

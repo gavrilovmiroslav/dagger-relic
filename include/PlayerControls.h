@@ -16,57 +16,53 @@ struct PlayerControlsSystem
 	, public MutAccessComponentById<Status>
 	, public SignalEmitter<HealthUpdateSignal>
 	, public MutAccessComponentById<Position>
-      	, public MutAccessComponentById<KeyBindings>
-      	, public AccessComponentById<Player>
+	, public MutAccessComponentById<KeyBindings>
+	, public AccessComponentById<Player>
 	, public SignalProcessor<PlayerCollisionSignal>
 {
 	ecs::Entity player_entity_cache;
-    	PlayerFSM fsm;
-    	Bool doing_damage = false;
+	PlayerFSM fsm;
+	Bool doing_damage = false;
 	Bool fighting = false;
 	bool side = true;
 
 	PlayerControlsSystem()
-    	{
+	{
 		fsm.events_for_action("TryMove").connect<&PlayerControlsSystem::TryMove>(this);
 		fsm.events_for_action("TryStop").connect<&PlayerControlsSystem::TryStop>(this);
 		fsm.events_for_action("TryAttack").connect<&PlayerControlsSystem::TryAttack>(this);
 		fsm.events_for_action("TryHit").connect<&PlayerControlsSystem::TryHit>(this);
 		fsm.current_state = "Idle";
-    	}
+	}
 
 	using HealthUpdateEmitter = SignalEmitter<HealthUpdateSignal>;
 
 	void TryMove()
-    	{
+	{
 		auto& sprite = MutAccessComponentById<SpriteAnimation>::get(player_entity_cache);
-		if(side)
+		if (side)
 			sprite.change_to("fallingHero/runningRight");
-		if (!side)
+		else
 			sprite.change_to("fallingHero/runningLeft");
 		auto& pos = MutAccessComponentById<Position>::get(player_entity_cache);
-		auto& bindings  = MutAccessComponentById<KeyBindings>::get(player_entity_cache);
+		auto& bindings = MutAccessComponentById<KeyBindings>::get(player_entity_cache);
 
 		geometry::Vec2 xy { 0.0f, 0.0f };
 		F32 speed = 1.0f;
 
 		const auto &keys = KeyState::get();
-
-
 		if (keys.is_down(bindings.left))
 		{
 			side = false;
 			xy.x -= speed;
-			if (pos.xy.x < -PLAYER_OFFSET_LEFT)
-				pos.xy.x = -PLAYER_OFFSET_LEFT;
+			pos.xy.x = std::max(pos.xy.x, float(-PLAYER_OFFSET_LEFT));
 		}
 
 		if (keys.is_down(bindings.right))
 		{
 			side = true;
 			xy.x += speed;
-			if (pos.xy.x > SCREEN_WIDTH - PLAYER_OFFSET_RIGHT)
-				pos.xy.x = SCREEN_WIDTH - PLAYER_OFFSET_RIGHT;
+			pos.xy.x = std::min(pos.xy.x, float(SCREEN_WIDTH - PLAYER_OFFSET_RIGHT));
 		}
 
 		if (glm::length(xy) > 0.0f)
@@ -82,7 +78,7 @@ struct PlayerControlsSystem
 		doing_damage = false;
 		if (side)
 			sprite.change_to("fallingHero/heroStanding");
-		if (!side)
+		else
 			sprite.change_to("fallingHero/leftHeroStanding");
 	}
 
@@ -101,6 +97,7 @@ struct PlayerControlsSystem
 		auto& sprite = MutAccessComponentById<SpriteAnimation>::get(player_entity_cache);
 		doing_damage = sprite.current_frame >= 4 && sprite.current_frame <= 5;
 	}
+
 	void process_signal(PlayerCollisionSignal& signal)
 	{
 		if (doing_damage && fighting)
@@ -116,5 +113,6 @@ struct PlayerControlsSystem
 			}
 		}
 	}
+
 	void on_tick() override;
 };

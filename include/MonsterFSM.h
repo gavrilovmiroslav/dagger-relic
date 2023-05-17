@@ -4,5 +4,5 @@
 
 struct MonsterFSM : public FSM
 {
-    MonsterFSM() : FSM("data/player.grasm") {}
+	MonsterFSM() : FSM("data/player.grasm") {}
 };

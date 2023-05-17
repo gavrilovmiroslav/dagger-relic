@@ -2,18 +2,22 @@
 #include <random>
 #include <iostream>
 
-std::random_device rd;
-std::mt19937 gen(rd());
-std::uniform_real_distribution<> dis(0.0, 1.0);
-double randomNumber = dis(gen);
-auto randomIndicator = 0;
+namespace MyRandomGenerator
+{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<> dis(0.0, 1.0);
+}
+double randomNumber = MyRandomGenerator::dis(MyRandomGenerator::gen);
+int randomIndicator = 0;
+
 void MonsterSystem::on_tick()
 {
 	const auto &keys = KeyState::get();
 	auto &ourGlobal = MutAccessUnique<OurGlobalVar>::access_unique();
-	if(randomIndicator>100)
+	if(randomIndicator > 100)
 	{
-		randomNumber = dis(gen);
+		randomNumber = MyRandomGenerator::dis(MyRandomGenerator::gen);
 		randomIndicator = 0;
 	}
 	randomIndicator++;
@@ -44,11 +48,11 @@ void MonsterSystem::on_tick()
 			{
 				fsm.trigger("checkForHit");
 			}
-			if (ourGlobal.isGrounded && abs(player_pos.xy.x-monster_pos.xy.x)<50 && randomNumber<0.2)
+			if (ourGlobal.isGrounded && abs(player_pos.xy.x - monster_pos.xy.x) < 50 && randomNumber < 0.17)
 			{
 				fsm.trigger("attack");
 			}
-			else if(ourGlobal.isGrounded)
+			else if (ourGlobal.isGrounded)
 			{
 				fsm.trigger("walk");
 			}

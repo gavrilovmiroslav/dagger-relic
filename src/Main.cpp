@@ -26,7 +26,6 @@ struct FallingHero
 		engine.use<TimeRenderControlSystem>();
 		engine.use<HealthBarAnimationSystem>();
 		engine.use<PhysicsSystem>();
-
 	}
 	void on_start() override
 	{
@@ -122,7 +121,7 @@ struct FallingHero
 			.with<CharacterId>(hero)
 			.with<Sprite>(ecs::no_entity, 1)
 			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("healthBar/healthBar"), 1.0f, 0)
-            		.with<Scale>(geometry::Vec2{0.3f,0.3f})
+			.with<Scale>(geometry::Vec2{0.3f,0.3f})
 			.with<Position>(geometry::Vec2{100, 10})
 			.with<Visibility>(true)
 			.done();
@@ -131,13 +130,14 @@ struct FallingHero
 			.with<CharacterId>(monster)
 			.with<Sprite>(ecs::no_entity, 1)
 			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("healthBar/healthBar"), 1.0f, 0)
-            		.with<Scale>(geometry::Vec2{0.3f,0.3f})
+			.with<Scale>(geometry::Vec2{0.3f,0.3f})
 			.with<Position>(geometry::Vec2{500, 10})
 			.with<Visibility>(true)
 			.done();
 		SignalEmitter<OnStartSignal>::emit(OnStartSignal{70});
 
 	}
+
 	void on_end() override
 	{
 		TimeRender::deinit();
