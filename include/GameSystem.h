@@ -11,3 +11,4 @@
 #include "MonsterFSM.h"
 #include "FSM.h"
 #include "Fight.h"
+#include "ScoreRender.h"

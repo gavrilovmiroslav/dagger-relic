@@ -31,5 +31,9 @@ void BackgroundSystem::on_tick()
 				despawn(background_entity);
 			}
 		}
+		if (ourGlobal.shouldDespawn)
+		{
+			despawn(background_entity);
+		}
 	}
 }

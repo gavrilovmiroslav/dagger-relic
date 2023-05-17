@@ -100,6 +100,8 @@ struct PlayerControlsSystem
 
 	void process_signal(PlayerCollisionSignal& signal)
 	{
+		auto &ourGlobal = MutAccessUnique<OurGlobalVar>::access_unique();
+
 		if (doing_damage && fighting)
 		{
 			fighting = false;
@@ -110,6 +112,15 @@ struct PlayerControlsSystem
 			if (status.health <= 0)
 			{
 				despawn(signal.enemy);
+				ourGlobal.shouldDespawn = true;
+				ourGlobal.didPlayerWon = true;
+				auto& playerStatus = MutAccessComponentById<Status>::get(player_entity_cache);
+				ourGlobal.playerHealth = playerStatus.health;
+				spawn()
+					.with<ScoreRender>("", 60)
+					.with<Sprite>(ecs::no_entity)
+					.with<Visibility>(true)
+					.with<Position>(geometry::Vec2{150, 250});
 			}
 		}
 	}

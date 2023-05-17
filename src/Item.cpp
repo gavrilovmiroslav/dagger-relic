@@ -23,9 +23,13 @@ void ItemSystem::on_tick()
 			if (abs(player_pos.xy.x - item_pos.xy.x) < item.pickupRadius &&
 			    abs(player_pos.xy.y - item_pos.xy.y) < item.pickupRadius)
 			{
-				player.coinNumber += 1;
+				ourGlobal.coinNumber += 1;
 				remove_later.push_back(item_entity);
 				item_visibility.state = false;
+			}
+			if (ourGlobal.shouldDespawn)
+			{
+				despawn(item_entity);
 			}
 		}
 		for (auto e : remove_later)

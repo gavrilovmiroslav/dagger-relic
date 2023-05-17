@@ -97,6 +97,7 @@ struct MonsterSystem
 
 	void process_signal(PlayerCollisionSignal& signal)
 	{
+		auto &ourGlobal = MutAccessUnique<OurGlobalVar>::access_unique();
 		if (doing_damage && fighting)
 		{
 			fighting = false;
@@ -106,7 +107,14 @@ struct MonsterSystem
 			HealthUpdateEmitter::emit(HealthUpdateSignal{signal.player, status.health});
 			if (status.health <= 0)
 			{
+				ourGlobal.shouldDespawn = true;
 				despawn(signal.player);
+				ourGlobal.didPlayerWon = false;
+				spawn()
+					.with<ScoreRender>("", 60)
+					.with<Sprite>(ecs::no_entity)
+					.with<Visibility>(true)
+					.with<Position>(geometry::Vec2{ 250, 250});
 			}
 		}
 	}

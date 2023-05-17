@@ -8,8 +8,8 @@ namespace MyRandomGenerator
 		std::mt19937 gen(rd());
 		std::uniform_real_distribution<> dis(0.0, 1.0);
 }
-double randomNumber = MyRandomGenerator::dis(MyRandomGenerator::gen);
-int randomIndicator = 0;
+static double randomNumber = MyRandomGenerator::dis(MyRandomGenerator::gen);
+static int randomIndicator = 0;
 
 void MonsterSystem::on_tick()
 {

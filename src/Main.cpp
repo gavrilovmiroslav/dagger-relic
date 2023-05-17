@@ -24,6 +24,7 @@ struct FallingHero
 		engine.use<ItemSystem>();
 		engine.use<MonsterSystem>();
 		engine.use<TimeRenderControlSystem>();
+		engine.use<ScoreRenderControlSystem>();
 		engine.use<HealthBarAnimationSystem>();
 		engine.use<PhysicsSystem>();
 	}
@@ -54,6 +55,7 @@ struct FallingHero
 			    .with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S)
 			    .done();
 		TimeRender::init();
+		ScoreRender::init();
 		auto time = spawn()
 			.with<TimeRender>("00:00:00", 32)
 			.with<Sprite>(ecs::no_entity)
@@ -85,7 +87,7 @@ struct FallingHero
 			    .with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S)
 			    .done();
 		auto hero = spawn()
-				.with<Player>(0.0f, 0)
+				.with<Player>(0.0f)
 				.with<Sprite>(ecs::no_entity)
 				.with<SpriteAnimation>(Spritesheet::get_by_name("fallingHero/heroStanding"))
 				.with<Position>(geometry::Vec2{300, 100})
@@ -141,6 +143,7 @@ struct FallingHero
 	void on_end() override
 	{
 		TimeRender::deinit();
+		ScoreRender::deinit();
 	}
 };
 

@@ -2,6 +2,8 @@
 
 #include "Prelude.h"
 
+#include "SDL_ttf.h"
+
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 #define SPEED_MOD 350.0f
@@ -19,7 +21,6 @@
 struct Player
 {
 	F32 verticalVelocity;
-	I32 coinNumber;
 };
 struct Background
 {
@@ -38,6 +39,11 @@ struct OurGlobalVar
 {
 	bool canPlayerMove = false;
 	bool isGrounded = false;
+	bool shouldDespawn = false;
+	I32 coinNumber = 0;
+	int timeMs = 0;
+	bool didPlayerWon = true;
+	F32 playerHealth = 70.0;
 };
 struct KeyBindings
 {
@@ -79,4 +85,16 @@ struct PlayerCollisionSignal
 struct OnStartSignal
 {
 	I32 start_health;
+};
+
+struct ScoreRender
+{
+	TTF_Font* font;
+	String text;
+	U32 font_size;
+	SDL_Color text_color = {233, 245, 2};
+	ScoreRender(String text, U32 font_size);
+
+	static void init();
+	static void deinit();
 };

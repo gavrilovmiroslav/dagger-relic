@@ -4,8 +4,6 @@ void PlayerControlsSystem::on_tick()
 {
 	const auto &keys = KeyState::get();
 	auto &ourGlobal = MutAccessUnique<OurGlobalVar>::access_unique();
-	geometry::Vec2 tmp = {0,0};
-
 
 	if (keys.is_pressed(KEY_ESCAPE))
 	{
