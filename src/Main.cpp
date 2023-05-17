@@ -10,9 +10,9 @@
 
 using namespace core;
 
-struct SWMG 
+struct SWMG
 	: public Game
-	, public SignalEmitter<OnStartSignal> 
+	, public SignalEmitter<OnStartSignal>
 	, public MutAccessComponentById<SpriteAnimation>
 {
 	SWMG()
@@ -31,44 +31,68 @@ struct SWMG
 	void on_start() override
 	{
 
-		auto platform1 = spawn()
+		auto platform_left1 = spawn()
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
             		.with<Scale>(geometry::Vec2{0.25f,0.1f})
-			.with<Position>(geometry::Vec2{ 400, 550 })
+			.with<Position>(geometry::Vec2{ 120, 500 })
 			.with<Visibility>(true);
 
-		auto platform2 = spawn()
+		auto platform_left2 = spawn()
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
             		.with<Scale>(geometry::Vec2{0.25f,0.1f})
-			.with<Position>(geometry::Vec2{ 200, 450 })
+			.with<Position>(geometry::Vec2{ 120, 300 })
 			.with<Visibility>(true);
 
-		auto platform3 = spawn()
+		auto platform_mid1 = spawn()
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
             		.with<Scale>(geometry::Vec2{0.25f,0.1f})
-			.with<Position>(geometry::Vec2{ 300, 500 })
+			.with<Position>(geometry::Vec2{ 400, 400 })
 			.with<Visibility>(true);
 
-		auto platform4 = spawn()
+		auto platform_mid2 = spawn()
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
             		.with<Scale>(geometry::Vec2{0.25f,0.1f})
-			.with<Position>(geometry::Vec2{ 450, 450 })
+			.with<Position>(geometry::Vec2{ 300, 400 })
 			.with<Visibility>(true);
 
-		auto platform5 = spawn()
+		auto platform_mid3 = spawn()
 			.with<Platform>(130.0f, 21.0f)
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
             		.with<Scale>(geometry::Vec2{0.25f,0.1f})
-			.with<Position>(geometry::Vec2{ 600, 400 })
+			.with<Position>(geometry::Vec2{ 500, 400 })
+			.with<Visibility>(true);
+
+		auto platform_mid4 = spawn()
+			.with<Platform>(130.0f, 21.0f)
+			.with<Sprite>(ecs::no_entity, 20)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
+            		.with<Scale>(geometry::Vec2{0.25f,0.1f})
+			.with<Position>(geometry::Vec2{ 400, 200 })
+			.with<Visibility>(true);
+
+		auto platform_right1 = spawn()
+			.with<Platform>(130.0f, 21.0f)
+			.with<Sprite>(ecs::no_entity, 20)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
+            		.with<Scale>(geometry::Vec2{0.25f,0.1f})
+			.with<Position>(geometry::Vec2{ 680, 500 })
+			.with<Visibility>(true);
+
+		auto platform_right2 = spawn()
+			.with<Platform>(130.0f, 21.0f)
+			.with<Sprite>(ecs::no_entity, 20)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
+            		.with<Scale>(geometry::Vec2{0.25f,0.1f})
+			.with<Position>(geometry::Vec2{ 680, 300 })
 			.with<Visibility>(true);
 
 		auto ground = spawn()
@@ -81,7 +105,7 @@ struct SWMG
 		auto player_one_entity = spawn()
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/Wizard1/WizardIdle"))
-			.with<Position>(geometry::Vec2{ 50, 600 - 32})
+			.with<Position>(geometry::Vec2{ 80, 500 - 32})
 			.with<Visibility>(true)
 			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_S, KeyCode::KEY_A, KeyCode::KEY_D, KeyCode::KEY_F, KeyCode::KEY_G)
 			.with<Flip>(None)
@@ -94,7 +118,7 @@ struct SWMG
 		auto player_two_entity = spawn()
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/Wizard2/WizardIdle"))
-			.with<Position>(geometry::Vec2{ 750, 600 - 32})
+			.with<Position>(geometry::Vec2{ 720, 500 - 32})
 			.with<Visibility>(true)
 			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_DOWN, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT, KeyCode::KEY_K, KeyCode::KEY_L)
 			.with<Flip>(Horizontal)
@@ -109,7 +133,7 @@ struct SWMG
 			.with<PlayerId>(player_one_entity)
 			.with<Sprite>(ecs::no_entity, 1)
 			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("test/HealthBar"), 1.0f, 0)
-            .with<Scale>(geometry::Vec2{3.0f,3.0f})
+            		.with<Scale>(geometry::Vec2{3.0f,3.0f})
 			.with<Position>(geometry::Vec2{50, 50})
 			.with<Visibility>(true)
 			.done();
@@ -119,15 +143,15 @@ struct SWMG
 			.with<PlayerId>(player_two_entity)
 			.with<Sprite>(ecs::no_entity, 1)
 			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("test/HealthBar"), 1.0f, 0)
-            .with<Scale>(geometry::Vec2{3.0f,3.0f})
+            		.with<Scale>(geometry::Vec2{3.0f,3.0f})
 			.with<Position>(geometry::Vec2{700, 50})
 			.with<Visibility>(true)
+			.with<Flip>(Horizontal)
 			.done();
 
 		SignalEmitter<OnStartSignal>::emit(OnStartSignal{100});
 
 		auto background = spawn()
-			.with<Platform>()
 			.with<Sprite>(ecs::no_entity, -100)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/Background"))
 			.with<Visibility>(true)
