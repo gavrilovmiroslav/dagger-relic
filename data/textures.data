@@ -18,6 +18,10 @@ nexus/shield nexus/shield.png
 nexus/knife nexus/knife.png
 nexus/hand nexus/hand.png
 nexus/gun nexus/gun.png
+nexus/bomb nexus/bomb.png
+nexus/food nexus/food.png
+nexus/shotgun nexus/shotgun.png
+nexus/potion nexus/potion.png
 nexus/fire nexus/fire.png
 nexus/healthbar_0 nexus/healthbar_0.png
 nexus/healthbar_1 nexus/healthbar_1.png
@@ -33,3 +37,5 @@ nexus/healthbar_10 nexus/healthbar_10.png
 nexus/bad_end nexus/bad_end.png
 nexus/good_end nexus/good_end.png
 nexus/less_bad_end nexus/less_bad_end.png
+nexus/less_good_end nexus/less_good_end.png
+nexus/weak nexus/weak.png

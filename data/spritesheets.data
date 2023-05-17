@@ -18,7 +18,11 @@ nexus/shield: nexus/shield.png.data
 nexus/knife: nexus/knife.png.data
 nexus/hand: nexus/hand.png.data
 nexus/gun: nexus/gun.png.data
+nexus/bomb: nexus/bomb.png.data
+nexus/food: nexus/food.png.data
+nexus/shotgun: nexus/shotgun.png.data
 nexus/fire: nexus/fire.png.data
+nexus/potion: nexus/potion.png.data
 nexus/healthbar_0: nexus/healthbar_0.png.data
 nexus/healthbar_1: nexus/healthbar_1.png.data
 nexus/healthbar_2: nexus/healthbar_2.png.data
@@ -33,3 +37,5 @@ nexus/healthbar_10: nexus/healthbar_10.png.data
 nexus/bad_end: nexus/bad_end.png.data
 nexus/good_end: nexus/good_end.png.data
 nexus/less_bad_end: nexus/less_bad_end.png.data
+nexus/less_good_end: nexus/less_good_end.png.data
+nexus/weak: nexus/weak.png.data

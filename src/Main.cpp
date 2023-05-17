@@ -33,10 +33,11 @@ enum Option{
 	SHIELD,
 	GUN,
 	SWORD,
-	BOMB,
 	KNIFE,
+	BOMB,
 	FOOD,
-	POTION
+	POTION,
+	SHOTGUN
 };
 struct Cursor {};
 
@@ -138,13 +139,13 @@ struct PlayerControlsSystem
 			}
 			else if(keys.is_pressed(bindings.right))
 			{
-				if(pos.xy.x+320<SCREEN_WIDTH)
+				if(pos.xy.x+320<SCREEN_WIDTH*3/4)
 				{
                     pos.xy.x+=320;
                     idx+=3;
                 }		
 			}
-            else if(keys.is_pressed(KEY_SPACE))
+            else if(keys.is_pressed(KEY_SPACE) && !calc)
 			{
                     SignalEmitter<OptionIndexSignal>::emit(OptionIndexSignal{idx});
 					auto s=spawn()
@@ -152,25 +153,25 @@ struct PlayerControlsSystem
 						.with<Fire>()
 						.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/fire"))
 						.with<Visibility>(false)
-						.with<Position>(geometry::Vec2{SCREEN_WIDTH-400,SCREEN_HEIGHT-200})
+						.with<Position>(geometry::Vec2{SCREEN_WIDTH-450,SCREEN_HEIGHT-200})
 						.done();
 					fire_i=0;
-					monster_i=0;
 					calc=true;
             }
 			else{
-				for (auto&& [entity] : MutAccessGroupStorage<Fire>::access_storage().each()){
-					if(fire_i==60*15){
+				for (auto&& [entity] : MutAccessGroupStorage<Fire>::access_storage().each())
+				{
+					if(fire_i==60*30 && calc==true)
+					{
 						despawn(entity);
+						calc=false;
+						SignalEmitter<MonsterAttackSignal>::emit(MonsterAttackSignal{});
+						
 					}
 				}
 
 			}
-			if(monster_i==300 && calc==true){
-				calc=false;
-				SignalEmitter<MonsterAttackSignal>::emit(MonsterAttackSignal{});
-			}
-			
+		
 		}
 	}
 };
@@ -219,7 +220,7 @@ struct AttackSystem
 		{
 			for(auto &&[entity,jane] : MutAccessGroupStorage<Jane>::access_storage().each())
 			{
-				int harm=get_harm(signal.option,jane);
+				int harm=get_harm(signal.option);
 
 				monster.health=std::max(0,monster.health-harm);
 			}
@@ -231,54 +232,77 @@ struct AttackSystem
 		{
 			for (auto &&[entity,monster] : MutAccessGroupStorage<Monster>::access_storage().each())
 			{
-				int harm=number_from_distribution({0.0,0.0,0.0,0.1,0.2,0.03,0.04,0.05,0.15,0.5,0.2},0,10);
-				
-				jane.health=std::max(0,jane.health-harm);
+				int harm=number_from_distribution({0.0,0.01,0.02,0.03,0.05,0.1,0.4,0.2,0.1,0.05,0.04},0,10);
+				if(!jane.shield)
+				{
+					jane.health=std::max(0,jane.health-harm);
+				}
+				else
+				{
+					jane.shield=false;
+					monster.health-=harm/2;
+					jane.health-=number_from_distribution({0.4,0.3,0.2,0.1},0,3);
+				}
 			}
 		}
     }
 
-	int get_harm(Option option,Jane jane)
+	int get_harm(Option option)
 	{
 		int harm=0;
-		switch (option)
+		for(auto &&[entity,jane] : MutAccessGroupStorage<Jane>::access_storage().each())
 		{
-			jane.shield=false;
-
-			case HAND:
-				harm = number_from_distribution({0.0,0.05,0.1,0.15,0.3,0.4},0,5);
-				jane.attack_strength+=0.05;
-				break;
-			case KNIFE:
-				harm = number_from_distribution({0.0,0.01,0.02,0.05,0.08,0.15,0.65},0,6);
-				jane.monster_score+=4;
-				break;
-			case BOMB:
-				harm = number_from_distribution({0.0,0.0,0.0,0.0,0.0,0.01,0.02,0.03,0.04,0.1,0.8},0,10);
-				jane.monster_score+=10;
-				break;
-			case GUN:
-				harm = number_from_distribution({0.0,0.01,0.02,0.05,0.07,0.2,0.35,0.3},0,7);
-				jane.monster_score+=7;
-				break;
-			case SWORD:
-				harm = number_from_distribution({0.0,0.01,0.02,0.03,0.04,0.15,0.3,0.25,0.2},0,8);
-				jane.monster_score+=5;
-				break;
-			case SHIELD:
-				harm=0;
-				jane.shield=true;
-				jane.monster_score-=5;
-				break;
-			case FOOD:
-				harm=0;
-				jane.health=std::min(100,jane.health+20);
-				jane.monster_score-=5;
-				jane.attack_strength+=0.1;
-				break;
+			switch (option)
+			{
+				case HAND:
+					harm = number_from_distribution({0.0,0.05,0.1,0.15,0.3,0.4},0,5);
+					jane.attack_strength+=0.05;
+					break;
+				case KNIFE:
+					harm = number_from_distribution({0.0,0.01,0.02,0.05,0.08,0.15,0.65},0,6);
+					jane.monster_score+=4;
+					break;
+				case BOMB:
+					harm = number_from_distribution({0.0,0.0,0.0,0.0,0.0,0.01,0.02,0.03,0.04,0.1,0.8},0,10);
+					jane.monster_score+=10;
+					break;
+				case GUN:
+					harm = number_from_distribution({0.0,0.01,0.02,0.05,0.07,0.2,0.35,0.3},0,7);
+					jane.monster_score+=7;
+					break;
+				case SWORD:
+					harm = number_from_distribution({0.0,0.01,0.02,0.03,0.04,0.15,0.3,0.25,0.2},0,8);
+					jane.monster_score+=5;
+					break;
+				case SHIELD:
+					harm=0;
+					jane.shield=true;
+					jane.monster_score-=5;
+					break;
+				case FOOD:
+					harm=0;
+					jane.health=std::min(100,jane.health+20);
+					jane.monster_score-=10;
+					jane.attack_strength+=0.2;
+					break;
+				case POTION:
+					harm=0;
+					jane.monster_score-=20;
+					jane.attack_strength+=0.3;
+					break;
+				case SHOTGUN:
+					harm = number_from_distribution({0.0,0.0,0.01,0.02,0.03,0.04,0.1,0.3,0.5},0,8);
+					jane.monster_score+=8;
+					break;
+				default:
+					harm=0;
+					break;
+			}
+			return (int)std::round(jane.attack_strength*harm);
 		}
-		return jane.attack_strength*harm;
+		
 	}
+
 	int number_from_distribution(const std::vector<double>& distribution_vector, int begin, int end)
 	{
 		std::random_device rd;
@@ -288,6 +312,7 @@ struct AttackSystem
 
 		return begin + distribution(generator);
 	}
+
 };
 struct MonsterMovement
 	: public ecs::System
@@ -367,10 +392,10 @@ struct EndingSystem
 	: public ecs::System
 	, public SignalProcessor<EndingSignal>
 {
-	virtual void process_signal(EndingSignal& signal) //proccess signal da bude zbog efikasnosti
+	virtual void process_signal(EndingSignal& signal) 
 	{
 		
-				if(signal.jane.health==0)
+				if(signal.jane.health<10 && signal.jane.monster_score<35)
 				{
 					spawn()
 						.with<Sprite>(ecs::no_entity)
@@ -378,8 +403,9 @@ struct EndingSystem
 						.with<Position>(geometry::Vec2{ SCREEN_WIDTH/2, SCREEN_HEIGHT/2})
 						.with<Visibility>(true)
 						.done();
+					
 				}
-				else if(signal.monster.health==0 and signal.jane.monster_score>35)
+				else if(signal.jane.health<10 && signal.jane.monster_score>=35)
 				{
 					spawn()
 						.with<Sprite>(ecs::no_entity)
@@ -387,8 +413,9 @@ struct EndingSystem
 						.with<Position>(geometry::Vec2{ SCREEN_WIDTH/2, SCREEN_HEIGHT/2})
 						.with<Visibility>(true)
 						.done();
+					
 				}
-				else if(signal.monster.health==0)
+				else if(signal.monster.health<10 && signal.jane.monster_score<35)
 				{
 					spawn()
 						.with<Sprite>(ecs::no_entity)
@@ -396,6 +423,17 @@ struct EndingSystem
 						.with<Position>(geometry::Vec2{ SCREEN_WIDTH/2, SCREEN_HEIGHT/2})
 						.with<Visibility>(true)
 						.done();
+						
+				}
+				else if(signal.monster.health<10 && signal.jane.monster_score>=35)
+				{
+					spawn()
+						.with<Sprite>(ecs::no_entity)
+						.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/less_good_end"))
+						.with<Position>(geometry::Vec2{ SCREEN_WIDTH/2, SCREEN_HEIGHT/2})
+						.with<Visibility>(true)
+						.done();
+					
 				}
 	}
 };
@@ -405,7 +443,8 @@ struct JaneSpriteAnimationSystem:
 {
 	void on_tick() override
 	{
-		for (auto&& [entity,jane,sprite] : access_storage().each()){
+		for (auto&& [entity,jane,sprite] : access_storage().each())
+		{
 			if(jane.monster_score>50)
 			{
 				
@@ -426,6 +465,43 @@ struct JaneSpriteAnimationSystem:
 		}
 	}
 };
+struct Comment {};
+struct MonsterCommentsSystem: 
+	public ecs::System, 
+	public MutAccessGroupStorage<Jane>,
+	public MutAccessGroupStorage<Comment>
+	
+{
+	int time=0;
+	bool show_weak_comment=false;
+	
+	void on_tick() override
+	{
+		time++;
+		for (auto&& [entity,jane] : MutAccessGroupStorage<Jane>::access_storage().each())
+		{
+			if(jane.health<=90){
+				spawn()
+						.with<Comment>()
+						.with<Sprite>(ecs::no_entity)
+						.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/weak"))
+						.with<Position>(geometry::Vec2{ SCREEN_WIDTH-200, SCREEN_HEIGHT-400})
+						.with<Visibility>(true)
+						.done();
+				time=0;
+				show_weak_comment=true;
+			}
+		}
+		if(time==60*10 && show_weak_comment==true)
+		{
+			for(auto&& [entity] : MutAccessGroupStorage<Comment>::access_storage().each())
+			{
+				despawn(entity);
+			}
+			show_weak_comment=false;
+		}
+	}
+};
 struct Pong : public Game
 {
 	Pong()
@@ -439,6 +515,7 @@ struct Pong : public Game
         engine.use<ChoosingOptionSystem>();
 		engine.use<AttackSystem>();
 		engine.use<EndingSystem>();
+		//engine.use<MonsterCommentsSystem>();
 	}
 
 	void on_start() override
@@ -450,15 +527,15 @@ struct Pong : public Game
 			.with<Position>(geometry::Vec2{ MENUBG_X+175, MENUBG_Y+55 })
 			.with<Visibility>(true)
 			.done();
-        auto knife = spawn()
+        auto shield = spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/gun"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/shield"))
 			.with<Position>(geometry::Vec2{ MENUBG_X+175, MENUBG_Y+55+65})
 			.with<Visibility>(true)
 			.done(); 
         auto gun = spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/hand"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/gun"))
 			.with<Position>(geometry::Vec2{ MENUBG_X+175, MENUBG_Y+55+65+65})
 			.with<Visibility>(true)
 			.done();  
@@ -468,18 +545,36 @@ struct Pong : public Game
 			.with<Position>(geometry::Vec2{ MENUBG_X+450, MENUBG_Y+55})
 			.with<Visibility>(true)
 			.done();  
-		auto shield = spawn()
+		auto knife = spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/shield"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/knife"))
 			.with<Position>(geometry::Vec2{ MENUBG_X+450, MENUBG_Y+55 + 65})
 			.with<Visibility>(true)
 			.done();
-		auto pom = spawn()
+		auto bomb = spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/knife"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/bomb"))
 			.with<Position>(geometry::Vec2{ MENUBG_X+450, MENUBG_Y+55 + 65 + 65})
 			.with<Visibility>(true)
-			.done();       
+			.done();
+		auto food = spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/food"))
+			.with<Position>(geometry::Vec2{ MENUBG_X+450+300, MENUBG_Y+55})
+			.with<Visibility>(true)
+			.done();
+		auto potion = spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/potion"))
+			.with<Position>(geometry::Vec2{ MENUBG_X+450+300, MENUBG_Y+55+65})
+			.with<Visibility>(true)
+			.done();
+		auto shotgun = spawn()
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/shotgun"))
+			.with<Position>(geometry::Vec2{ MENUBG_X+450+300, MENUBG_Y+55+65+70})
+			.with<Visibility>(true)
+			.done();         
 		auto menubg = spawn()
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/menubg"))
@@ -514,7 +609,7 @@ struct Pong : public Game
 			.with<Monster>("Gluttony",100)
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/monster"))
-			.with<Position>(geometry::Vec2{SCREEN_WIDTH-200,SCREEN_HEIGHT-260})
+			.with<Position>(geometry::Vec2{SCREEN_WIDTH-250,SCREEN_HEIGHT-260})
 			.with<Visibility>(true)
 			.done();	
 		auto jane = spawn()

@@ -1,0 +1,7 @@
+texture: nexus/weak
+dimensions: 1, 1
+sprites: 1
+
+clip: 0, 0, 300, 200
+pivot: 0.5, 1
+scale: 1, 1
