@@ -113,6 +113,5 @@ struct PlayerControlsSystem
 			}
 		}
 	}
-
 	void on_tick() override;
 };
