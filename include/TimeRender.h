@@ -2,6 +2,9 @@
 
 #include "Prelude.h"
 #include "SDL_ttf.h"
+#include "Definitions.h"
+#include "Access.h"
+#include "GameComponents.h"
 
 struct TimeRender
 {
@@ -19,6 +22,7 @@ struct TimeRenderControlSystem
 	: public ecs::System
 	, public MutAccessUnique<WindowingState>
 	, public MutAccessGroupStorage<TimeRender, Position, Sprite>
+	, public MutAccessUnique<OurGlobalVar>
 {
 	void on_tick() override;
 };

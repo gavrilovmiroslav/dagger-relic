@@ -5,12 +5,11 @@ void PlatformSystem::on_tick()
 {
 	const auto &keys = KeyState::get();
 	auto &ourGlobal = MutAccessUnique<OurGlobalVar>::access_unique();
-	for (auto &&[player_entity, player, player_pos] : QueryPlayer::access_storage().each())
+	for (auto &&[platform_entity, platform, bindings, platform_pos, sprite] : QueryPlatform::access_storage().each())
 	{
-		for (auto &&[platform_entity, platform, bindings, platform_pos, sprite] : QueryPlatform::access_storage().each())
+		for (auto &&[player_entity, player, player_pos] : QueryPlayer::access_storage().each())
 		{
 			sprite.depth = -50;
-
 			if (keys.is_down(bindings.up))
 			{
 				platform.verticalVelocity = 200;
@@ -29,6 +28,10 @@ void PlatformSystem::on_tick()
 				player.verticalVelocity = 0;
 				break;
 			}
+		}
+		if (ourGlobal.shouldDespawn)
+		{
+			despawn(platform_entity);
 		}
 	}
 }

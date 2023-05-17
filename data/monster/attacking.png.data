@@ -1,0 +1,55 @@
+texture: monster/attacking
+dimensions: 1, 1
+sprites: 6
+
+clip: 0, 0, 100, 100
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 100, 0, 100, 100
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 200, 0, 100, 100
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 300, 0, 100, 100
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 400, 0, 100, 100
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 500, 0, 100, 100
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 0, 100, 100, 100
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 100, 100, 100, 100
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 200, 100, 100, 100
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 300, 100, 100, 100
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 400, 100, 100, 100
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 500, 100, 100, 100
+pivot: 0.5, 0.5
+scale: 1, 1
+
+clip: 0, 200, 100, 100
+pivot: 0.5, 0.5
+scale: 1, 1
