@@ -21,3 +21,5 @@ test/FirebombTome test/FirebombTome.png
 test/Firebomb test/Firebomb.png
 test/p1Win test/p1Win.png
 test/p2Win test/p2Win.png
+test/p1HealthBar test/p1HealthBar.png
+test/p2HealthBar test/p2HealthBar.png

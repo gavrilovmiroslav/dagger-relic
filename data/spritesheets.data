@@ -21,3 +21,5 @@ test/FirebombTome: test/FirebombTome.png.data
 test/Firebomb: test/Firebomb.png.data
 test/p1Win: test/p1Win.png.data
 test/p2Win: test/p2Win.png.data
+test/p1HealthBar: test/p1HealthBar.png.data
+test/p2HealthBar: test/p2HealthBar.png.data

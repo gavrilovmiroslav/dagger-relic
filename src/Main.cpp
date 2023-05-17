@@ -124,9 +124,9 @@ struct SWMG
 			.with<Status>(100)
 			.with<PlayerId>(player_one_entity)
 			.with<Sprite>(ecs::no_entity, 1)
-			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("test/HealthBar"), 1.0f, 0)
-            		.with<Scale>(geometry::Vec2{3.0f,3.0f})
-			.with<Position>(geometry::Vec2{50, 50})
+			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("test/p1HealthBar"), 1.0f, 0)
+            		.with<Scale>(geometry::Vec2{5.0f,5.0f})
+			.with<Position>(geometry::Vec2{30, 30})
 			.with<Visibility>(true)
 			.done();
 
@@ -134,9 +134,9 @@ struct SWMG
 			.with<Status>(100)
 			.with<PlayerId>(player_two_entity)
 			.with<Sprite>(ecs::no_entity, 1)
-			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("test/HealthBar"), 1.0f, 0)
-            		.with<Scale>(geometry::Vec2{3.0f,3.0f})
-			.with<Position>(geometry::Vec2{700, 50})
+			.with<HealthBarSpriteAnimation>(Spritesheet::get_by_name("test/p2HealthBar"), 1.0f, 0)
+            		.with<Scale>(geometry::Vec2{5.0f,5.0f})
+			.with<Position>(geometry::Vec2{650, 30})
 			.with<Visibility>(true)
 			.with<Flip>(Horizontal)
 			.done();
