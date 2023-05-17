@@ -17,6 +17,8 @@ nexus/sword nexus/sword.png
 nexus/shield nexus/shield.png
 nexus/knife nexus/knife.png
 nexus/hand nexus/hand.png
+nexus/gun nexus/gun.png
+nexus/fire nexus/fire.png
 nexus/healthbar_0 nexus/healthbar_0.png
 nexus/healthbar_1 nexus/healthbar_1.png
 nexus/healthbar_2 nexus/healthbar_2.png
@@ -28,3 +30,6 @@ nexus/healthbar_7 nexus/healthbar_7.png
 nexus/healthbar_8 nexus/healthbar_8.png
 nexus/healthbar_9 nexus/healthbar_9.png
 nexus/healthbar_10 nexus/healthbar_10.png
+nexus/bad_end nexus/bad_end.png
+nexus/good_end nexus/good_end.png
+nexus/less_bad_end nexus/less_bad_end.png

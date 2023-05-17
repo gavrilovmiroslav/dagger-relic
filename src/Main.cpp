@@ -5,7 +5,14 @@
 #include <string>
 #include <cmath>
 #include <iostream>
+
+#include <vector>
+#include <random>
+#include <algorithm>
 #include<windows.h>
+
+#include <chrono> // za rad sa vremenom
+#include <thread>
 
 using namespace core;
 
@@ -25,10 +32,11 @@ enum Option{
 	HAND=1,
 	SHIELD,
 	GUN,
-	SHORD,
+	SWORD,
 	BOMB,
 	KNIFE,
-	NMP
+	FOOD,
+	POTION
 };
 struct Cursor {};
 
@@ -42,6 +50,7 @@ struct Jane{
 	int monster_score=0;
 	float attack_strength=1.0;
 	float monster_coeff=1.0;
+	bool shield=false;
 };
 struct JaneHealthbar{
 	int value;
@@ -68,27 +77,44 @@ struct JaneHealthbar{
 struct OptionIndexSignal{
     int i;
 };
+struct Fire
+{
+
+};
+struct MonsterAttackSignal
+{
+
+};
 struct PlayerControlsSystem
 	: public ecs::System
 	, public MutAccessGroupStorage<Cursor, KeyBindings, Position>
+	, public MutAccessGroupStorage<Fire>
     , public SignalEmitter<OptionIndexSignal>
+	, public SignalEmitter<MonsterAttackSignal>
 {
 	int idx=1;
+	int fire_i=0;
+	int monster_i=0;
+	bool calc=false;
+
     void on_tick() override
 	{
 		const auto& keys = KeyState::get(); 
+		fire_i++;
+		monster_i++;
 
 		if (keys.is_pressed(KEY_ESCAPE))
 		{
 			Engine::get_instance().quit();
 		}
 
-		for (auto&& [entity, bindings, pos] : access_storage().each())
+		for (auto&& [entity, bindings, pos] : MutAccessGroupStorage<Cursor, KeyBindings, Position>::access_storage().each())
 		{
 			
 			if (keys.is_pressed(bindings.up)) 
 			{
-				if(pos.xy.y-CURSOR_STEP>=MENUBG_Y+50){
+				if(pos.xy.y-CURSOR_STEP>=MENUBG_Y+50)
+				{
                     pos.xy.y -= CURSOR_STEP;
                     idx-=1;
                 }
@@ -96,38 +122,63 @@ struct PlayerControlsSystem
 			}
 			else if (keys.is_pressed(bindings.down)) 
 			{
-				if(pos.xy.y+CURSOR_STEP<=MENUBG_PIVOT_Y-50){
+				if(pos.xy.y+CURSOR_STEP<=MENUBG_PIVOT_Y-50)
+				{
                     pos.xy.y += CURSOR_STEP;
                     idx+=1;
                 }	  
 			}
-			else if(keys.is_pressed(bindings.left)){
+			else if(keys.is_pressed(bindings.left))
+			{
 				if(pos.xy.x-320>0){
                     pos.xy.x-=320;
                     idx-=3;
                 }
 					
 			}
-			else if(keys.is_pressed(bindings.right)){
-				if(pos.xy.x+320<SCREEN_WIDTH){
+			else if(keys.is_pressed(bindings.right))
+			{
+				if(pos.xy.x+320<SCREEN_WIDTH)
+				{
                     pos.xy.x+=320;
                     idx+=3;
                 }		
 			}
-            else if(keys.is_pressed(KEY_SPACE)){
-                    emit(OptionIndexSignal{idx});
+            else if(keys.is_pressed(KEY_SPACE))
+			{
+                    SignalEmitter<OptionIndexSignal>::emit(OptionIndexSignal{idx});
+					auto s=spawn()
+						.with<Sprite>(ecs::no_entity)
+						.with<Fire>()
+						.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/fire"))
+						.with<Visibility>(false)
+						.with<Position>(geometry::Vec2{SCREEN_WIDTH-400,SCREEN_HEIGHT-200})
+						.done();
+					fire_i=0;
+					monster_i=0;
+					calc=true;
             }
+			else{
+				for (auto&& [entity] : MutAccessGroupStorage<Fire>::access_storage().each()){
+					if(fire_i==60*15){
+						despawn(entity);
+					}
+				}
+
+			}
+			if(monster_i==300 && calc==true){
+				calc=false;
+				SignalEmitter<MonsterAttackSignal>::emit(MonsterAttackSignal{});
+			}
+			
 		}
 	}
 };
 struct AttackSignal
-	{
-		int id;
-	};
-struct MonsterAttackSignal
 {
-
+		Option option;
 };
+
 struct BlockSignal{};
 
 struct ChoosingOptionSystem
@@ -137,30 +188,20 @@ struct ChoosingOptionSystem
 	, public SignalEmitter<MonsterAttackSignal>
 	, public SignalEmitter<BlockSignal>
 {
-    virtual void process_signal(OptionIndexSignal& signal){
-        switch (signal.i)
-        {
-        case 1:
-            SignalEmitter<AttackSignal>::emit(AttackSignal{1});
-            break;
-        case 2:
-            SignalEmitter<BlockSignal>::emit(BlockSignal{});
-			break;
-        case 3:
-           SignalEmitter<MonsterAttackSignal>::emit(MonsterAttackSignal{});
-		   break;
-		case 4:
-			SignalEmitter<AttackSignal>::emit(AttackSignal{2});
-			break;
-		case 5:
-			break;
-		case 6:
-			SignalEmitter<AttackSignal>::emit(AttackSignal{3});
-			break;
+    
+	virtual void process_signal(OptionIndexSignal& signal)
+	{
+        if(signal.i==Option::SHIELD)
+		{
+			SignalEmitter<BlockSignal>::emit(BlockSignal{});
 		}
-		SignalEmitter<MonsterAttackSignal>::emit(MonsterAttackSignal{});
+		else
+		{
+			SignalEmitter<AttackSignal>::emit(AttackSignal{static_cast<Option>(signal.i)});
+		}
     }
 };
+
 struct AttackSystem
     : public ecs::System
     , public SignalProcessor<AttackSignal>
@@ -171,53 +212,81 @@ struct AttackSystem
 	, public MutAccessGroupStorage<Monster>
 	, public MutAccessGroupStorage<Jane>
 {
-    
-	String health_sprites[10]; //scale za sprite
-
-	AttackSystem()
-	{
-		String base_string="nexus/healthbar_";
-
-		for(int i=0;i<10;i++)
-		{
-			health_sprites[i]=base_string+std::to_string(i);
-		}
-	}
 
 	virtual void process_signal(AttackSignal& signal)
 	{	
 		for (auto &&[entity,monster] : MutAccessGroupStorage<Monster>::access_storage().each())
 		{
-			int harm=get_harm(signal.id);
-			monster.health=std::max(0,monster.health-harm);
+			for(auto &&[entity,jane] : MutAccessGroupStorage<Jane>::access_storage().each())
+			{
+				int harm=get_harm(signal.option,jane);
+
+				monster.health=std::max(0,monster.health-harm);
+			}
 		}
     }
 	virtual void process_signal(MonsterAttackSignal& signal)
 	{
-		for(auto &&[entity,jane] : MutAccessGroupStorage<Jane>::access_storage().each()){
-			int harm=10;
-			jane.health=std::max(0,jane.health-harm);
-			jane.monster_score+=10;
+		for(auto &&[entity,jane] : MutAccessGroupStorage<Jane>::access_storage().each())
+		{
+			for (auto &&[entity,monster] : MutAccessGroupStorage<Monster>::access_storage().each())
+			{
+				int harm=number_from_distribution({0.0,0.0,0.0,0.1,0.2,0.03,0.04,0.05,0.15,0.5,0.2},0,10);
+				
+				jane.health=std::max(0,jane.health-harm);
+			}
 		}
     }
 
-	String get_sprite(int health)
+	int get_harm(Option option,Jane jane)
 	{
-		return health_sprites[health/10];
+		int harm=0;
+		switch (option)
+		{
+			jane.shield=false;
+
+			case HAND:
+				harm = number_from_distribution({0.0,0.05,0.1,0.15,0.3,0.4},0,5);
+				jane.attack_strength+=0.05;
+				break;
+			case KNIFE:
+				harm = number_from_distribution({0.0,0.01,0.02,0.05,0.08,0.15,0.65},0,6);
+				jane.monster_score+=4;
+				break;
+			case BOMB:
+				harm = number_from_distribution({0.0,0.0,0.0,0.0,0.0,0.01,0.02,0.03,0.04,0.1,0.8},0,10);
+				jane.monster_score+=10;
+				break;
+			case GUN:
+				harm = number_from_distribution({0.0,0.01,0.02,0.05,0.07,0.2,0.35,0.3},0,7);
+				jane.monster_score+=7;
+				break;
+			case SWORD:
+				harm = number_from_distribution({0.0,0.01,0.02,0.03,0.04,0.15,0.3,0.25,0.2},0,8);
+				jane.monster_score+=5;
+				break;
+			case SHIELD:
+				harm=0;
+				jane.shield=true;
+				jane.monster_score-=5;
+				break;
+			case FOOD:
+				harm=0;
+				jane.health=std::min(100,jane.health+20);
+				jane.monster_score-=5;
+				jane.attack_strength+=0.1;
+				break;
+		}
+		return jane.attack_strength*harm;
 	}
-	int get_harm(int id)
+	int number_from_distribution(const std::vector<double>& distribution_vector, int begin, int end)
 	{
-		//TODO: verovatnoca
-		if(id==1)
-		{
-			return 4; 
-		}
-		else if(id==2)
-		{
-			return 8;
-		}
-		else
-			return 6;
+		std::random_device rd;
+		std::mt19937 generator(rd());
+
+		std::discrete_distribution<> distribution(distribution_vector.begin(), distribution_vector.end());
+
+		return begin + distribution(generator);
 	}
 };
 struct MonsterMovement
@@ -233,18 +302,22 @@ struct MonsterMovement
 		
 		for (auto&& [entity,monster,pos] : access_storage().each())
 		{
-			if(up){
+			if(up)
+			{
 				num++;
 				pos.xy.y+=velocity*Time::delta_time()*22.0f;
-				if(num==350){
+				if(num==350)
+				{
 					up=false;
 					num=0;
 				}
 			}
-			else{
+			else
+			{
 				num++;
 				pos.xy.y-=velocity*Time::delta_time()*22.0f;
-				if(num==350){
+				if(num==350)
+				{
 					up=true;
 					num=0;
 				}
@@ -253,21 +326,30 @@ struct MonsterMovement
 		}
 	}
 };
+struct EndingSignal{
+	Monster monster;
+	Jane jane;
+};
+
 struct HealthbarSpriteAnimationSystem:
 	public ecs::System
 	, public MutAccessGroupStorage<MonsterHealthbar,SpriteAnimation>
 	, public MutAccessGroupStorage<JaneHealthbar,SpriteAnimation>
 	, public MutAccessGroupStorage<Monster>
 	, public MutAccessGroupStorage<Jane>
+	, public SignalEmitter<EndingSignal>
 {
+	
 	void on_tick() override 
 	{
+		EndingSignal s{};
 		for (auto &&[entity,monster] : MutAccessGroupStorage<Monster>::access_storage().each())
 		{
 			for (auto &&[healthbar_entity, healthbar,sprite] : MutAccessGroupStorage<MonsterHealthbar,SpriteAnimation>::access_storage().each())
 			{
 				sprite.change_to("nexus/healthbar_"+std::to_string(monster.health/10));
 			}
+			s.monster=monster;
 		}
 
 		for (auto &&[entity,jane] : MutAccessGroupStorage<Jane>::access_storage().each())
@@ -276,7 +358,45 @@ struct HealthbarSpriteAnimationSystem:
 			{
 				sprite.change_to("nexus/healthbar_"+std::to_string(jane.health/10));
 			}
+			s.jane=jane;
 		}
+		emit(s);
+	}
+};
+struct EndingSystem
+	: public ecs::System
+	, public SignalProcessor<EndingSignal>
+{
+	virtual void process_signal(EndingSignal& signal) //proccess signal da bude zbog efikasnosti
+	{
+		
+				if(signal.jane.health==0)
+				{
+					spawn()
+						.with<Sprite>(ecs::no_entity)
+						.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/less_bad_end"))
+						.with<Position>(geometry::Vec2{ SCREEN_WIDTH/2, SCREEN_HEIGHT/2})
+						.with<Visibility>(true)
+						.done();
+				}
+				else if(signal.monster.health==0 and signal.jane.monster_score>35)
+				{
+					spawn()
+						.with<Sprite>(ecs::no_entity)
+						.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/bad_end"))
+						.with<Position>(geometry::Vec2{ SCREEN_WIDTH/2, SCREEN_HEIGHT/2})
+						.with<Visibility>(true)
+						.done();
+				}
+				else if(signal.monster.health==0)
+				{
+					spawn()
+						.with<Sprite>(ecs::no_entity)
+						.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/good_end"))
+						.with<Position>(geometry::Vec2{ SCREEN_WIDTH/2, SCREEN_HEIGHT/2})
+						.with<Visibility>(true)
+						.done();
+				}
 	}
 };
 struct JaneSpriteAnimationSystem: 
@@ -288,6 +408,7 @@ struct JaneSpriteAnimationSystem:
 		for (auto&& [entity,jane,sprite] : access_storage().each()){
 			if(jane.monster_score>50)
 			{
+				
 				sprite.change_to("nexus/jane_stage4");
 			}
 			else if(jane.monster_score>40)
@@ -317,27 +438,27 @@ struct Pong : public Game
 		engine.use<PlayerControlsSystem>();
         engine.use<ChoosingOptionSystem>();
 		engine.use<AttackSystem>();
+		engine.use<EndingSystem>();
 	}
 
 	void on_start() override
 	{
-	
-	 
-        auto button_attack = spawn()
+		
+        auto hand = spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/sword"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/hand"))
 			.with<Position>(geometry::Vec2{ MENUBG_X+175, MENUBG_Y+55 })
 			.with<Visibility>(true)
 			.done();
-        auto button_block = spawn()
+        auto knife = spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/sword"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/gun"))
 			.with<Position>(geometry::Vec2{ MENUBG_X+175, MENUBG_Y+55+65})
 			.with<Visibility>(true)
 			.done(); 
-        auto button_items = spawn()
+        auto gun = spawn()
 			.with<Sprite>(ecs::no_entity)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/sword"))
+			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/hand"))
 			.with<Position>(geometry::Vec2{ MENUBG_X+175, MENUBG_Y+55+65+65})
 			.with<Visibility>(true)
 			.done();  
@@ -353,7 +474,7 @@ struct Pong : public Game
 			.with<Position>(geometry::Vec2{ MENUBG_X+450, MENUBG_Y+55 + 65})
 			.with<Visibility>(true)
 			.done();
-		auto knife = spawn()
+		auto pom = spawn()
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("nexus/knife"))
 			.with<Position>(geometry::Vec2{ MENUBG_X+450, MENUBG_Y+55 + 65 + 65})
