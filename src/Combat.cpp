@@ -60,6 +60,22 @@ void ProjectileSpawnSystem::on_tick()
 					.with<Duration>(Disappear)
 					.with<Clipping>(Pass);
 			}
+			else if (item.name == "firebomb")
+			{
+				spawn()
+					.with<Spell>(300.0f, pos.xy.x + direction * 60.0f, 800.0f, 50.0f, 40)
+					.with<Sprite>(ecs::no_entity)
+					.with<SpriteAnimation>(Spritesheet::get_by_name("test/Firebomb"))
+					.with<Position>(geometry::Vec2{pos.xy.x + direction * 60.0f, pos.xy.y})
+					.with<Visibility>(true)
+					.with<Flip>(flip)
+					.with<Scale>(geometry::Vec2{0.2f, 0.2f})
+					.with<Element>(Fire)
+					.with<Shape>(Ray)
+					.with<Move>(Line)
+					.with<Duration>(Disappear)
+					.with<Clipping>(Pass);
+			}
 		}
 	}
 }

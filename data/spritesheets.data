@@ -17,3 +17,5 @@ test/CurseballTome: test/CurseballTome.png.data
 test/FastballTome: test/FastballTome.png.data
 test/HealthPotion: test/HealthPotion.png.data
 test/Background: test/Background.png.data
+test/FirebombTome: test/FirebombTome.png.data
+test/Firebomb: test/Firebomb.png.data

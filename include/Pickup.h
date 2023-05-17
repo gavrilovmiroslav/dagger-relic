@@ -8,7 +8,7 @@
 
 struct PickupTimeoutSignal {};
 
-using PickupTimer = Timer<3000, PickupTimeoutSignal>;
+using PickupTimer = Timer<4000, PickupTimeoutSignal>;
 
 struct PickupSystem
 	: public ecs::System

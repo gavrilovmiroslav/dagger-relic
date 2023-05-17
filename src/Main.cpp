@@ -52,15 +52,7 @@ struct SWMG
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
             		.with<Scale>(geometry::Vec2{0.25f,0.1f})
-			.with<Position>(geometry::Vec2{ 400, 400 })
-			.with<Visibility>(true);
-
-		auto platform_mid2 = spawn()
-			.with<Platform>(130.0f, 21.0f)
-			.with<Sprite>(ecs::no_entity, 20)
-			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
-            		.with<Scale>(geometry::Vec2{0.25f,0.1f})
-			.with<Position>(geometry::Vec2{ 300, 400 })
+			.with<Position>(geometry::Vec2{ 270, 400 })
 			.with<Visibility>(true);
 
 		auto platform_mid3 = spawn()
@@ -68,7 +60,7 @@ struct SWMG
 			.with<Sprite>(ecs::no_entity, 20)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("test/pixel-platform"))
             		.with<Scale>(geometry::Vec2{0.25f,0.1f})
-			.with<Position>(geometry::Vec2{ 500, 400 })
+			.with<Position>(geometry::Vec2{ 530, 400 })
 			.with<Visibility>(true);
 
 		auto platform_mid4 = spawn()
