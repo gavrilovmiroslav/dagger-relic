@@ -1,6 +1,8 @@
 #pragma once
 #include "Prelude.h" //16
 #include "PlayerFSM.h"
+#include "Physics.h"
+
 
 struct PlayerControlsSystem
     : public ecs::System,
@@ -15,7 +17,8 @@ struct PlayerControlsSystem
       public AccessComponentById<Player>,	  
       public SignalProcessor<PlayerCollisionSignal>,
       public MutAccessGroupStorage<Healthbar,SpriteAnimation>,
-      public MutAccessComponentById<Health>
+      public MutAccessComponentById<Health>,
+      public SignalEmitter<GameEndSignal>
 {
     ecs::Entity player_entity_cache;
     PlayerFSM fsm;
@@ -72,7 +75,7 @@ struct PlayerControlsSystem
         
         if (glm::length(xy) > 0.0f)
         {
-            pos.xy += glm::normalize(xy) * SPEED_MOD * Time::delta_time();
+            pos.xy += glm::normalize(xy) * 200.0f * Time::delta_time();
         }
     }
 
@@ -109,6 +112,9 @@ struct PlayerControlsSystem
 
     void on_tick() override
     {
+        
+        
+
         const auto &keys = KeyState::get();
 
         if (keys.is_pressed(KEY_ESCAPE))
@@ -158,6 +164,17 @@ struct PlayerControlsSystem
                         sprite.change_to(health_sprite);
                     }
                 } 
+        }
+    }
+
+
+
+    Bool isPlayerDead()
+    {
+        auto& health = MutAccessComponentById<Health>::get(player_entity_cache);
+        if(health.health <= 0)
+        {
+            emit(GameEndSignal{});
         }
     }
 };

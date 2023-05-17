@@ -6,6 +6,13 @@
 #define RANGE_X 801
 #define RANGE_Y 601
 
+auto start = std::chrono::high_resolution_clock::now(); // get current time
+int elapsed_time_ms = 0;
+bool hasSpawnEnemies = false;
+int num;
+int numSpawnedEnemies = 1;
+
+
 TimeRender::TimeRender(String text, U32 font_size)
 	: text(text), font_size(font_size)
 {
@@ -28,13 +35,12 @@ void TimeRender::init()
 void TimeRender::deinit()
 {
 	TTF_Quit();
+	start = std::chrono::high_resolution_clock::now();
+	elapsed_time_ms = 0;
+	hasSpawnEnemies = false;
+	numSpawnedEnemies = 1;
 }
 
-auto start = std::chrono::high_resolution_clock::now(); // get current time
-int elapsed_time_ms = 0;
-bool hasSpawnEnemies = false;
-int num;
-int numSpawnedEnemies = 1;
 
 void TimeRenderControlSystem::on_tick()
 {
@@ -142,6 +148,10 @@ void TimeRenderControlSystem::on_tick()
 		SDL_Surface *text_surf = TTF_RenderText_Solid(time_render.font, time_render.text.c_str(), time_render.text_color);
 		SDL_Texture *texture = SDL_CreateTextureFromSurface(state.renderer, text_surf);
 		SDL_Rect dest;
+		if(text_surf == nullptr || texture == nullptr)
+		{
+			return; 
+		}
 		dest.x = position.xy.x;
 		dest.y = position.xy.y;
 		dest.w = text_surf->w;

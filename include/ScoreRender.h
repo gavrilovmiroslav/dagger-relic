@@ -3,6 +3,7 @@
 #include "Prelude.h"
 #include "Common.h"
 #include "SDL_ttf.h"
+#include "Players.h"
 
 struct ScoreRender
 {
@@ -23,6 +24,10 @@ struct ScoreRenderControlSystem
     , public MutAccessStorage<Player>
     , public MutAccessComponentById<Score>
 
+
 {
+	Bool isPlayerDead = false;
+	
 	void on_tick() override;
+	
 };

@@ -9,14 +9,12 @@
 
 struct EnemyFSMController : public ecs::System,
 							public MutAccessStorage<Player>,
+							public MutAccessStorage<Enemy>,
 							public MutAccessComponentById<Position>,
 							public MutAccessGroupStorage<Enemy, Position, SpriteAnimation>,
-							public MutAccessComponentById<EnemyFSMController>,
-							public MutAccessStorage<EnemyFSMController>,
 							public MutAccessComponentById<SpriteAnimation>,
 							public MutAccessComponentById<Flip>,
 							public MutAccessComponentById<Enemy>
-
 
 {
 
@@ -25,10 +23,6 @@ struct EnemyFSMController : public ecs::System,
 	EnemyFSM fsm;
 	ecs::Entity enemy_entity_cache;
 	Bool doing_damage = false;
-
-	// Flip &flip = MutAccessComponentById<Flip>::get(enemy_entity_cache);
-	// ecs::Entity player = MutAccessStorage<Player>::access_storage().front();
-	// Position &player_position = MutAccessComponentById<Position>::get(player);
 
 	EnemyFSMController(ecs::Entity entt)
 		: enemy_entity_cache(entt)
@@ -43,6 +37,21 @@ struct EnemyFSMController : public ecs::System,
 	void TryMove()
 	{
 
+		Bool should_exit = true;
+		for (auto &&[entity2, enemy2, pos2, sprite] : QueryEnemies::access_storage().each())
+		{
+			if (entity2 == enemy_entity_cache)
+			{
+				should_exit = false;
+				break;
+			}
+		}
+
+		if (should_exit)
+		{
+			return;
+		}
+
 		Flip &flip = MutAccessComponentById<Flip>::get(enemy_entity_cache);
 		ecs::Entity player = MutAccessStorage<Player>::access_storage().front();
 		Position &player_position = MutAccessComponentById<Position>::get(player);
@@ -53,7 +62,6 @@ struct EnemyFSMController : public ecs::System,
 		sprite.change_to("Golem/Golem1_run");
 
 		auto size = QueryEnemies::access_storage().size_hint();
-		// Logger::info("Current number of enemies {}", size);
 		// enemy flocking system (do this only if there is more then one enemy left)
 		if (size >= 2)
 		{
@@ -75,8 +83,8 @@ struct EnemyFSMController : public ecs::System,
 			}
 
 			// TODO: check length around this...
-			auto to_player = my_normalize(player_position.xy - pos.xy);
-			auto from_nearest_enemy = my_normalize(pos.xy - nearest_enemy_pos->xy);
+			auto to_player = normalize(player_position.xy - pos.xy);
+			auto from_nearest_enemy = normalize(pos.xy - nearest_enemy_pos->xy);
 
 			auto enemy_tilt_coef = 0.02f;
 
@@ -94,17 +102,13 @@ struct EnemyFSMController : public ecs::System,
 			{
 				flip = Flip::None;
 			}
-			enemy.speed = my_normalize(enemy.speed);
-			pos.xy += enemy.speed * Time::delta_time() * ENEMY_SPEED_MOD;
+			enemy.speed = normalize(enemy.speed);
+			pos.xy += enemy.speed * Time::delta_time() * enemy.movement_speed;
 		}
 		else
 		{
 
-			Flip &flip = MutAccessComponentById<Flip>::get(enemy_entity_cache);
-			ecs::Entity player = MutAccessStorage<Player>::access_storage().front();
-			Position &player_position = MutAccessComponentById<Position>::get(player);
-
-			auto to_player = my_normalize(player_position.xy - pos.xy);
+			auto to_player = normalize(player_position.xy - pos.xy);
 			enemy.speed += to_player;
 			if (should_flip())
 			{
@@ -114,8 +118,8 @@ struct EnemyFSMController : public ecs::System,
 			{
 				flip = Flip::None;
 			}
-			enemy.speed = my_normalize(enemy.speed);
-			pos.xy += enemy.speed * Time::delta_time() * ENEMY_SPEED_MOD;
+			enemy.speed = normalize(enemy.speed);
+			pos.xy += enemy.speed * Time::delta_time() * enemy.movement_speed;
 		}
 		if (enemy.speed.length == 0)
 		{
@@ -130,6 +134,21 @@ struct EnemyFSMController : public ecs::System,
 
 	void TryStop()
 	{
+		Bool should_exit = true;
+		for (auto &&[entity2, enemy2, pos2, sprite] : QueryEnemies::access_storage().each())
+		{
+			if (entity2 == enemy_entity_cache)
+			{
+				should_exit = false;
+				break;
+			}
+		}
+
+		if (should_exit)
+		{
+			return;
+		}
+		
 		auto &sprite = MutAccessComponentById<SpriteAnimation>::get(enemy_entity_cache);
 		sprite.change_to("Golem/Golem1_idle");
 		Flip &flip = MutAccessComponentById<Flip>::get(enemy_entity_cache);
@@ -146,6 +165,21 @@ struct EnemyFSMController : public ecs::System,
 
 	void TryAttack()
 	{
+		Bool should_exit = true;
+		for (auto &&[entity2, enemy2, pos2, sprite] : QueryEnemies::access_storage().each())
+		{
+			if (entity2 == enemy_entity_cache)
+			{
+				should_exit = false;
+				break;
+			}
+		}
+
+		if (should_exit)
+		{
+			return;
+		}
+		
 		auto &sprite = MutAccessComponentById<SpriteAnimation>::get(enemy_entity_cache);
 		sprite.change_to("Golem/Golem1_attack");
 		Flip &flip = MutAccessComponentById<Flip>::get(enemy_entity_cache);
@@ -166,6 +200,22 @@ struct EnemyFSMController : public ecs::System,
 
 	void TryHit()
 	{
+		
+		Bool should_exit = true;
+		for (auto &&[entity2, enemy2, pos2, sprite] : QueryEnemies::access_storage().each())
+		{
+			if (entity2 == enemy_entity_cache)
+			{
+				should_exit = false;
+				break;
+			}
+		}
+
+		if (should_exit)
+		{
+			return;
+		}
+
 		auto &sprite = MutAccessComponentById<SpriteAnimation>::get(enemy_entity_cache);
 		sprite.change_to("Golem/Golem1_attack");
 
@@ -176,11 +226,11 @@ struct EnemyFSMController : public ecs::System,
 		if (distance(player_position.xy, pos.xy) < 50.0f && sprite.current_frame == 8 && doing_damage)
 		{
 			spawn()
-				.with<Damage>(enemy_entity_cache, player,10)
+				.with<Damage>(enemy_entity_cache, player, 10)
 				.done();
 		}
 
-		doing_damage = false; 
+		doing_damage = false;
 	}
 
 	inline Bool should_flip() const
@@ -206,5 +256,4 @@ struct EnemyFSMController : public ecs::System,
 		}
 		return vec;
 	}
-
 };
