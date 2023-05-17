@@ -8,6 +8,7 @@ using namespace core;
 RenderingModule::RenderingModule()
 	: render_texture{nullptr}
 	, post_render_texture{nullptr}
+	, post_render_texture2{nullptr}
 {
 }
 
@@ -18,12 +19,14 @@ bool RenderingModule::on_start()
 
 void RenderingModule::on_tick()
 {
-
 	U32 *postprocess_pixels;
+	U32 *postprocess_pixels2;
 	I32  postprocess_pitch;
+	I32  postprocess_pitch2;
 
 	SignalEmitter<RenderFrameStart>::emit(RenderFrameStart{});
 	auto& state = AccessUnique<WindowingState>::access_unique();
+	SDL_SetRenderTarget(state.renderer, render_texture);
 	SDL_RenderClear(state.renderer);
 
 	SignalEmitter<RenderSignal>::emit(RenderSignal{});
@@ -33,8 +36,11 @@ void RenderingModule::on_tick()
 	SignalEmitter<PostProcessRenderSignal>::emit(PostProcessRenderSignal{postprocess_pixels, postprocess_pitch, (U32) width, (U32) height });
 	SDL_UnlockTexture(post_render_texture);
 
-	SDL_SetTextureBlendMode(post_render_texture, SDL_BlendMode::SDL_BLENDMODE_BLEND);
+	SDL_SetTextureBlendMode(post_render_texture, SDL_BlendMode::SDL_BLENDMODE_MOD);
 	SDL_RenderCopyEx(state.renderer, post_render_texture, nullptr, nullptr, 0, nullptr, SDL_FLIP_NONE);
+
+	//SDL_SetRenderTarget(state.renderer, render_texture);
+	SignalEmitter<PostProcessRenderSignal2>::emit(PostProcessRenderSignal2{postprocess_pixels2, postprocess_pitch, (U32) width, (U32) height });
 
 	SDL_RenderPresent(state.renderer);
 	SignalEmitter<RenderFrameEnd>::emit(RenderFrameEnd{});
@@ -65,11 +71,18 @@ void RenderingModule::recreate_render_surface_texture()
 	}
 	post_render_texture = SDL_CreateTexture(state.renderer, SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA8888, SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING, w, h);
 
+	if (post_render_texture2 != nullptr)
+	{
+		SDL_DestroyTexture(post_render_texture2);
+	}
+	post_render_texture2 = SDL_CreateTexture(state.renderer, SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA8888, SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING, w, h);
+
 	// render to screen
 	SDL_SetRenderTarget(state.renderer, nullptr);
 	SDL_RenderClear(state.renderer);
 	SDL_RenderCopyEx(state.renderer, render_texture, nullptr, nullptr, 0, nullptr, SDL_FLIP_NONE);
 	SDL_RenderCopyEx(state.renderer, post_render_texture, nullptr, nullptr, 0, nullptr, SDL_FLIP_NONE);
+	SDL_RenderCopyEx(state.renderer, post_render_texture2, nullptr, nullptr, 0, nullptr, SDL_FLIP_NONE);
 	SDL_RenderPresent(state.renderer);
 
 }
@@ -92,6 +105,11 @@ void RenderingModule::on_end()
 
 	if (post_render_texture != nullptr)
 	{
-		SDL_DestroyTexture(render_texture);
+		SDL_DestroyTexture(post_render_texture);
+	}
+
+	if (post_render_texture2 != nullptr)
+	{
+		SDL_DestroyTexture(post_render_texture2);
 	}
 }

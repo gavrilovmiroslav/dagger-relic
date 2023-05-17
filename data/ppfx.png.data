@@ -1,0 +1,7 @@
+texture: tool/ppfx
+dimensions: 1, 1
+sprites: 1
+
+clip: 0, 0, 16, 16
+pivot: 0.0, 0.0
+scale: 1, 1

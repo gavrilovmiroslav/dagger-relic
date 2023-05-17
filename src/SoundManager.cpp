@@ -115,8 +115,19 @@ void SoundManager::play_sound(Sound sound_type) const
 		{
 			Mix_VolumeChunk(m_sound_effects.at("button_click"), AUDIO_VOLUME);
 			Mix_PlayChannel(-1, m_sound_effects.at("button_click"), 0);
-		}
+		} break;
+		case Sound::PushPlateActivated:
+		{
+			Mix_VolumeChunk(m_sound_effects.at("metalshut"), AUDIO_VOLUME);
+			Mix_PlayChannel(-1, m_sound_effects.at("metalshut"), 0);
+		} break;
 	}
+}
+
+void SoundControlSystem::process_signal(PushPlateActivatedSignal& signal)
+{
+	auto&& music = MutAccessUnique<SoundManager>::access_unique();
+	music.play_sound(Sound::PushPlateActivated);
 }
 
 void SoundControlSystem::on_tick()
@@ -137,25 +148,28 @@ void SoundControlSystem::on_tick()
 		if (valid_position_x && valid_position_y && mouse.get_mouse_button_left() == MouseEventState::DownNow)
 		{
 			music.play_sound(Sound::ButtonClick);
-			if (button.type == ButtonType::PauseMusic)
+			switch (button.type)
 			{
-				is_playing = music.toggle_music();
-				if (is_playing)
+				case ButtonType::PauseMusic:
 				{
-					sprite_animation.change_to("pyramidplunder/audio_active");
-				}
-				else
+					is_playing = music.toggle_music();
+					if (is_playing)
+					{
+						sprite_animation.change_to("pyramidplunder/audio_active");
+					}
+					else
+					{
+						sprite_animation.change_to("pyramidplunder/audio_not_active");
+					}
+				} break;
+				case ButtonType::PlayNext:
 				{
-					sprite_animation.change_to("pyramidplunder/audio_not_active");
-				}
-			}
-			else if (button.type == ButtonType::PlayNext)
-			{
-				music.play_music(++current_song);
-			}
-			else if (button.type == ButtonType::PlayPrevious)
-			{
-				music.play_music(--current_song);
+					music.play_music(++current_song);
+				} break;
+				case ButtonType::PlayPrevious:
+				{
+					music.play_music(--current_song);
+				} break;
 			}
 		}
 	}

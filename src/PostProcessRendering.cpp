@@ -1,5 +1,6 @@
 #include "PostProcessRendering.h"
 #include "Prelude.h"
+#include "Scene.h"
 
 extern U8 r_image_font_6_11[2464];
 
@@ -105,7 +106,7 @@ void render_line(struct Bitmap *bm, U32 x0, U32 y0, U32 x1, U32 y1, U32 colour)
 		{
 			break;
 		}
-		
+
 		e2 = err;
 		if (e2 > -dx)
 		{
@@ -146,8 +147,166 @@ void PostProcessTextRenderingModule::process_signal(core::PostProcessRenderSigna
 	}
 }
 
+F32        postprocess_fade_timer = 0.0f;
+Bool       postprocess_fade_force = false;
+U32        dynamiclight_x         = 0;
+U32        dynamiclight_y         = 0;
+static U32 buffer_vignette[960*960];
+static U8  buffer_lightmap[960*960];
+static U8  buffer_decal[960*960];
+
+static const U8 lightmap_shadow = 0x10u;
+static const U8 lightmap_light  = 0x5fu;
+
+void Lightmap_Calculate(std::vector<Lightmap_Block> &block)
+{
+    U32 i, j;
+    const U32 bluramount = 10;
+
+    for (i = 0; i < 960*960; i++)
+    {
+        buffer_lightmap[i] = lightmap_light;
+    }
+
+    for (i = 0; i < block.size(); i++)
+    {
+        U32 x, y;
+
+        for (x = block[i].x; x < block[i].x + block[i].w; x++)
+        {
+            for (y = block[i].y; y < block[i].y + block[i].h; y++)
+            {
+                buffer_lightmap[x + y * 960] = lightmap_shadow;
+            }
+        }
+    }
+
+    /* Blur lightmap buffer... */
+    for (j = 0; j < 960; j++)
+    {
+        for (i = 0; i < 960; i++)
+        {
+            U32 x, y;
+            U32 c = 0;
+            U32 k = 0;
+
+            for (x = i; x <= i+bluramount*2; x++)
+            {
+                for (y = j; y <= j+bluramount*2; y++)
+                {
+                    const U32 x2 = x-bluramount;
+                    const U32 y2 = y-bluramount;
+
+                    if (x2 < 960 && y2 < 960)
+                    {
+                        c += buffer_lightmap[x2 + y2 * 960];
+                    }
+                    else
+                    {
+                        c += lightmap_shadow;
+                    }
+                    k++;
+                }
+            }
+
+            if (k > 0)
+            {
+                buffer_lightmap[i + j * 960] = (U8) (c / k);
+            }
+        }
+    }
+}
+
+void Decal_Stamp(U32 x, U32 y, U32 what)
+{
+	U32 i, j;
+
+	switch (what)
+	{
+	case DECAL_FOOTPRINT_BIPED1:
+	case DECAL_TEST:
+		for (j = y; j < y+4; j++)
+		{
+			for (i = x; i < x+8; i++)
+			{
+				if (x >= 0 && x < 960 && y >= 0 && y < 960)
+				{
+					buffer_decal[j*960+i] = 0x80;
+				}
+			}
+		}
+	break;
+	case DECAL_FOOTPRINT_BIPED2:
+		for (j = y+6; j < y+6+4; j++)
+		{
+			for (i = x+1; i < x+1+8; i++)
+			{
+				if (x >= 0 && x < 960 && y >= 0 && y < 960)
+				{
+					buffer_decal[j*960+i] = 0x80;
+				}
+			}
+		}
+	break;
+	case DECAL_BOXGRIND:
+		for (j = y; j < y+32; j++)
+		{
+			for (i = x; i < x+32; i++)
+			{
+				if (x >= 0 && x < 960 && y >= 0 && y < 960)
+				{
+					buffer_decal[j*960+i] = 0x9f;
+				}
+			}
+		}
+	break;
+	default:
+	break;
+	}
+}
+
+void Decal_Clear(void)
+{
+	memset(buffer_decal, 0, 960*960);
+}
+
+/*
+ * TODO: This is slow because the engine is not designed for this... Maybe use SIMD?
+ */
 void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSignal& signal)
 {
+	if(!scene.in_game)
+	{
+		memset(signal.pixels, 0xff, signal.h * signal.w * sizeof(U32));
+		return;
+	}
+
+	static Bool buffercreate      = true;
+	const  U32  dynamiclight_size = 144;
+	static U32  switchcolour      = 0;
+
+	if (buffercreate)
+	{
+		U32 x, y;
+
+		buffercreate = false;
+
+		for (y = 0; y < signal.h; y++)
+		{
+			for (x = 0; x < signal.w; x++)
+			{
+				F32 dx = x-(signal.w/2.0f);
+				F32 dy = y-(signal.h/2.0f);
+				F32 d  = sqrtf(dx*dx+dy*dy);
+				F32 v  = d/signal.w;
+				U32 a  = (U32) (v*255);
+				U32 c  = 0;
+
+				buffer_vignette[y * signal.w + x] = (a << 0) | (c << 16) | (c << 8) | (c << 24);
+			}
+		}
+	}
+
 	for (const auto&& [ entity, test ] : AccessStorage<PostProcessTest>::access_storage().each())
 	{
 		U32 x, y;
@@ -165,7 +324,7 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
             }
         }
         break;
-        case 1:
+        case 999:
         for (y = 0; y < signal.h; y++)
         {
             for (x = 0; x < signal.w; x++)
@@ -173,9 +332,200 @@ void PostProcessTestRenderingModule::process_signal(core::PostProcessRenderSigna
                 signal.pixels[y * signal.w + x] = (x << 16) | (x << 8) | (x);
             }
         }
+		case POSTPROCESS_TEST_VIGNETTE:
+		for (y = 0; y < signal.h; y++)
+		{
+			for (x = 0; x < signal.w; x++)
+			{
+				signal.pixels[y * signal.w + x] = buffer_vignette[y * signal.w + x];
+			}
+		}
+		break;
+		case POSTPROCESS_TEST_FADE:
+		if (postprocess_fade_timer > 0.0f || postprocess_fade_force)
+		{
+			for (y = 0; y < signal.h; y++)
+			{
+				for (x = 0; x < signal.w; x++)
+				{
+					F32 d = postprocess_fade_timer;
+					U32 c = signal.pixels[y * signal.w + x];
+					U32 a = (c >> 0)  & 0xff;
+
+					U32 r = ((U32) (((c>>24)&0xff) * d))&0xff;
+					U32 g = ((U32) (((c>>16)&0xff) * d))&0xff;
+					U32 b = ((U32) (((c>> 8)&0xff) * d))&0xff;
+
+					signal.pixels[y * signal.w + x] = (r << 24) | (g << 16) | (b << 8) | (a << 0);
+				}
+			}
+		}
+		else if (postprocess_fade_timer < 0.0f)
+		{
+			for (y = 0; y < signal.h; y++)
+			{
+				for (x = 0; x < signal.w; x++)
+				{
+					F32 d = 1.0f+postprocess_fade_timer;
+					U32 c = signal.pixels[y * signal.w + x];
+					U32 a = (c >> 0)  & 0xff;
+
+					U32 r = ((U32) (((c>>24)&0xff) * d))&0xff;
+					U32 g = ((U32) (((c>>16)&0xff) * d))&0xff;
+					U32 b = ((U32) (((c>> 8)&0xff) * d))&0xff;
+
+					signal.pixels[y * signal.w + x] = (r << 24) | (g << 16) | (b << 8) | (a << 0);
+				}
+			}
+		}
+		break;
+		case POSTPROCESS_TEST_LIGHTMAP:
+		for (y = 0; y < signal.h; y++)
+		{
+			for (x = 0; x < signal.w; x++)
+			{
+				U32 c = signal.pixels[y * signal.w + x];
+				U32 r = (c >> 24) & 0xff;
+				U32 g = (c >> 16) & 0xff;
+				U32 b = (c >> 8)  & 0xff;
+				U32 a = (c >> 0)  & 0xff;
+				U32 c2 = (buffer_vignette[y * signal.w + x]) & 0xff;
+
+				r  = (buffer_lightmap[y * signal.w + x]) & 0xff;
+				g  = (buffer_lightmap[y * signal.w + x]) & 0xff;
+				b  = (buffer_lightmap[y * signal.w + x]) & 0xff;
+				a  = 0x9f;
+
+				if (r > 255) r = 255;
+				if (g > 255) g = 255;
+				if (b > 255) b = 255;
+				if (a > 255) a = 255;
+
+				signal.pixels[y * signal.w + x] = (a << 0) | (r << 16) | (g << 8) | (b << 24);
+			}
+		}
+		break;
+		case POSTPROCESS_TEST_DYNAMICLIGHT:
+		{
+			for (y = 0; y < signal.h; y++)
+			{
+				for (x = 0; x < signal.w; x++)
+				{
+					F32 dx = (F32)x-dynamiclight_x;
+					F32 dy = (F32)y-dynamiclight_y;
+					F32 d  = sqrtf(dx*dx+dy*dy);
+
+					if (d < dynamiclight_size)
+					{
+						U32 i;
+
+						for (i = 0; i < 3; i++)
+						{
+							F32 c = ((U8*) (&signal.pixels[y * signal.w + x]))[i+1];
+							F32 dl = d/dynamiclight_size;
+							F32 v = (2.0f-dl)*c;
+							((U8*) (&signal.pixels[y * signal.w + x]))[i+1] = (U8) v;
+						}
+					}
+				}
+			}
+		}
+		break;
+		case POSTPROCESS_TEST_UIFRAME:
+#define UIFRAME_HEIGHT 64
+			// Crappy algorithm.
+			for (x = 0; x < signal.w; x++)
+			{
+				signal.pixels[(signal.h-UIFRAME_HEIGHT-2) * signal.w + x] = 0x101010ff;
+			}
+			for (x = 0; x < signal.w; x++)
+			{
+				signal.pixels[(signal.h-UIFRAME_HEIGHT-1) * signal.w + x] = 0x070707ff;
+			}
+			switchcolour = (switchcolour+1)%2;
+			for (y = signal.h-UIFRAME_HEIGHT; y < signal.h; y++)
+			{
+				for (x = 0; x < signal.w; x++)
+				{
+					U32 c = signal.pixels[y * signal.w + x];
+					U32 r = (c >> 24) & 0xff;
+					U32 g = (c >> 16) & 0xff;
+					U32 b = (c >> 8)  & 0xff;
+					U32 a = (c >> 0)  & 0xff;
+
+					if (y % 2 == switchcolour)
+					{
+						if (x % 2 == 0)
+						{
+							r = 0;
+							g = 0;
+							b = 0;
+						}
+						else
+						{
+							r = 0x10;
+							g = 0x10;
+							b = 0x10;
+						}
+					}
+					else
+					{
+						if (x % 2 == switchcolour)
+						{
+							r = 0x10;
+							g = 0x10;
+							b = 0x10;
+						}
+						else
+						{
+							r = 0;
+							g = 0;
+							b = 0;
+						}
+					}
+
+					signal.pixels[y * signal.w + x] = (a << 0) | (r << 24) | (g << 16) | (b << 8);
+				}
+			}
+		break;
+		case POSTPROCESS_TEST_TRACK:
+			for (y = 0; y < signal.h; y++)
+			{
+				for (x = 0; x < signal.w; x++)
+				{
+					U32 i;
+
+					if (buffer_decal[y*signal.w+x] != 0)
+					{
+						for (i = 0; i < 3; i++)
+						{
+							((U8*) (&signal.pixels[y * signal.w + x]))[i+1] -= buffer_decal[y * signal.w + x]/32;
+						}
+					}
+				}
+			}
+		break;
         default:
         break;
         }
+	}
+}
+
+void PostProcessRectangleRenderingModule::process_signal(core::PostProcessRenderSignal& signal)
+{
+	for (const auto&& [ entity, rectangle ] : AccessStorage<PostProcessRectangle>::access_storage().each())
+	{
+		for (I32 y = rectangle.y; y < rectangle.y+rectangle.h; y++)
+		{
+			for (I32 x = rectangle.x; x < rectangle.x+rectangle.w; x++)
+			{
+				/* Terrible thing to do here. */
+				if (x < signal.w && y < signal.h)
+				{
+					signal.pixels[y * signal.w + x] = 0xffffffff;
+				}
+			}
+		}
 	}
 }
 

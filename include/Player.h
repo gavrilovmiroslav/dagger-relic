@@ -13,15 +13,10 @@ enum class SpecialBlindfold
 	ScorpionEyes
 };
 
-struct Constraints
-{
-	U32 number_of_blindfolds = 6;
-	U32 max_number_of_blindfolds = 20;
-};
+#define number_of_blindfolds  6
+#define max_number_of_blindfolds 20
 
 struct Player
-	: public AllocateUnique<Constraints>
-	, public AccessUnique<Constraints>
 {
 	SpecialBlindfold current_blindfold;
 	Map<SpecialBlindfold, U32> available_blindfolds;
@@ -35,15 +30,13 @@ struct BlindfoldChangingSystem
 	, public AccessComponentById<Visibility>
 	, public MutAccessGroupStorage<Box, Visibility>
 	, public MutAccessGroupStorage<Player, KeyBinding>
-	, public MutAccessGroupStorage<Trap, Visibility>
+	, public MutAccessGroupStorage<Boulder, Visibility>
 	, public MutAccessGroupStorage<Wall, Visibility>
 {
 	using QueryPlayer = MutAccessGroupStorage<Player, KeyBinding>;
 	using QueryWalls = MutAccessGroupStorage<Wall, Visibility>;
-	using QueryTraps = MutAccessGroupStorage<Trap, Visibility>;
+	using QueryBoulders = MutAccessGroupStorage<Boulder, Visibility>;
 	using QueryBoxes = MutAccessGroupStorage<Box, Visibility>;
-
-	// Bool traps_visible = AccessComponentById<Visibility>::get(QueryTraps::access_storage().front()).state;
 
 	U32 counter = 0;
 	StaticArray<SpecialBlindfold, 3> blindfolds = { SpecialBlindfold::HumanEyes, SpecialBlindfold::FoxEyes, SpecialBlindfold::ScorpionEyes };

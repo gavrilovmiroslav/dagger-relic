@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Scene.h"
 
 Player::Player(SpecialBlindfold blindfold)
 	: current_blindfold(blindfold)
@@ -6,12 +7,11 @@ Player::Player(SpecialBlindfold blindfold)
 
 	DynamicArray<SpecialBlindfold> blindfolds = {};
 
-	auto&& constraint = AccessUnique<Constraints>::access_unique();
-	blindfolds.insert(blindfolds.begin(), constraint.max_number_of_blindfolds, SpecialBlindfold::FoxEyes);
-	blindfolds.insert(blindfolds.begin(), constraint.max_number_of_blindfolds, SpecialBlindfold::ScorpionEyes);
+	blindfolds.insert(blindfolds.begin(), max_number_of_blindfolds, SpecialBlindfold::FoxEyes);
+	blindfolds.insert(blindfolds.begin(), max_number_of_blindfolds, SpecialBlindfold::ScorpionEyes);
 
 	randomize(blindfolds);
-	for (U32 i = 0; i < constraint.number_of_blindfolds; ++i)
+	for (U32 i = 0; i < number_of_blindfolds; ++i)
 	{
 		available_blindfolds[blindfolds[i]]++;
 	}
@@ -19,10 +19,16 @@ Player::Player(SpecialBlindfold blindfold)
 
 void BlindfoldChangingSystem::on_tick()
 {
+	if(!scene.in_game)
+	{
+		return;
+	}
+
 	const auto& keys = KeyState::get();
 
 	Bool walls_visible = AccessComponentById<Visibility>::get(QueryWalls::access_storage().front()).state;
 	Bool boxes_visible = AccessComponentById<Visibility>::get(QueryBoxes::access_storage().front()).state;
+	Bool boulders_visible = AccessComponentById<Visibility>::get(QueryBoulders::access_storage().front()).state;
 
 	for (auto&& [player_entity, player, key_binding] : QueryPlayer::access_storage().each())
 	{
@@ -53,9 +59,17 @@ void BlindfoldChangingSystem::on_tick()
 
 				if (boxes_visible)
 				{
-					for (auto&& [box_entity, visibility] : QueryBoxes::access_storage().each())
+					for (auto&& [box_entity, box, visibility] : QueryBoxes::access_storage().each())
 					{
 						visibility.state = false;
+					}
+				}
+
+				if (!boulders_visible)
+				{
+					for (auto&& [boulder_entity, visibility] : QueryBoulders::access_storage().each())
+					{
+						visibility.state = true;
 					}
 				}
 			} break;
@@ -71,7 +85,15 @@ void BlindfoldChangingSystem::on_tick()
 
 				if (!boxes_visible)
 				{
-					for (auto&& [box_entity, visibility] : QueryBoxes::access_storage().each())
+					for (auto&& [box_entity, box, visibility] : QueryBoxes::access_storage().each())
+					{
+						visibility.state = true;
+					}
+				}
+
+				if (!boulders_visible)
+				{
+					for (auto&& [boulder_entity, visibility] : QueryBoulders::access_storage().each())
 					{
 						visibility.state = true;
 					}
@@ -89,9 +111,17 @@ void BlindfoldChangingSystem::on_tick()
 
 				if (!boxes_visible)
 				{
-					for (auto&& [box_entity, visibility] : QueryBoxes::access_storage().each())
+					for (auto&& [box_entity, box, visibility] : QueryBoxes::access_storage().each())
 					{
 						visibility.state = true;
+					}
+				}
+
+				if (boulders_visible)
+				{
+					for (auto&& [boulder_entity, visibility] : QueryBoulders::access_storage().each())
+					{
+						visibility.state = false;
 					}
 				}
 			} break;
