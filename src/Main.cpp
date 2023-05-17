@@ -3,6 +3,8 @@
 #include "Prelude.h"
 #include "Components.h"
 #include "PlayerControlsSystem.h"
+#include "Platforms.h"
+#include "BoxMovingSystem.h"
 
 struct PurgatoryPals : public Game
 {
@@ -10,6 +12,8 @@ struct PurgatoryPals : public Game
 	{
 		auto& engine = Engine::get_instance();
 		engine.use<PlayerControlsSystem>();
+		engine.use<PlatformSystem>();
+		engine.use<BoxMovingSystem>();
 	}
 
 	void on_start() override
@@ -17,10 +21,10 @@ struct PurgatoryPals : public Game
 		auto rogue = spawn()
 			.with<Sprite>(ecs::no_entity)
 			.with<SpriteAnimation>(Spritesheet::get_by_name("Rogue/idle"))
-			.with<Position>(geometry::Vec2{600, 300})
-			.with<Gravity>(geometry::Vec2{0, 0.03})
+			.with<Position>(geometry::Vec2{500, 300})
+			.with<Gravity>(geometry::Vec2{0, 0.02})
 			.with<Visibility>(true)
-			.with<Player>(geometry::Vec2{ 0, 0 }, false)
+			.with<Player>(geometry::Vec2{ 0, 0 }, false, 300.0f, 1)
 			.with<KeyBindings>(KeyCode::KEY_UP, KeyCode::KEY_LEFT, KeyCode::KEY_RIGHT)
 			.with<Animation>("Rogue/jump", "Rogue/walk", "Rogue/idle")
 			.with<Flip>(None)
@@ -32,12 +36,77 @@ struct PurgatoryPals : public Game
 			.with<Position>(geometry::Vec2{200, 300})
 			.with<Gravity>(geometry::Vec2{0, 0.03})
 			.with<Visibility>(true)
-			.with<Player>(geometry::Vec2{ 0, 0 }, true)
+			.with<Player>(geometry::Vec2{ 0, 0 }, false, 300.0f, 2)
 			.with<KeyBindings>(KeyCode::KEY_W, KeyCode::KEY_A, KeyCode::KEY_D)
 			.with<Animation>("Knight/jump", "Knight/walk", "Knight/idle")
 			.with<Flip>(None)
 			.done();
+
+		auto platform1 = spawn()
+			.with<Platform>(128.0f, 4.0f, 1)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
+			.with<Position>(geometry::Vec2{ 550, 400 })
+			.with<Visibility>(true)
+			.done();
+
+		auto platform5 = spawn()
+			.with<Platform>(128.0f, 4.0f, 5)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
+			.with<Position>(geometry::Vec2{ 250, 400 })
+			.with<Visibility>(true)
+			.done();	
+
+		auto platform3 = spawn()
+			.with<Platform>(128.0f, 4.0f, 3)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
+			.with<Position>(geometry::Vec2{ 100, 150 })
+			.with<Visibility>(true)
+			.done();
+
+		auto platform4 = spawn()
+			.with<Platform>(128.0f, 4.0f, 4)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
+			.with<Position>(geometry::Vec2{ 700, 150 })
+			.with<Visibility>(true)
+			.done();	
 			
+		auto platform2 = spawn()
+			.with<Platform>(1380.0f, 4.0f, 2)
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("platform/platform"))
+			.with<Position>(geometry::Vec2{128, 600})
+			.with<Visibility>(true)
+			.done();
+
+		auto box = spawn()
+			.with<Position>(geometry::Vec2{250, 268})
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("box/box"))
+			.with<Visibility>(true)
+			.with<Box>(geometry::Vec2{0.0f, 0.0f}, false)
+			.with<Gravity>(geometry::Vec2{0.0f, 0.01f})
+			.done();
+
+		auto orange_flag = spawn()
+			.with<Position>(geometry::Vec2{170, 83})
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("flags/orangeflag"))
+			.with<Visibility>(true)
+			.with<Scale>(geometry::Vec2{0.15f, 0.15f})
+			.with<Flip>(Horizontal)
+			.done();
+
+		auto green_flag = spawn()
+			.with<Position>(geometry::Vec2{885, 83})
+			.with<Sprite>(ecs::no_entity)
+			.with<SpriteAnimation>(Spritesheet::get_by_name("flags/greenflag"))
+			.with<Visibility>(true)
+			.with<Scale>(geometry::Vec2{0.15f, 0.15f})
+			.done();
 	}
 };
 
