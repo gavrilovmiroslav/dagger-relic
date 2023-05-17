@@ -38,6 +38,7 @@ class DamageSystem : public ecs::System,
             {
                 return;
             }
+            
             auto& health_to = MutAccessComponentById<Health>::get(to);
             Logger::info("Health before damage: {} -> {}", (int)to, health_to.health);
             health_to.health -=  damage; 
