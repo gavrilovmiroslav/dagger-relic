@@ -95,7 +95,7 @@ void PlatformSystem::on_tick()
 			if(((player_pos.xy.x - 40 >= box_pos.xy.x - 10 && player_pos.xy.x - 40 <= box_pos.xy.x - 5 && player.speed.x > 0.0f) ||
 			   (player_pos.xy.x - 40 >= box_pos.xy.x + 27 && player_pos.xy.x - 40 <= box_pos.xy.x + 33 && player.speed.x < 0.0f)) &&
 			    player_pos.xy.y - 47 >= box_pos.xy.y - 2 && player_pos.xy.y - 47 <= box_pos.xy.y + 32 &&
-			    player.isGrounded)
+			    player.isGrounded && player.id == 2)
 			{
 				box.speed.x = player.speed.x;
 				in_contact = true;
